@@ -1,4 +1,4 @@
-package geneticalgorithm;
+package advancedalgorithm;
 /**
  * 
  */
@@ -16,7 +16,10 @@ public class Main {
 		// TODO Auto-generated method stub
 		
 //		new GA(4,10).run();
-		new TSP(30,6,10).run();
+//		new TSP(30,6,10).run();
+		ACO aco=new ACO(30,10,100,1.f,5.f,0.5f);
+		aco.init();
+		aco.solve();
 	}
 
 }
