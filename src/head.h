@@ -14,6 +14,12 @@
 #include<assert.h>
 #include "sys/timeb.h"
 
+#include <fstream>
+#include<sstream>
+
+#include <sys/time.h>
+#include "sys/timeb.h"
+
 #include<pthread.h>
 #include<semaphore.h>
 
@@ -29,12 +35,24 @@ using namespace std;
 
 const int MAX_NodeSize = (2015); //may be overflow
 const int WeightSort = (0); //0:weight value,1:hop
+#define algorithm_franz 1
+#define algorithm_IMSH 3
+#define algorithm_IHKSP 4
+#define algorithm_ILP 2
+#define algorithm_getSRLGcsv -2
+#define algorithm_all -1
+
+#define exit_ILP_glp_set_obj_coef 50
+
+#define LimitedTime 3
+#define MAX_ITERATIONS 1000
 
 //every srlg and what srlg is belonged from a edge.
 class SrlgMember {
 public:
 	vector<int> srlgMember; //the corresponding id of every SRLG's members
-	int srlgmemberNum; //member number of every SRLG
+//	int srlgGroupsNum; //member number of every SRLG
+	int srlgMembersNum;
 };
 
 class Edge {
@@ -69,22 +87,20 @@ public:
 	int source, destination;
 	//set of all edge. topo.csv
 	vector<Edge> edges;
-	//����ͼ���˽ṹ��������ʽ��
-	vector<EdgeList> graphList;
+	vector<EdgeList> topo_Node_fEdgeList;
+	vector<EdgeList> topo_Node_rEdgeList;
 	//vector<edge>GraphList[MAX_NodeSize];
 
-	//edge number of initial graph ԭʼ����ͼ�ߵĸ��� 19
-	//node number of initial graph ԭʼ����ͼ��ĸ��� 11
+	//edge number of initial graph
+	//node number of initial graph
 	int edgeNum, nodeNum;
 	int prenodeNum;
 	//SRLG
 	vector<SrlgMember> srlgGroups;
 	int srlgGroupsNum;
 
-	//���--���
 	//int index_node[MAX_NodeSize];
 	vector<int> index_node;
-	//���--���
 	//int node_index[MAX_NodeSize];
 	vector<int> node_index;
 	//judge this node is valued to calculation
@@ -177,11 +193,12 @@ public:
 		this->edges.push_back(e);
 	}
 
-	//����������ʽ��ԭʼͼ
 	void ConstructGraphbyLink(void) {
-		this->graphList = vector<EdgeList>(this->nodeNum);
+		this->topo_Node_fEdgeList = vector<EdgeList>(this->nodeNum);
 		for (unsigned int i = 0; i < this->edges.size(); i++) {
-			this->graphList[this->edges.at(i).from].edgeList.push_back(
+			this->topo_Node_fEdgeList[this->edges.at(i).from].edgeList.push_back(
+					this->edges.at(i).id);
+			this->topo_Node_rEdgeList[this->edges.at(i).to].edgeList.push_back(
 					this->edges.at(i).id);
 		}
 		return;
@@ -196,32 +213,32 @@ public:
 			}
 		}
 	}
+	void TransformedToEdgeBelongingOnlySRLG() {
 
+	}
 	//	//the initial graph's topological structure(matrix)
-	//	//ԭʼ����ͼ�����˽ṹ��������ʽ��
 	//	int InputGraphMatix[MAX_NodeSize][MAX_NodeSize];
 	//	int InputMaxGraphMatix[MAX_NodeSize][MAX_NodeSize];
 	//
-	//	//ԭʼ����ͼÿ��������Ӧ�ı��
 	//	int FlagofInputGraphEdgeMatrix[MAX_NodeSize][MAX_NodeSize];
 	//	int FlagofInputMaxGraphEdgeMatrix[MAX_NodeSize][MAX_NodeSize];
 };
-class InclusionExclusionSet{
+class InclusionExclusionSet {
 public:
 	int veclen;
-	vector<bool>Inclusion;
-	vector<bool>Exlusion;
+	vector<bool> Inclusion;
+	vector<bool> Exlusion;
 
-	InclusionExclusionSet(int len){
-		this->Inclusion=vector<bool>(len,true);
-		this->Exlusion=vector<bool>(len,true);
-		this->veclen=len;
+	InclusionExclusionSet(int len) {
+		this->Inclusion = vector<bool>(len, true);
+		this->Exlusion = vector<bool>(len, true);
+		this->veclen = len;
 	}
-	void clear(){
+	void clear() {
 		this->Inclusion.clear();
 		this->Exlusion.clear();
-		this->Inclusion=vector<bool>(veclen,true);
-		this->Exlusion=vector<bool>(veclen,true);
+		this->Inclusion = vector<bool>(veclen, true);
+		this->Exlusion = vector<bool>(veclen, true);
 	}
 };
 class Request {
@@ -232,11 +249,9 @@ public:
 	vector<bool> BPMustNotPassEdges4AP;
 	vector<bool> BPMustNotPassEdgesRLAP;
 
-
 	vector<int> APExlusionEdges;
 	vector<int> APInclusionEdges;
 	vector<int> APSrlgs;	//may exist duplicate value
-
 
 	vector<int> RLAP_PathEdge;
 
@@ -253,7 +268,7 @@ public:
 
 	vector<bool> STNodeCut;	//true: belong s,false: belong t;
 
-	Request(int s,int d,int edgenum) {
+	Request(int s, int d, int edgenum) {
 		APHopSum = 0;
 		APCostSum = 0;
 		BPCostSum = 0;
@@ -270,13 +285,29 @@ public:
 	}
 };
 
-class DisjointPath{
+class DisjointPath {
 public:
-	vector<int>AP;
-	vector<int>BP;
-	DisjointPath(int aplen,int bplen){
-		this->AP=vector<int>(aplen);
-		this->BP=vector<int>(bplen);
+	vector<int> AP;
+	vector<int> BP;
+	int APsum;
+	int BPsum;
+	DisjointPath() {
+		APsum = 0;
+		BPsum = 0;
+	}
+	DisjointPath(int aplen, int bplen) {
+		this->APsum = INT_MAX;
+		this->BPsum = INT_MAX;
+		this->AP = vector<int>(aplen);
+		this->BP = vector<int>(bplen);
+	}
+	void getResult(DisjointPath *dispath) {
+		std::copy(dispath->AP.begin(), dispath->AP.end(), this->AP.begin());
+		std::copy(dispath->BP.begin(), dispath->BP.end(), this->BP.begin());
+		this->AP = dispath->AP;
+		this->BP = dispath->BP;
+		this->APsum = dispath->APsum;
+		this->BPsum = dispath->BPsum;
 	}
 
 };
@@ -301,4 +332,3 @@ public:
  7.optimate some array's long assignment problem
  8.first calculate the more enodesize's path
  */
-

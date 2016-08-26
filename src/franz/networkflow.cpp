@@ -5,10 +5,10 @@
  *      Author: Taoheng
  */
 
-#include "networkflow.h"
+#include "../franz/networkflow.h"
 
 //find the augmentation path.
-int dfsNetworkFlow(int v, int t, int f, NetworkFlow & netflow) {
+int dfsNetworkFlow_fordfulkerson(int v, int t, int f, NetworkFlow & netflow) {
 	if (v == t)
 		return f;
 	netflow.used[v] = true;
@@ -16,8 +16,8 @@ int dfsNetworkFlow(int v, int t, int f, NetworkFlow & netflow) {
 		newtworkEdge&e = netflow.G[v].newtworkedgelist[i];
 		if (!netflow.used[e.to] && e.cap > 0) {
 			int min = f > e.cap ? e.cap : f;
-			int d = dfsNetworkFlow(e.to, t, min, netflow);
-			if (d > 0) {
+			int d = dfsNetworkFlow_fordfulkerson(e.to, t, min, netflow);
+			if (0 < d) {
 				e.cap -= d;
 				netflow.G[e.to].newtworkedgelist[e.rev].cap += d;
 				return d;
@@ -27,15 +27,15 @@ int dfsNetworkFlow(int v, int t, int f, NetworkFlow & netflow) {
 	return 0;
 }
 
-void dfs(NetworkFlow & netflow, int s, Request & request) {
+void dfsGetSTCut(NetworkFlow & netflow, int s, Request & request) {
 	request.STNodeCut[s] = true;
 	netflow.used[s] = true;
 	for (unsigned int i = 0; i < netflow.G[s].newtworkedgelist.size(); i++) {
 		newtworkEdge&e = netflow.G[s].newtworkedgelist[i];
-		if (!netflow.used[e.to] && e.cap > 0) {
+		if ((!netflow.used[e.to]) && (0 < e.cap)) {
 			netflow.used[e.to] = true;
 			request.STNodeCut[e.to] = true;
-			dfs(netflow, e.to, request);
+			dfsGetSTCut(netflow, e.to, request);
 		}
 	}
 }
@@ -45,7 +45,7 @@ void MaxFlowAlgorithm_fordfulkerson(Graph &graph, Request & request) {
 	NetworkFlow netflow(graph, request);
 	for (;;) {
 		netflow.clearUsedVector();
-		int augmentationflow = dfsNetworkFlow(graph.source, graph.destination,
+		int augmentationflow = dfsNetworkFlow_fordfulkerson(graph.source, graph.destination,
 		INT_MAX, netflow);
 		if (0 == augmentationflow)
 			break;
@@ -55,15 +55,16 @@ void MaxFlowAlgorithm_fordfulkerson(Graph &graph, Request & request) {
 	cout << "maxflow:" << maxflow << endl;
 	request.STNodeCut = vector<bool>(graph.nodeNum, false);
 	netflow.clearUsedVector();
-	dfs(netflow, graph.source, request);
+	dfsGetSTCut(netflow, graph.source, request);
 	for (int i = 0; i < graph.nodeNum; i++) {
 		if (true == request.STNodeCut[i]) {
 			cout << "S'node: " << graph.node_index[i] << endl;
 		}
 	}
+	//delete netflow;
 	return;
 }
-void bfsNetworkFlow(NetworkFlow & netflow) {
+void bfsNetworkFlow_dinic(NetworkFlow & netflow) {
 	netflow.level = vector<int>(netflow.nodeSize, -1);
 	queue<int> que;
 	netflow.level[netflow.source] = 0;
@@ -71,7 +72,7 @@ void bfsNetworkFlow(NetworkFlow & netflow) {
 	while (!que.empty()) {
 		int v = que.front();
 		que.pop();
-		for (unsigned  i = 0; i < netflow.G.at(v).newtworkedgelist.size(); i++) {
+		for (unsigned i = 0; i < netflow.G.at(v).newtworkedgelist.size(); i++) {
 			newtworkEdge &e = netflow.G.at(v).newtworkedgelist.at(i);
 			if ((0 < e.cap) && (0 > netflow.level[e.to])) {
 				netflow.level[e.to] = netflow.level[v] + 1;
@@ -104,7 +105,7 @@ void MaxFlowAlgorithm_dinic(Graph &graph, Request & request) {
 	NetworkFlow netflow(graph, request);
 
 	for (;;) {
-		bfsNetworkFlow(netflow);
+		bfsNetworkFlow_dinic(netflow);
 		if (netflow.level[graph.destination] < 0)
 			break;
 		netflow.clearUsedVector();

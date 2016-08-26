@@ -1,6 +1,5 @@
 #include "head.h"
 extern int demand_num;
-extern int srlg_num;
 
 void DebugPrint(Graph *p_graph) {
 	for (int i = 0; i < demand_num; i++) {
@@ -29,38 +28,24 @@ void DebugPrint(Graph *p_graph) {
 	}
 	cout << endl;
 
-	if (debug_showinitmatrix) {
-		cout << "Initmatrix:" << endl;
-		for (int i = 0; i < (*p_graph).nodeNum; i++) {
-			cout << (*p_graph).node_index[i] << " ";
-		}
-		cout << endl;
-		cout << endl;
-
-		for (int i = 0; i < (*p_graph).nodeNum; i++) {
-			for (int j = 0; j < (*p_graph).nodeNum; j++) {
-				//cout << (*p_graph).InputGraphMatix[i][j] << " ";
-			}
-			cout << endl;
-		}
-	}
-	for (unsigned int i = 0; i < p_graph->edges.size(); i++) {
-		cout << p_graph->edges[i].id << " :"
-				<< p_graph->node_index[p_graph->edges[i].from] << " "
-				<< p_graph->node_index[p_graph->edges[i].to] << " ";
-		cout << p_graph->edges[i].ithsrlg << " " << p_graph->edges[i].cost
-				<< endl;
-	}
-
-	SrlgMember srlgmem;
-	if (debug_showsrlginfo) {
-		for (int i = 0; i < srlg_num; i++) {
-			srlgmem = (*p_graph).srlgGroups.at(i);
-			cout << "SRLG" << i << ":";
-			for (int j = 0; j < srlgmem.srlgmemberNum; j++) {
-				cout << srlgmem.srlgMember.at(j) << "  ";
-			}
-			cout << endl;
-		}
-	}
+//
+//	for (unsigned int i = 0; i < p_graph->edges.size(); i++) {
+//		cout << p_graph->edges[i].id << " :"
+//				<< p_graph->node_index[p_graph->edges[i].from] << " "
+//				<< p_graph->node_index[p_graph->edges[i].to] << " ";
+//		cout << p_graph->edges[i].ithsrlg << " " << p_graph->edges[i].cost
+//				<< endl;
+//	}
+//
+//	SrlgMember srlgmem;
+//	if (debug_showsrlginfo) {
+//		for (int i = 0; i < srlg_num; i++) {
+//			srlgmem = (*p_graph).srlgGroups.at(i);
+//			cout << "SRLG" << i << ":";
+//			for (int j = 0; j < srlgmem.srlgMembersNum; j++) {
+//				cout << srlgmem.srlgMember.at(j) << "  ";
+//			}
+//			cout << endl;
+//		}
+//	}
 }
