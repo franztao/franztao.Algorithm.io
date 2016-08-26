@@ -9,7 +9,7 @@
 #include <signal.h>
 #include "lib/lib_record.h"
 
-#define MAX_LINE_LEN 4000
+#define MAX_LINE_LEN 40000
 
 #define INLINE  static __inline
 #define _DEBUG
@@ -114,7 +114,7 @@ INLINE void write_file(const bool cover, const char * const buff, const char * c
     if (buff == NULL)
         return;
 
-    const char *write_type = cover ? "w" : "a";//1:覆盖写文件，0:追加写文件
+    const char *write_type = cover ? "w" : "a";
     FILE *fp = fopen(filename, write_type);
     if (fp == NULL)
     {

@@ -1,50 +1,89 @@
-#include "stdio.h"
-
 #include "lib/lib_io.h"
 #include "lib/lib_time.h"
 #include "route.h"
-int main(int argc, char *argv[])
-{
-    print_time("Begin");
-    char *topo[MAX_EDGE_NUM];
-    int edge_num;
-    char *demand[MAX_DEMAND_NUM];
-    int demand_num;
+
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+
+	print_time("Experimante Begin");
+	char *topo[MAX_EDGE_NUM];
+	int edge_num;
+
+	char *demand[MAX_DEMAND_NUM];
+	int demand_num;
 	char *srlg[MAX_SRLG_NUM];
 	int srlg_num;
 
-    char *topo_file = argv[1];
-    edge_num = read_file(topo, MAX_EDGE_NUM, topo_file);
-    if (edge_num == 0)
-    {
-        printf("Please input valid topo file.\n");
-        return -1;
-    }
-    char *demand_file = argv[2];
-    demand_num = read_file(demand, MAX_DEMAND_NUM, demand_file);
-    if (demand_num != MAX_DEMAND_NUM)
-    {
-        printf("Please input valid demand file.\n");
-        return -1;
-    }
 
-	char *srlg_file=argv[3];
-	srlg_num=read_file(srlg,MAX_SRLG_NUM,srlg_file);
-	if(srlg_num==0){
-		printf("Please input valid srlg file.\n");
-        return -1;
+
+//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/topo.csv
+//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/demand.csv
+//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/srlg.csv
+//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/result.csv
+
+	char *topo_file = argv[1];
+	char *demand_file = argv[2];
+	char *srlg_file = argv[3];
+	char *result_file = argv[4];
+	int alg = atoi(argv[5]);
+	if (argc == 1) {
+		string si = "0";
+		string suffix = "/home/franz/eclipse4cworkspace/SRLG_Franz/test";
+		string strtopo = "/topo.csv";
+		string strdemand = "/demand.csv";
+		string strsrlg = "/srlg.csv";
+		string strresult = "/result.csv";
+//		char argv1[100] ="/home/franz/eclipse4cworkspace/SRLG_Franz/test6/topo.csv";
+//		char argv2[100] ="/home/franz/eclipse4cworkspace/SRLG_Franz/test6/demand.csv";
+//		char argv3[100] ="/home/franz/eclipse4cworkspace/SRLG_Franz/test6/srlg.csv";
+//		char argv4[100] =	"/home/franz/eclipse4cworkspace/SRLG_Franz/test6/result.csv";
+//		topo_file=argv1;
+//		demand_file=argv2;
+//		srlg_file=argv3;
+//		result_file=argv4;
+
+		alg = algorithm_IMSH;
+		string s1 = (suffix + si + strtopo);
+		string s2 = (suffix + si + strdemand);
+		string s3 = (suffix + si + strsrlg);
+		string s4 = (suffix + si + strresult);
+
+		topo_file = (char *) malloc(sizeof(char) * (s1.length() + 1));
+		demand_file = (char *) malloc(sizeof(char) * (s2.length() + 1));
+		srlg_file = (char *) malloc(sizeof(char) * (s3.length() + 1));
+		result_file = (char *) malloc(sizeof(char) * (s4.length() + 1));
+		strcpy(topo_file, s1.c_str());
+		strcpy(demand_file, s2.c_str());
+		strcpy(srlg_file, s3.c_str());
+		strcpy(result_file, s4.c_str());
+
 	}
 
+	edge_num = read_file(topo, MAX_EDGE_NUM, topo_file);
+	if (edge_num == 0) {
+		printf("Please input valid topo file.\n");
+		return -1;
+	}
+	demand_num = read_file(demand, MAX_DEMAND_NUM, demand_file);
+	if (demand_num != MAX_DEMAND_NUM) {
+		printf("Please input valid demand file.\n");
+		return -1;
+	}
 
-    search_route(topo, edge_num, demand, demand_num,srlg,srlg_num);
+	srlg_num = read_file(srlg, MAX_SRLG_NUM, srlg_file);
+	if (srlg_num == 0) {
+		printf("Please input valid srlg file.\n");
+		return -1;
+	}
 
-    char *result_file = argv[4];
-    write_result(result_file);
-    release_buff(topo, edge_num);
-    release_buff(demand, demand_num);
-    release_buff(srlg, srlg_num);
+	search_route(topo, edge_num, demand, demand_num, srlg, srlg_num, alg,
+			topo_file);
 
-    print_time("End");
+	write_result(result_file);
+	release_buff(topo, edge_num);
+	release_buff(demand, demand_num);
+	release_buff(srlg, srlg_num);
 
 	return 0;
 }
