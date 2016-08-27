@@ -5,65 +5,72 @@
 #include "head.h"
 
 Graph *p_graph;
-DisjointPath *AlgorithmResult;
+DisjointPaths *AlgorithmResult;
 pthread_mutex_t mutex_result;
 pthread_mutex_t mutex_thread;
-void print_answer(DisjointPath *FranzAlgorithmResult) {
+void print_answer(DisjointPaths *FranzAlgorithmResult) {
 
-	cout << "optimal APcost:" << FranzAlgorithmResult->APsum << "  " << endl;
+	cout << "optimal APcost:" << FranzAlgorithmResult->APcostsum << "  " << endl;
 
 	cout << "AP edge: ";
 	unsigned int i = 0;
-	for (i = 0; i < FranzAlgorithmResult->AP.size(); i++) {
+	for (i = 0; i < FranzAlgorithmResult->APnode.size(); i++) {
 
-		record_result(WORK_PATH, FranzAlgorithmResult->AP.at(i));
-		cout << FranzAlgorithmResult->AP.at(i) << "   ";
+		record_result(WORK_PATH, FranzAlgorithmResult->APnode.at(i));
+		cout << FranzAlgorithmResult->APnode.at(i) << "   ";
 	}
 	cout << endl;
 
 	cout << "AP node: ";
-	for (i = 0; i < FranzAlgorithmResult->AP.size(); i++) {
+	for (i = 0; i < FranzAlgorithmResult->APnode.size(); i++) {
 
 		cout
-				<< p_graph->node_index[p_graph->edges.at(
-						FranzAlgorithmResult->AP.at(i)).from] << "   ";
+				<< p_graph->nid_nindex[p_graph->edges.at(
+						FranzAlgorithmResult->APnode.at(i)).from] << "   ";
 
 	}
 	cout
-			<< p_graph->node_index[p_graph->edges.at(
-					FranzAlgorithmResult->AP.at(i - 1)).to] << "   ";
+			<< p_graph->nid_nindex[p_graph->edges.at(
+					FranzAlgorithmResult->APnode.at(i - 1)).to] << "   ";
 	cout << endl;
 
 	cout << "BP edge: ";
-	for (i = 0; i < FranzAlgorithmResult->BP.size(); i++) {
-		record_result(BACK_PATH, FranzAlgorithmResult->BP.at(i));
-		cout << FranzAlgorithmResult->BP.at(i) << "   ";
+	for (i = 0; i < FranzAlgorithmResult->BPnode.size(); i++) {
+		record_result(BACK_PATH, FranzAlgorithmResult->BPnode.at(i));
+		cout << FranzAlgorithmResult->BPnode.at(i) << "   ";
 	}
 	cout << endl;
 	cout << "BP node: ";
-	for (i = 0; i < FranzAlgorithmResult->BP.size(); i++) {
+	for (i = 0; i < FranzAlgorithmResult->BPnode.size(); i++) {
 		cout
-				<< p_graph->node_index[p_graph->edges.at(
-						FranzAlgorithmResult->BP.at(i)).from] << "   ";
+				<< p_graph->nid_nindex[p_graph->edges.at(
+						FranzAlgorithmResult->BPnode.at(i)).from] << "   ";
 	}
 	cout
-			<< p_graph->node_index[p_graph->edges.at(
-					FranzAlgorithmResult->BP.at(i - 1)).to] << "   ";
+			<< p_graph->nid_nindex[p_graph->edges.at(
+					FranzAlgorithmResult->BPnode.at(i - 1)).to] << "   ";
 	cout << endl;
 
 	cout << "|||||||Be Successful to find disjoint path||||||||||" << endl;
 
 }
-void verify_result(DisjointPath *FranzAlgorithmResult) {
+//verify whether the answer is really right.
+void verify_result(DisjointPaths *FranzAlgorithmResult) {
 
 }
 void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		char *demand[MAX_DEMAND_NUM], int demand_num, char *srlg[MAX_SRLG_NUM],
 		int srlg_num, int algorithm, char *str) {
 
-	AlgorithmResult = new DisjointPath();
-	p_graph = new Graph();
-	LoadData(p_graph, topo, edge_num, demand, demand_num, srlg, srlg_num);
+
+	AlgorithmResult = new DisjointPaths();
+	p_graph = new Graph(edge_num);
+
+
+	if(!LoadData(p_graph, topo, edge_num, demand, demand_num, srlg, srlg_num)){
+		printf("Error:LoadData\n");
+		return ;
+	}
 
 	DebugPrint(p_graph);
 
@@ -75,13 +82,8 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		} else {
 			cout << "it is impossible to have a SRLG-disjoint path pair"
 					<< endl;
-
 		}
-
 		print_time("FranzAlgorithmEnd");
-		cout << endl
-				<< "-------------------------------------------------------------"
-				<< endl;
 	}
 
 	if ((algorithm_ILP == algorithm) || (algorithm_all == algorithm)) {
@@ -94,10 +96,6 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 
 		}
 		print_time("ILPEnd");
-		cout << endl
-				<< "-------------------------------------------------------------"
-				<< endl;
-
 	}
 
 	if ((algorithm_IHKSP == algorithm) || (algorithm_all == algorithm)) {
@@ -110,9 +108,6 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 
 		}
 		print_time("IHKSPEnd");
-		cout << endl
-				<< "-------------------------------------------------------------"
-				<< endl;
 
 	}
 

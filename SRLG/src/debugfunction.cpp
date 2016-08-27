@@ -4,9 +4,9 @@ extern int demand_num;
 void DebugPrint(Graph *p_graph) {
 	for (int i = 0; i < demand_num; i++) {
 		cout << "disjointpath  " << i << endl;
-		cout << "source node:" << (*p_graph).node_index[(*p_graph).source];
+		cout << "source node:" << (*p_graph).nid_nindex[(*p_graph).source];
 		cout << "  destination node:"
-				<< (*p_graph).node_index[(*p_graph).destination] << endl;
+				<< (*p_graph).nid_nindex[(*p_graph).destination] << endl;
 
 		//        cout<<"essential node ("<<demandEnodeSize[i]<<"):";
 		//        for(int j=0; j<demandEnodeSize[i]; j++)
@@ -19,12 +19,12 @@ void DebugPrint(Graph *p_graph) {
 
 	cout << "node_index :";
 	for (int i = 0; i < (*p_graph).nodeNum; i++) {
-		cout << (*p_graph).node_index[i] << " ";
+		cout << (*p_graph).nid_nindex[i] << " ";
 	}
 	cout << endl;
 	cout << "index_node :";
 	for (int i = 0; i < (*p_graph).nodeNum; i++) {
-		cout << (*p_graph).index_node[i] << " ";
+		cout << (*p_graph).nindex_nid[i] << " ";
 	}
 	cout << endl;
 

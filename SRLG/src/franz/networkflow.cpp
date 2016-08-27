@@ -39,7 +39,7 @@ void dfsGetSTCut(NetworkFlow & netflow, int s, Request & request) {
 		}
 	}
 }
-//time complexity=O(EF)
+//time complexity=O(EF) find maxflow in graph G*,
 void MaxFlowAlgorithm_fordfulkerson(Graph &graph, Request & request) {
 	int maxflow = 0;
 	NetworkFlow netflow(graph, request);
@@ -52,15 +52,20 @@ void MaxFlowAlgorithm_fordfulkerson(Graph &graph, Request & request) {
 		maxflow += augmentationflow;
 	}
 
+#ifndef ConsolePrint
 	cout << "maxflow:" << maxflow << endl;
+#endif
+
 	request.STNodeCut = vector<bool>(graph.nodeNum, false);
 	netflow.clearUsedVector();
 	dfsGetSTCut(netflow, graph.source, request);
+#ifndef ConsolePrint
 	for (int i = 0; i < graph.nodeNum; i++) {
 		if (true == request.STNodeCut[i]) {
-			cout << "S'node: " << graph.node_index[i] << endl;
+			cout << "S'node: " << graph.nid_nindex[i] << endl;
 		}
 	}
+#endif
 	//delete netflow;
 	return;
 }

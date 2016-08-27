@@ -7,7 +7,7 @@
 
 //extern void StoreEdgeInformationbyMatrix(Graph *graph, int EdgeFlag,int inEdgeFlag, int outEdgeflag, int EdgeWeight);
 
-extern void LoadData(Graph *graph, char *topo[MAX_EDGE_NUM], int edgenum,
+extern bool LoadData(Graph *graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		char *demand[MAX_DEMAND_NUM], int demandnum, char *srlg[MAX_SRLG_NUM],
 		int srlgnum);
 
