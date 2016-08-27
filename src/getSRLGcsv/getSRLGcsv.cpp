@@ -48,7 +48,9 @@ void getStarSRLG(Graph *p_graph, char *str) {
 			if (len > 1) {
 				out << id;
 				id++;
-				for (k = 0; k < p_graph->topo_Node_fEdgeList.at(n).edgeList.size(); k++) {
+				for (k = 0;
+						k < p_graph->topo_Node_fEdgeList.at(n).edgeList.size();
+						k++) {
 					edge = p_graph->topo_Node_fEdgeList.at(n).edgeList.at(k);
 					out << "," << edge;
 				}
@@ -124,7 +126,9 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 			if (len >= 1) {
 				out << id;
 				id++;
-				for (k = 0; k < p_graph->topo_Node_fEdgeList.at(n).edgeList.size(); k++) {
+				for (k = 0;
+						k < p_graph->topo_Node_fEdgeList.at(n).edgeList.size();
+						k++) {
 					edge = p_graph->topo_Node_fEdgeList.at(n).edgeList.at(k);
 					if (!vis[p_graph->edges.at(edge).to]) {
 						if (have) {
@@ -134,7 +138,8 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 
 							for (unsigned int l = 0;
 									l
-											< p_graph->topo_Node_fEdgeList.at(next).edgeList.size();
+											< p_graph->topo_Node_fEdgeList.at(
+													next).edgeList.size();
 									l++) {
 								int e2 =
 										p_graph->topo_Node_fEdgeList.at(next).edgeList.at(
@@ -220,7 +225,8 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 				}
 			} else {
 				if ((((p_graph->topo_Node_fEdgeList.at(n1).edgeList.size())
-						+ (p_graph->topo_Node_fEdgeList.at(n2).edgeList.size())) <= 1)) {
+						+ (p_graph->topo_Node_fEdgeList.at(n2).edgeList.size()))
+						<= 1)) {
 					continue;
 				}
 				vis[n2] = true;
@@ -232,9 +238,12 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 				if (len >= 1) {
 					out << id;
 					id++;
-					for (k = 0; k < p_graph->topo_Node_fEdgeList.at(n1).edgeList.size();
+					for (k = 0;
+							k
+									< p_graph->topo_Node_fEdgeList.at(n1).edgeList.size();
 							k++) {
-						edge = p_graph->topo_Node_fEdgeList.at(n1).edgeList.at(k);
+						edge = p_graph->topo_Node_fEdgeList.at(n1).edgeList.at(
+								k);
 						out << "," << edge;
 						have = true;
 					}
@@ -245,14 +254,17 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 				len = p_graph->topo_Node_fEdgeList.at(n2).edgeList.size();
 				if (len >= 1) {
 					if (-1 == n1
-							|| ((p_graph->topo_Node_fEdgeList.at(n1).edgeList.size() == 0)
-									&& (-1 != n1))) {
+							|| ((p_graph->topo_Node_fEdgeList.at(n1).edgeList.size()
+									== 0) && (-1 != n1))) {
 						out << id;
 						id++;
 					}
-					for (k = 0; k < p_graph->topo_Node_fEdgeList.at(n2).edgeList.size();
+					for (k = 0;
+							k
+									< p_graph->topo_Node_fEdgeList.at(n2).edgeList.size();
 							k++) {
-						edge = p_graph->topo_Node_fEdgeList.at(n2).edgeList.at(k);
+						edge = p_graph->topo_Node_fEdgeList.at(n2).edgeList.at(
+								k);
 						out << "," << edge;
 						have = true;
 					}

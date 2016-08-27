@@ -6,7 +6,7 @@
 using namespace localsolver;
 using namespace std;
 
-extern DisjointPath *AlgorithmResult;
+extern DisjointPaths *AlgorithmResult;
 
 bool ILPAlgorithm_glpk(Graph *p_graph) {
 	char s[1000];
@@ -234,7 +234,7 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 	if (SolutionIsInteger == false)
 		return false;
 
-	AlgorithmResult->APsum = 0;
+	AlgorithmResult->APcostsum = 0;
 	int state = p_graph->source;
 	vector<bool> apvis = vector<bool>(p_graph->edgeNum, false);
 	for (int i = 1; i <= jlimit1; i++) {
@@ -249,8 +249,8 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 			int iedge = p_graph->topo_Node_fEdgeList.at(state).edgeList.at(j);
 			if (apvis[iedge]) {
 				state = p_graph->edges.at(iedge).to;
-				AlgorithmResult->AP.push_back(iedge);
-				AlgorithmResult->APsum += p_graph->edges.at(iedge).cost;
+				AlgorithmResult->APnode.push_back(iedge);
+				AlgorithmResult->APcostsum += p_graph->edges.at(iedge).cost;
 				break;
 			}
 		}
@@ -270,7 +270,7 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 			int iedge = p_graph->topo_Node_fEdgeList.at(state).edgeList.at(j);
 			if (apvis[iedge]) {
 				state = p_graph->edges.at(iedge).to;
-				AlgorithmResult->BP.push_back(iedge);
+				AlgorithmResult->BPnode.push_back(iedge);
 				break;
 			}
 		}
@@ -280,7 +280,7 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 	free(ia);
 	free(ja);
 	free(ar);
-	if (INT_MAX == AlgorithmResult->APsum)
+	if (INT_MAX == AlgorithmResult->APcostsum)
 		return false;
 	else
 		return true;
@@ -520,7 +520,7 @@ bool ILPAlgorithmBasicFlows_LocalSolver(Graph *p_graph) {
 		}
 		for (int i = 0; i < onecolnum; i++) {
 			if (1 == x[i].getValue()) {
-				cout << p_graph->node_index[p_graph->edges.at(i).from] << endl;
+				cout << p_graph->nid_nindex[p_graph->edges.at(i).from] << endl;
 			}
 		}
 
@@ -528,7 +528,7 @@ bool ILPAlgorithmBasicFlows_LocalSolver(Graph *p_graph) {
 		for (int i = onecolnum; i < twocolnum; i++) {
 			if (1 == x[i].getValue()) {
 				cout
-						<< p_graph->node_index[p_graph->edges.at(i - onecolnum).from]
+						<< p_graph->nid_nindex[p_graph->edges.at(i - onecolnum).from]
 						<< endl;
 			}
 		}

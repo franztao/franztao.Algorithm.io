@@ -34,7 +34,6 @@ using namespace std;
 #endif // __FranzDebug
 
 const int MAX_NodeSize = (2015); //may be overflow
-const int WeightSort = (0); //0:weight value,1:hop
 #define algorithm_franz 1
 #define algorithm_IMSH 3
 #define algorithm_IHKSP 4
@@ -43,15 +42,19 @@ const int WeightSort = (0); //0:weight value,1:hop
 #define algorithm_all -1
 
 #define exit_ILP_glp_set_obj_coef 50
+#define exit_franz_pthread_create 51//ERROR; return code from pthread_create()
 
 #define LimitedTime 3
 #define MAX_ITERATIONS 1000
+const int WeightSort = (0); //0:weight value,1:hop
+const bool isUndirectedGraph = false; //
 
 //every srlg and what srlg is belonged from a edge.
 class SrlgMember {
 public:
-	vector<int> srlgMember; //the corresponding id of every SRLG's members
-//	int srlgGroupsNum; //member number of every SRLG
+	//the corresponding index of every SRLG's members
+	vector<int> srlgMember;
+	//members' number of every SRLG
 	int srlgMembersNum;
 };
 
@@ -60,16 +63,19 @@ public:
 	int from; //starting node
 	int to; //end node
 	int cost; //weight value
+	int index;
 	int id; //topo.csv.edge flag begin from 0.
 	int capacity; //capacity of network flow graph//could be removed
 	int ithsrlg; //-1:represent the edge do not belong any SRLG
 	int ithsrlg4virtualedge; //the edge which form the dummy vertex//could be removed
-	int revid; //reverse edge's id //could be removed
-	Edge(int f, int t, int c, int i, int cap, int iths, int ithsrl, int r) {
+	int revid; //reverse edge's id -1:represent the graph is directed//could be removed
+	Edge(int f, int t, int c, int index, int id, int cap, int iths, int ithsrl,
+			int r) {
 		this->from = f;
 		this->to = t;
 		this->cost = c;
-		this->id = i;
+		this->index = index;
+		this->id = id;
 		this->capacity = cap;
 		this->ithsrlg = iths;
 		this->ithsrlg4virtualedge = ithsrl;
@@ -85,58 +91,73 @@ class Graph {
 public:
 	//demand.csv
 	int source, destination;
+
 	//set of all edge. topo.csv
 	vector<Edge> edges;
 	vector<EdgeList> topo_Node_fEdgeList;
 	vector<EdgeList> topo_Node_rEdgeList;
-	//vector<edge>GraphList[MAX_NodeSize];
 
 	//edge number of initial graph
 	//node number of initial graph
 	int edgeNum, nodeNum;
-	int prenodeNum;
-	//SRLG
+	//**
+	int nodeNumbeforeTransToNostar;
+
+	//shared risk link groups
 	vector<SrlgMember> srlgGroups;
 	int srlgGroupsNum;
 
 	//int index_node[MAX_NodeSize];
-	vector<int> index_node;
+	vector<int> nindex_nid;
 	//int node_index[MAX_NodeSize];
-	vector<int> node_index;
+	vector<int> nid_nindex;
+
+//	//index_id
+//	vector<int> eindex_eid;
+//	vector<int> eid_eindex;
+
 	//judge this node is valued to calculation
-	//int isUsableNode[MAX_NodeSize];
 	vector<bool> isValidNode;
 
 	vector<int> virtualnode;
 
-	Graph() {
+	Graph(int edgenum) {
 		source = -1;
 		destination = -1;
 		edgeNum = 0;
-		nodeNum = prenodeNum = 0;
+		nodeNum = nodeNumbeforeTransToNostar = 0;
 		srlgGroupsNum = 0;
-		//memset(index_node, -1, sizeof(index_node));
-		//memset(node_index, -1, sizeof(node_index));
+
+		//-1 represent it is not used.
+		//maybe have bug.
+		this->nid_nindex = vector<int>(edgenum * 2, -1);
+		this->nindex_nid = vector<int>(edgenum * 2, -1);
+		//false represent the ith index's node dosen't exist
+		this->isValidNode = vector<bool>(edgenum * 2, false);
+
+//		p_graph->eindex_eid = vector<int>(edgenum , -1);
+//		p_graph->eid_eindex = vector<int>(edgenum , -1);
 	}
 
 	//transform the graph of star property into no-star property graph
 	void TransformToNostarGraph(void) {
-
-		int pre, next;
-		this->prenodeNum = this->nodeNum;
-		for (unsigned int i = 0; i < this->srlgGroups.size(); i++) {
-			for (unsigned int j = 0; j < this->srlgGroups[i].srlgMember.size();
-					j++) {
+		int pre, next, len;
+		this->nodeNumbeforeTransToNostar = this->nodeNum;
+		//transform star edges belonging the same slrg into no star edge.
+		//A-->B A-->C ====> A->D->B A->C->B
+		for (unsigned int i = 0; i < this->srlgGroupsNum; i++) {
+			len = this->srlgGroups[i].srlgMember.size();
+			for (unsigned int j = 0; j < len; j++) {
 				pre = this->srlgGroups[i].srlgMember[j];
 				int virtualnode = -1;
-				for (unsigned int k = j + 1;
-						k < this->srlgGroups[i].srlgMember.size(); k++) {
+				int len1 = this->srlgGroups[i].srlgMember.size();
+				for (unsigned int k = j + 1; k < len1; k++) {
 					next = this->srlgGroups[i].srlgMember[k];
 					if (this->edges[pre].from == this->edges[next].from) {
 						if (-1 == virtualnode) {
 							virtualnode = this->nodeNum;
-							this->index_node[virtualnode] = this->nodeNum;
-							this->node_index[this->nodeNum] = virtualnode;
+							this->nindex_nid[virtualnode] = this->nodeNum;
+							this->nid_nindex[this->nodeNum] = virtualnode;
 							this->isValidNode[this->nodeNum] = true;
 							this->nodeNum++;
 							this->virtualnode.push_back(this->edges[pre].from);
@@ -147,7 +168,7 @@ public:
 				}
 				if (-1 != virtualnode) {
 					Edge e((this->edges[pre].from), virtualnode, 0,
-							(this->edges.size()), 1, i, i, -1);
+							(this->edges.size()), this->edgeNum, 1, i, i, -1);
 					this->edges[pre].from = virtualnode;
 					//GraphList[inEdgeFlag].push_back(e);
 					this->edgeNum++;
@@ -155,19 +176,19 @@ public:
 				}
 			}
 		}
-		for (unsigned int i = 0; i < this->srlgGroups.size(); i++) {
-			for (unsigned int j = 0; j < this->srlgGroups[i].srlgMember.size();
-					j++) {
+		for (unsigned int i = 0; i < this->srlgGroupsNum; i++) {
+			len = this->srlgGroups[i].srlgMember.size();
+			for (unsigned int j = 0; j < len; j++) {
 				pre = this->srlgGroups[i].srlgMember[j];
 				int virtualnode = -1;
-				for (unsigned int k = j + 1;
-						k < this->srlgGroups[i].srlgMember.size(); k++) {
+				int len1 = this->srlgGroups[i].srlgMember.size();
+				for (unsigned int k = j + 1; k < len1; k++) {
 					next = this->srlgGroups[i].srlgMember[k];
 					if (this->edges[pre].to == this->edges[next].to) {
 						if (-1 == virtualnode) {
 							virtualnode = this->nodeNum;
-							this->index_node[virtualnode] = this->nodeNum;
-							this->node_index[this->nodeNum] = virtualnode;
+							this->nindex_nid[virtualnode] = this->nodeNum;
+							this->nid_nindex[this->nodeNum] = virtualnode;
 							this->isValidNode[this->nodeNum] = true;
 							this->nodeNum++;
 						}
@@ -177,7 +198,7 @@ public:
 				if (-1 != virtualnode) {
 					//(inEdgeFlag,outEdgeflag,EdgeWeight,EdgeFlag,1,-1,-1,-1);
 					Edge e(virtualnode, (this->edges[pre].to), 0,
-							this->edges.size(), 1, i, i, -1);
+							this->edges.size(), this->edgeNum, 1, i, i, -1);
 					this->edges[pre].to = virtualnode;
 					this->edgeNum++;
 					this->edges.push_back(e);
@@ -186,15 +207,30 @@ public:
 		}
 	}
 
+	//add edge into the topo structure.
 	void AddEdges(int EdgeFlag, int inEdgeFlag, int outEdgeflag,
 			int EdgeWeight) {
-		Edge e(inEdgeFlag, outEdgeflag, EdgeWeight, EdgeFlag, 1, -1, -1, -1);
+		Edge fe(inEdgeFlag, outEdgeflag, EdgeWeight, EdgeFlag, this->edgeNum, 1,
+				-1, -1, -1);
+
 		this->edgeNum++;
-		this->edges.push_back(e);
+		if (isUndirectedGraph) {
+			fe.revid = this->edgeNum;
+		}
+		this->edges.push_back(fe);
+		if (isUndirectedGraph) {
+			Edge re(outEdgeflag, inEdgeFlag, EdgeWeight, EdgeFlag,
+					this->edgeNum, 1, -1, -1, -1);
+			re.revid = this->edgeNum - 1;
+			this->edgeNum++;
+			this->edges.push_back(re);
+		}
 	}
 
+	//construte the topo's form(ith node's edgelist)
 	void ConstructGraphbyLink(void) {
 		this->topo_Node_fEdgeList = vector<EdgeList>(this->nodeNum);
+		this->topo_Node_rEdgeList = vector<EdgeList>(this->nodeNum);
 		for (unsigned int i = 0; i < this->edges.size(); i++) {
 			this->topo_Node_fEdgeList[this->edges.at(i).from].edgeList.push_back(
 					this->edges.at(i).id);
@@ -205,14 +241,15 @@ public:
 	}
 
 	void InsertSRLGInfoToEdgeInfo() {
-		for (unsigned int i = 0; i < this->srlgGroups.size(); i++) {
+		for (unsigned int i = 0; i < this->srlgGroupsNum; i++) {
 			SrlgMember srlgmem = this->srlgGroups.at(i);
-			for (unsigned int j = 0; j < srlgmem.srlgMember.size(); j++) {
+			for (unsigned int j = 0; j < srlgmem.srlgMembersNum; j++) {
 				int ithgroupithmem = srlgmem.srlgMember.at(j);
 				this->edges.at(ithgroupithmem).ithsrlg = i;
 			}
 		}
 	}
+	//resolve one edge is belonging mang srlgs.
 	void TransformedToEdgeBelongingOnlySRLG() {
 
 	}
@@ -223,10 +260,12 @@ public:
 	//	int FlagofInputGraphEdgeMatrix[MAX_NodeSize][MAX_NodeSize];
 	//	int FlagofInputMaxGraphEdgeMatrix[MAX_NodeSize][MAX_NodeSize];
 };
+
 class InclusionExclusionSet {
 public:
 	int veclen;
-	vector<bool> Inclusion;
+	//AP path must pass or not pass edge.
+	vector<bool>Inclusion;
 	vector<bool> Exlusion;
 
 	InclusionExclusionSet(int len) {
@@ -255,11 +294,13 @@ public:
 
 	vector<int> RLAP_PathEdge;
 
+	//AP path information
 	vector<int> AP_PathNode;
 	vector<int> AP_PathEdge;
 	int APCostSum;
 	int APHopSum;
 
+	//BP path information
 	vector<int> BP_PathNode;
 	vector<int> BP_PathEdge;
 	int BPCostSum;
@@ -285,29 +326,31 @@ public:
 	}
 };
 
-class DisjointPath {
+class DisjointPaths {
 public:
-	vector<int> AP;
-	vector<int> BP;
-	int APsum;
-	int BPsum;
-	DisjointPath() {
-		APsum = 0;
-		BPsum = 0;
+	vector<int> APnode;
+	vector<int> BPnode;
+	int APcostsum;
+	int BPcostsum;
+	DisjointPaths() {
+		APcostsum = INT_MAX;
+		BPcostsum = INT_MAX;
 	}
-	DisjointPath(int aplen, int bplen) {
-		this->APsum = INT_MAX;
-		this->BPsum = INT_MAX;
-		this->AP = vector<int>(aplen);
-		this->BP = vector<int>(bplen);
+	DisjointPaths(int aplen, int bplen) {
+		this->APcostsum = INT_MAX;
+		this->BPcostsum = INT_MAX;
+		this->APnode = vector<int>(aplen);
+		this->BPnode = vector<int>(bplen);
 	}
-	void getResult(DisjointPath *dispath) {
-		std::copy(dispath->AP.begin(), dispath->AP.end(), this->AP.begin());
-		std::copy(dispath->BP.begin(), dispath->BP.end(), this->BP.begin());
-		this->AP = dispath->AP;
-		this->BP = dispath->BP;
-		this->APsum = dispath->APsum;
-		this->BPsum = dispath->BPsum;
+	void getResult(DisjointPaths *dispath) {
+		this->APnode=vector<int>(dispath->APnode.size());
+		this->BPnode=vector<int>(dispath->BPnode.size());
+		std::copy(dispath->APnode.begin(), dispath->APnode.end(),
+				this->APnode.begin());
+		std::copy(dispath->BPnode.begin(), dispath->BPnode.end(),
+				this->BPnode.begin());
+		this->APcostsum = dispath->APcostsum;
+		this->BPcostsum = dispath->BPcostsum;
 	}
 
 };

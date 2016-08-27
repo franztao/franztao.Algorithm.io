@@ -33,7 +33,6 @@ public:
 	vector<int> used;
 	int nodeSize;
 
-	//dinic
 	vector<int> level;
 
 	NetworkFlow(Graph &graph, Request&request) {
@@ -48,8 +47,8 @@ public:
 			id = graph.edges[i].id;
 			cap = request.edgeCapacity.at(id); //graph.edges[i].capacity;
 #ifndef ConsolePrint
-			cout << id << " " << graph.node_index[from] << " - "
-					<< graph.node_index[to] << " - " << cap << endl;
+			cout << id << " " << graph.nid_nindex[from] << " - "
+					<< graph.nid_nindex[to] << " - " << cap << endl;
 #endif
 			newtworkEdge e1(to, cap, G[to].newtworkedgelist.size(), id);
 			G[from].newtworkedgelist.push_back(e1);

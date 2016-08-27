@@ -110,7 +110,7 @@ void processAuxilityAPInfo(Graph *p_graph, Request *p_request) {
 	<< ") hop:(" << (*p_request).APHopSum << ") :";
 	vector<int>::iterator it = (*p_request).AP_PathNode.begin();
 	do {
-		cout << p_graph->node_index[(*it)] << " ";
+		cout << p_graph->nindex_nid[(*it)] << " ";
 		it++;
 	}while (it != (*p_request).AP_PathNode.end());
 	cout << endl;
@@ -128,6 +128,7 @@ void processAuxilityAPInfo(Graph *p_graph, Request *p_request) {
 }
 
 
+//find AP path by ILP method ,glpk library.
 bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 
 	char s[1000];
@@ -269,7 +270,7 @@ bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 	<< ") hop:(" << (*p_request).APHopSum << ") :";
 	vector<int>::iterator it = (*p_request).AP_PathNode.begin();
 	do {
-		cout << p_graph->node_index[(*it)] << " ";
+		cout << p_graph->nindex_nid[(*it)] << " ";
 		it++;
 	}while (it != (*p_request).AP_PathNode.end());
 	cout << endl;
@@ -291,6 +292,7 @@ bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 	return true;
 }
 
+//find AP path must pass some essential node.
 bool findMustNodePath(Graph *p_graph, Request *p_request) {
 //	int r = findAP_ILP_ipopt(p_graph, p_request);
 //	if (r == 0) {

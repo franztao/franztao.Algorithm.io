@@ -5,8 +5,8 @@
  *      Author: franz
  */
 #include"../head.h"
-extern DisjointPath *AlgorithmResult;
-
+extern DisjointPaths *AlgorithmResult;
+extern Graph *p_graph;
 //reverse edge and get the shortest path's array from destination node to every other node
 void ReverseEdgeGetSSP(Graph *p_graph, vector<int> &dis) {
 	typedef pair<int, int> P;
@@ -48,6 +48,7 @@ void ReverseEdgeGetSSP(Graph *p_graph, vector<int> &dis) {
 	}
 	return;
 }
+
 //Compute the (i+1)th shortest path pi using dijstra and A* salgorithm.
 bool GetKthShotestPath(Graph *p_graph, Request *p_request, int k,
 		vector<int> &h) {
@@ -68,6 +69,7 @@ bool GetKthShotestPath(Graph *p_graph, Request *p_request, int k,
 		int v = p.second;
 //		if (dist[v] < p.first)
 //			continue;
+		//if node is destination when poping node from the priortiy
 		if (v == p_graph->destination) {
 			if (0 == k)
 				break;
@@ -88,6 +90,7 @@ bool GetKthShotestPath(Graph *p_graph, Request *p_request, int k,
 				path_edge[e.to] = e.id;
 				que.push(P(dist[e.to] + h[e.to], e.to));
 			} else {
+				//
 				if ((p_graph->destination == e.to) && k) {
 					dist[e.to] = dist[v] + e.cost;
 					hop[e.to] = hop[v] + 1;
@@ -129,7 +132,7 @@ bool GetKthShotestPath(Graph *p_graph, Request *p_request, int k,
 			}
 		}
 	}
-	if (0 == k) {
+	if (0 != k) {
 		cout << "failed to find the kth shortest path" << endl;
 		return false;
 	} else {
@@ -162,16 +165,25 @@ bool GetKthShotestPath(Graph *p_graph, Request *p_request, int k,
 				}
 			}
 		}
-		vector<int>::iterator it = (*p_request).AP_PathNode.end();
-		do {
-			it--;
-		} while (it != (*p_request).AP_PathNode.begin());
 		return true;
 	}
 	return false;
 }
-void SortEdges(Graph *p_graph) {
+bool nodeedgelistcomp(const int& pfirst, const int& psecond) {
+	return p_graph->edges.at(pfirst).cost <= p_graph->edges.at(psecond).cost;
+}
 
+//sort every node's neighbor edge
+void SortEdges(Graph *p_graph) {
+	int nodesize = p_graph->nodeNum;
+	for (int i = 0; i < nodesize; i++) {
+		std::sort(p_graph->topo_Node_fEdgeList.at(i).edgeList.begin(),
+				p_graph->topo_Node_fEdgeList.at(i).edgeList.end(),
+				nodeedgelistcomp);
+		std::sort(p_graph->topo_Node_rEdgeList.at(i).edgeList.begin(),
+				p_graph->topo_Node_rEdgeList.at(i).edgeList.end(),
+				nodeedgelistcomp);
+	}
 }
 bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 	typedef pair<int, int> P;
@@ -243,14 +255,14 @@ bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 
 		}
 
-		DisjointPath *dispath = new DisjointPath(p_request->AP_PathEdge.size(),
-				p_request->BP_PathEdge.size());
+		DisjointPaths *dispath = new DisjointPaths(
+				p_request->AP_PathEdge.size(), p_request->BP_PathEdge.size());
 		std::copy(p_request->AP_PathEdge.begin(), p_request->AP_PathEdge.end(),
-				dispath->AP.begin());
+				dispath->APnode.begin());
 		std::copy(p_request->BP_PathEdge.begin(), p_request->BP_PathEdge.end(),
-				dispath->BP.begin());
-		dispath->APsum = p_request->APCostSum;
-		if (dispath->APsum < AlgorithmResult->APsum)
+				dispath->BPnode.begin());
+		dispath->APcostsum = p_request->APCostSum;
+		if (dispath->APcostsum < AlgorithmResult->APcostsum)
 			AlgorithmResult->getResult(dispath);
 		delete dispath;
 		return true;
@@ -259,11 +271,10 @@ bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 }
 bool IHKSPAlgorithm(Graph *p_graph) {
 	int ite = 0;
-
 	vector<int> dest_dis = vector<int>(p_graph->nodeNum, -1); //-1 represent inf
 	ReverseEdgeGetSSP(p_graph, dest_dis);
 	SortEdges(p_graph);
-	while ((ite <= MAX_ITERATIONS) && (INT_MAX == AlgorithmResult->APsum)
+	while ((ite <= MAX_ITERATIONS) && (INT_MAX == AlgorithmResult->APcostsum)
 			&& (-1 != dest_dis[p_graph->source])) {
 		Request *p_request = new Request(p_graph->source, p_graph->destination,
 				p_graph->edgeNum);
