@@ -35,16 +35,19 @@ using namespace std;
 
 const int MAX_NodeSize = (2015); //may be overflow
 #define algorithm_franz 1
-#define algorithm_IMSH 3
-#define algorithm_IHKSP 4
+#define algorithm_IQP 5
+#define algorithm_IMSH 4
+#define algorithm_IHKSP 3
 #define algorithm_ILP 2
 #define algorithm_getSRLGcsv -2
-#define algorithm_all -1
+#define algorithm_all 0
+
+#define ConsolePrint false
 
 #define exit_ILP_glp_set_obj_coef 50
 #define exit_franz_pthread_create 51//ERROR; return code from pthread_create()
 
-#define LimitedTime 3
+#define LimitedTime 30
 #define MAX_ITERATIONS 1000
 const int WeightSort = (0); //0:weight value,1:hop
 const bool isUndirectedGraph = false; //
@@ -55,7 +58,7 @@ public:
 	//the corresponding index of every SRLG's members
 	vector<int> srlgMember;
 	//members' number of every SRLG
-	int srlgMembersNum;
+	unsigned int srlgMembersNum;
 };
 
 class Edge {
@@ -99,13 +102,13 @@ public:
 
 	//edge number of initial graph
 	//node number of initial graph
-	int edgeNum, nodeNum;
+	unsigned int edgeNum, nodeNum;
 	//**
-	int nodeNumbeforeTransToNostar;
+	unsigned int nodeNumbeforeTransToNostar;
 
 	//shared risk link groups
 	vector<SrlgMember> srlgGroups;
-	int srlgGroupsNum;
+	unsigned int srlgGroupsNum;
 
 	//int index_node[MAX_NodeSize];
 	vector<int> nindex_nid;
@@ -141,7 +144,8 @@ public:
 
 	//transform the graph of star property into no-star property graph
 	void TransformToNostarGraph(void) {
-		int pre, next, len;
+		int pre, next;
+		unsigned int len;
 		this->nodeNumbeforeTransToNostar = this->nodeNum;
 		//transform star edges belonging the same slrg into no star edge.
 		//A-->B A-->C ====> A->D->B A->C->B
@@ -150,7 +154,7 @@ public:
 			for (unsigned int j = 0; j < len; j++) {
 				pre = this->srlgGroups[i].srlgMember[j];
 				int virtualnode = -1;
-				int len1 = this->srlgGroups[i].srlgMember.size();
+				unsigned int len1 = this->srlgGroups[i].srlgMember.size();
 				for (unsigned int k = j + 1; k < len1; k++) {
 					next = this->srlgGroups[i].srlgMember[k];
 					if (this->edges[pre].from == this->edges[next].from) {
@@ -181,7 +185,7 @@ public:
 			for (unsigned int j = 0; j < len; j++) {
 				pre = this->srlgGroups[i].srlgMember[j];
 				int virtualnode = -1;
-				int len1 = this->srlgGroups[i].srlgMember.size();
+				unsigned int len1 = this->srlgGroups[i].srlgMember.size();
 				for (unsigned int k = j + 1; k < len1; k++) {
 					next = this->srlgGroups[i].srlgMember[k];
 					if (this->edges[pre].to == this->edges[next].to) {
@@ -265,7 +269,7 @@ class InclusionExclusionSet {
 public:
 	int veclen;
 	//AP path must pass or not pass edge.
-	vector<bool>Inclusion;
+	vector<bool> Inclusion;
 	vector<bool> Exlusion;
 
 	InclusionExclusionSet(int len) {
@@ -308,13 +312,25 @@ public:
 	vector<int> edgeCapacity;// setting capacity of every edges of network flow graph
 
 	vector<bool> STNodeCut;	//true: belong s,false: belong t;
+	void clear(int edgenum) {
+		APHopSum = 0;
+		APCostSum = 0;
+		BPCostSum = 0;
+		this->AP_PathNode.clear();
+		this->AP_PathEdge.clear();
+		for (int i = 0; i < edgenum; i++) {
+			this->APMustNotPassEdges[i] = true;
+			this->APMustPassEdges[i] = true;
+			this->BPMustNotPassEdges4AP[i] = true;
+			this->BPMustNotPassEdgesRLAP[i] = true;
+			this->edgeCapacity[i] = 1;
+		}
 
+	}
 	Request(int s, int d, int edgenum) {
 		APHopSum = 0;
 		APCostSum = 0;
 		BPCostSum = 0;
-//		this->source=s;
-//		this->destination=d;
 
 		this->APMustNotPassEdges = vector<bool>(edgenum, true);
 		this->APMustPassEdges = vector<bool>(edgenum, true);
@@ -324,33 +340,48 @@ public:
 
 		this->edgeCapacity = vector<int>(edgenum, 1);
 	}
+
 };
 
 class DisjointPaths {
 public:
-	vector<int> APnode;
-	vector<int> BPnode;
+	vector<int> APedge;
+	vector<int> BPedge;
 	int APcostsum;
 	int BPcostsum;
+	unsigned int APhop;
+	unsigned int BPhop;
+	bool solutionNotfeasible;
 	DisjointPaths() {
-		APcostsum = INT_MAX;
-		BPcostsum = INT_MAX;
+		this->APcostsum = INT_MAX;
+		this->BPcostsum = INT_MAX;
+		this->solutionNotfeasible = true;
 	}
 	DisjointPaths(int aplen, int bplen) {
 		this->APcostsum = INT_MAX;
 		this->BPcostsum = INT_MAX;
-		this->APnode = vector<int>(aplen);
-		this->BPnode = vector<int>(bplen);
+		this->APedge = vector<int>(aplen);
+		this->BPedge = vector<int>(bplen);
+		this->solutionNotfeasible = true;
 	}
 	void getResult(DisjointPaths *dispath) {
-		this->APnode=vector<int>(dispath->APnode.size());
-		this->BPnode=vector<int>(dispath->BPnode.size());
-		std::copy(dispath->APnode.begin(), dispath->APnode.end(),
-				this->APnode.begin());
-		std::copy(dispath->BPnode.begin(), dispath->BPnode.end(),
-				this->BPnode.begin());
+		this->APedge = vector<int>(dispath->APedge.size());
+		this->BPedge = vector<int>(dispath->BPedge.size());
+		std::copy(dispath->APedge.begin(), dispath->APedge.end(),
+				this->APedge.begin());
+		std::copy(dispath->BPedge.begin(), dispath->BPedge.end(),
+				this->BPedge.begin());
 		this->APcostsum = dispath->APcostsum;
 		this->BPcostsum = dispath->BPcostsum;
+		this->APhop = 1 + this->APedge.size();
+		this->BPhop = 1 + this->BPedge.size();
+	}
+	void clear() {
+		this->APcostsum = INT_MAX;
+		this->BPcostsum = INT_MAX;
+		this->solutionNotfeasible = true;
+		this->APedge.clear();
+		this->BPedge.clear();
 	}
 
 };

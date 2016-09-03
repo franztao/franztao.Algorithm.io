@@ -10,28 +10,28 @@
 extern bool LoadData(Graph *graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		char *demand[MAX_DEMAND_NUM], int demandnum, char *srlg[MAX_SRLG_NUM],
 		int srlgnum);
-
 extern void DebugPrint(Graph *graph);
 extern void search_route(char *graph[MAX_EDGE_NUM], int edge_num,
 		char *condition[MAX_DEMAND_NUM], int demand_num,
 		char *srlg[MAX_SRLG_NUM], int srlg_num, int algorithm, char *str);
 extern bool judge_isStarProperty();
-
-extern bool FranzAlgorithmBasicFlows(Graph *graph);
-extern bool ILPAlgorithmBasicFlows_gurobi(Graph *graph);
-extern bool ILPAlgorithm_glpk(Graph *graph);
-extern bool ILPAlgorithmBasicFlows_LocalSolver(Graph *graph);
-
 extern void eliminate_invalidnodeandedge();
-
+extern void getSRLGcsv(Graph* p_graph, char * str);
 extern void BuildNetworkFlowGraph(Graph *p_graph, Request *p_request);
 extern void GetConflictingSRLGLinkSet(Graph *p_graph, Request *p_request);
 
+extern bool findAP_ILP_gurobi(Graph *p_graph, Request *p_request);
+extern bool findAP_dijastra(Graph *p_graph, Request *p_request);
 extern bool findMustNodePath(Graph *p_graph, Request *p_request);
+extern bool FranzAlgorithmBasicFlows(Graph *graph);
 
-extern void getSRLGcsv(Graph* p_graph, char * str);
+extern bool findBP(Graph *p_graph, Request *p_request);
 
-extern bool ILPAlgorithmBasicFlows(Graph *p_graph);
+extern bool ILPAlgorithm_gurobi(Graph *graph);
+extern bool ILPAlgorithm_glpk(Graph *graph);
+extern bool ILPAlgorithmBasicFlows_LocalSolver(Graph *graph);
+extern bool IPAlgorithmBasicFlows(Graph *p_graph);
+extern bool IQPAlgorithm_gurobi(Graph *p_graph);
 
 extern bool IHKSPAlgorithm(Graph *p_graph);
 extern bool KSPAlgorithmBasicFlows(Graph *p_graph);

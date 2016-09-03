@@ -14,29 +14,27 @@ extern Graph *p_graph;
 pthread_cond_t ILP_cond;
 pthread_mutex_t ILP_mutex;
 
-void *ILPParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
+void *IPParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 
-	pthread_t tid = pthread_self();
-	cout << endl << "start----------thread: " << tid
-			<< "------------------------" << endl;
+//	pthread_t tid = pthread_self();
+//	cout << endl << "start----------thread: " << tid
+//			<< "------------------------" << endl;
 	//instead of waiting for another thread to perform PTHREAD_JOIN on it.
 
 	//pthread_detach(tid);
 	//ILPAlgorithmBasicFlows_glpk ILPAlgorithmBasicFlows_LocalSolver
 	ILPanswer = ILPAlgorithm_glpk(p_graph);	//ILPAlgorithmBasicFlows_glpk
 
-
-
 	pthread_mutex_lock(&ILP_mutex);
 	pthread_cond_signal(&ILP_cond);
 	pthread_mutex_unlock(&ILP_mutex);
-	cout << endl << "end----------thread: " << tid << "------------------------"
-			<< endl;
+//	cout << endl << "end----------thread: " << tid << "------------------------"
+//			<< endl;
 	pthread_exit(NULL);
 	return NULL;
 }
 
-bool ILPAlgorithmBasicFlows(Graph *p_graph) {
+bool IPAlgorithmBasicFlows(Graph *p_graph) {
 	pthread_t tid;
 
 	pthread_mutex_init(&ILP_mutex, NULL);
@@ -44,7 +42,7 @@ bool ILPAlgorithmBasicFlows(Graph *p_graph) {
 	int rc;
 	ILPanswer = false;
 //	ILPanswer=ILPAlgorithm_glpk(p_graph);
-	rc = pthread_create(&tid, NULL, ILPParallelThread, NULL);
+	rc = pthread_create(&tid, NULL, IPParallelThread, NULL);
 	if (rc) {
 		printf("ERROR; return code from pthread_create() is %d\n", rc);
 		exit(-1);

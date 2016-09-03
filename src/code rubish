@@ -1,6 +1,7 @@
 
 
 
+
 bool ILPAlgorithmBasicFlows_glpk(Graph *p_graph) {
 	char s[1000];
 	string strc;
@@ -307,116 +308,598 @@ bool ILPAlgorithmBasicFlows_glpk(Graph *p_graph) {
 }
 
 
-bool findAP_dijastra(Graph *p_graph, Request *p_request) {
-#ifndef	ConsolePrint
-	cout << endl << "is finding the AP" << endl;
-#endif
-	typedef pair<int, int> P;
-	vector<int> dist((*p_graph).nodeNum, (-1));
-	vector<int> hop((*p_graph).nodeNum, (-1));
-	vector<int> path_node((*p_graph).nodeNum, (-1));
-	vector<int> path_edge((*p_graph).nodeNum, (-1));
-	priority_queue<P, vector<P>, greater<P> > que;
-	dist[(*p_graph).source] = 0;
-	hop[(*p_graph).source] = 0;
-	que.push(P(0, (*p_graph).source));
+/*
+ * franz_nlp.hpp
+ *
+ *  Created on: Jul 26, 2016
+ *      Author: franz
+ */
 
-	while (!que.empty()) {
-		P p = que.top();
-		que.pop();
-		int v = p.second;
+#ifndef SINGLEMUSTNODEPATH_NLP_HPP_
+#define SINGLEMUSTNODEPATH_NLP_HPP_
+#include "../head.h"
+#include "IpTNLP.hpp"
 
-		if (dist[v] < p.first)
-			continue;
-		for (unsigned int i = 0; i < (*p_graph).graphList[v].edgeList.size();
-				i++) {
+using namespace Ipopt;
 
-			Edge e = (*p_graph).edges.at((*p_graph).graphList[v].edgeList[i]);
+/*
+ * problem
+ *
+ * min sum ei*ci (i=1,2...edgenum)
+ * s.t.
+ * 		1)sum ei(ei=1 ei is vi's from,otherwise -1)=0,1
+ * (vj is source),-1(vjis destination)
+ * all from or to of ei belong vj(j=1,2..,nodenum)
+ * 		2)sum ei<=2,(vj is source),-1(vjis destination)
+ * all from or to of ei belong vj(j=1,2..,nodenum)
+ *      3)
+ */
+class franz_NLP: public TNLP {
+public:
+	Graph *p_graph;
+	Request *p_request;
+	/** default constructor */
+	franz_NLP(Graph *p_graph, Request *p_request);
 
-			if (0 == (p_request->APMustNotPassEdges.size())) {
-				cout << "p_request->APedgestabu is " << "NULL" << endl;
-			}
-			if (!p_request->APMustNotPassEdges[e.id])
-				continue;
-			if (-1 == dist[e.to]) {
-				dist[e.to] = dist[v] + e.cost;
-				hop[e.to] = hop[v] + 1;
-				path_node[e.to] = v;
-				path_edge[e.to] = e.id;
-				que.push(P(dist[e.to], e.to));
-			} else {
-				if (dist[e.to] > dist[v] + e.cost) {
-					dist[e.to] = dist[v] + e.cost;
-					hop[e.to] = hop[v] + 1;
-					path_node[e.to] = v;
-					path_edge[e.to] = e.id;
-					que.push(P(dist[e.to], e.to));
-				}
-			}
+	/** default destructor */
+	virtual ~franz_NLP();
+
+	/**@name Overloaded from TNLP */
+	//@{
+	/** Method to return some info about the nlp */
+	virtual bool get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
+			Index& nnz_h_lag, IndexStyleEnum& index_style);
+
+	/** Method to return the bounds for my problem */
+	virtual bool get_bounds_info(Index n, Number* x_l, Number* x_u, Index m,
+			Number* g_l, Number* g_u);
+
+	/** Method to return the starting point for the algorithm */
+	virtual bool get_starting_point(Index n, bool init_x, Number* x,
+			bool init_z, Number* z_L, Number* z_U, Index m, bool init_lambda,
+			Number* lambda);
+
+	/** Method to return the objective value */
+	virtual bool eval_f(Index n, const Number* x, bool new_x,
+			Number& obj_value);
+
+	/** Method to return the gradient of the objective */
+	virtual bool eval_grad_f(Index n, const Number* x, bool new_x,
+			Number* grad_f);
+
+	/** Method to return the constraint residuals */
+	virtual bool eval_g(Index n, const Number* x, bool new_x, Index m,
+			Number* g);
+
+	/** Method to return:
+	 *   1) The structure of the jacobian (if "values" is NULL)
+	 *   2) The values of the jacobian (if "values" is not NULL)
+	 */
+	virtual bool eval_jac_g(Index n, const Number* x, bool new_x, Index m,
+			Index nele_jac, Index* iRow, Index *jCol, Number* values);
+
+	/** Method to return:
+	 *   1) The structure of the hessian of the lagrangian (if "values" is NULL)
+	 *   2) The values of the hessian of the lagrangian (if "values" is not NULL)
+	 */
+	virtual bool eval_h(Index n, const Number* x, bool new_x, Number obj_factor,
+			Index m, const Number* lambda, bool new_lambda, Index nele_hess,
+			Index* iRow, Index* jCol, Number* values);
+
+	//@}
+
+	/** @name Solution Methods */
+	//@{
+	/** This method is called when the algorithm is complete so the TNLP can store/write the solution */
+	virtual void finalize_solution(SolverReturn status, Index n,
+			const Number* x, const Number* z_L, const Number* z_U, Index m,
+			const Number* g, const Number* lambda, Number obj_value,
+			const IpoptData* ip_data, IpoptCalculatedQuantities* ip_cq);
+	//@}
+
+private:
+	/**@name Methods to block default compiler methods.
+	 * The compiler automatically generates the following three methods.
+	 *  Since the default compiler implementation is generally not what
+	 *  you want (for all but the most simple classes), we usually
+	 *  put the declarations of these methods in the private section
+	 *  and never implement them. This prevents the compiler from
+	 *  implementing an incorrect "default" behavior without us
+	 *  knowing. (See Scott Meyers book, "Effective C++")
+	 *
+	 */
+	//@{
+	//  HS071_NLP();
+	franz_NLP(const franz_NLP&);
+	franz_NLP& operator=(const franz_NLP&);
+	//@}
+};
+
+#endif /* SINGLEMUSTNODEPATH_NLP_HPP_ */
+
+/*
+ * franz_nlp.cpp
+ *
+ *  Created on: Jul 26, 2016
+ *      Author: franz
+ */
+
+#include "../franz/singlemustnodepath_nlp.hpp"
+
+#include <cassert>
+#include <iostream>
+
+using namespace Ipopt;
+
+// constructor
+franz_NLP::franz_NLP(Graph *p_graph, Request *p_request) {
+	this->p_graph = p_graph;
+	this->p_request = p_request;
+}
+
+//destructor
+franz_NLP::~franz_NLP() {
+}
+
+// returns the size of the problem
+bool franz_NLP::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
+		Index& nnz_h_lag, IndexStyleEnum& index_style) {
+	// The problem described in franz_NLP.hpp has edgenum variables, x[0] through x[edgenum]
+	n = this->p_graph->edgeNum;
+
+	// one equality constraint and one inequality constraint
+	m = 2 * this->p_graph->nodeNum;
+	int sum = 0;
+	// in this example the jacobian is dense and contains sum nonzeros
+	for (Index i = 0; i < (m / 2); i++) {
+		for (Index j = 0; j < n; j++) {
+			if ((i == p_graph->edges.at(j).from)
+					|| (i == p_graph->edges.at(j).to))
+				sum += 2;
+		}
+	}
+	nnz_jac_g = sum;
+
+	// the hessian is also dense and has 0 total nonzeros, but we
+	// only need the lower left corner (since it is symmetric)
+	nnz_h_lag = 0;
+
+	// use the C style indexing (0-based)
+	index_style = TNLP::C_STYLE;
+
+	return true;
+}
+
+// returns the variable bounds
+bool franz_NLP::get_bounds_info(Index n, Number* x_l, Number* x_u, Index m,
+		Number* g_l, Number* g_u) {
+	// here, the n and m we gave IPOPT in get_nlp_info are passed back to us.
+	// If desired, we could assert to make sure they are what we think they are.
+	assert(n == this->p_graph->edgeNum);
+	assert(m == (2 * this->p_graph->nodeNum));
+
+	// the variables have lower bounds of 0
+	// the variables have upper bounds of 1
+	for (Index i = 0; i < n; i++) {
+		x_l[i] = 0.0;
+		x_u[i] = 1.0;
+
+		if (!p_request->APMustPassEdges.at(i)) {
+			x_l[i] = 1.0;
+			x_u[i] = 1.0;
+
+		}
+		if (!p_request->APMustNotPassEdges.at(i)) {
+			x_l[i] = 0.0;
+			x_u[i] = 0.0;
+
 		}
 	}
 
-	for (int i = 0; i < p_graph->nodeNum; i++) {
-		cout << p_graph->node_index[i] << " ---:" << dist[i] << endl;
+	// Ipopt interprets any number greater than nlp_upper_bound_inf as
+	// infinity. The default value of nlp_upper_bound_inf and nlp_lower_bound_inf
+	// is 1e19 and can be changed through ipopt options.
+	for (Index i = 0; i < m; i++) {
+		if (i < (m / 2)) {
+			g_l[i] = g_u[i] = 0.0;
+			if (i == p_graph->source){
+
+				g_l[i] = g_u[i] = 1.0;
+			}
+			if (i == p_graph->destination){
+				g_l[i] = g_u[i] = -1.0;
+			}
+		} else {
+			g_l[i] = 0.0;
+			g_u[i] = 2.0;
+		}
+
+	}
+	return true;
+}
+
+// returns the initial point for the problem
+bool franz_NLP::get_starting_point(Index n, bool init_x, Number* x, bool init_z,
+		Number* z_L, Number* z_U, Index m, bool init_lambda, Number* lambda) {
+	// Here, we assume we only have starting values for x, if you code
+	// your own NLP, you can provide starting values for the dual variables
+	// if you wish
+	assert(init_x == true);  //true
+	assert(init_z == false);
+	assert(init_lambda == false);
+
+	// initialize to the given starting point
+	for (int i = 0; i < p_graph->edgeNum; i++) {
+		x[i] = 0.0;
+	}
+	x[0] = x[3] = x[5] = x[9] = x[10] = x[11] = x[14] = x[16] = x[19] = x[20] =
+			x[21] = 1.0;
+//  x[0] = 1.0;
+//  x[1] = 5.0;
+//  x[2] = 5.0;
+//  x[3] = 1.0;
+
+	return true;
+}
+
+// returns the value of the objective function
+bool franz_NLP::eval_f(Index n, const Number* x, bool new_x,
+		Number& obj_value) {
+	assert(n == this->p_graph->edgeNum);
+	obj_value=0;
+	for (Index i = 0; i < n; i++) {
+//		std::cout<<this->p_graph->edges.at(i).cost<<"FFFFFFFFF\nFFFFFFF\n"<<endl;
+		if(this->p_graph->edges.at(i).cost!=0)
+		obj_value += (this->p_graph->edges.at(i).cost * x[i]);
 	}
 
-	if (-1 == dist[(*p_graph).destination]) {
-		cout << "failed to find the AP" << endl;
-		return false;
+	return true;
+}
+
+// return the gradient of the objective function grad_{x} f(x)
+bool franz_NLP::eval_grad_f(Index n, const Number* x, bool new_x,
+		Number* grad_f) {
+	assert(n == this->p_graph->edgeNum);
+	for (Index i = 0; i < n; i++) {
+		grad_f[i] = this->p_graph->edges.at(i).cost;
+	}
+	return true;
+}
+
+// return the value of the constraints: g(x)
+bool franz_NLP::eval_g(Index n, const Number* x, bool new_x, Index m,
+		Number* g) {
+	assert(n == this->p_graph->edgeNum);
+	assert(m == (2 * this->p_graph->nodeNum));
+
+	int bi = m / 2;
+	for (Index i = 0; i < bi; i++) {
+		//g[i] = 0;
+		for (Index j = 0; j < n; j++) {
+			if (i == p_graph->edges.at(j).from)
+				g[i] += x[j];
+			if (i == p_graph->edges.at(j).to)
+				g[i] += (-1 * x[j]);
+
+		}
+	}
+	for (Index i = 0; i < bi; i++) {
+		//g[i + bi] = 0;
+		for (Index j = 0; j < n; j++) {
+			if ((i == p_graph->edges.at(j).from)
+					|| (i == p_graph->edges.at(j).to))
+				g[i + bi] += x[j];
+		}
+	}
+	return true;
+}
+
+// return the structure or values of the jacobian
+bool franz_NLP::eval_jac_g(Index n, const Number* x, bool new_x, Index m,
+		Index nele_jac, Index* iRow, Index *jCol, Number* values) {
+	if (values == NULL) {
+		// return the structure of the jacobian
+
+		// this particular jacobian is dense
+		Index s = 0;
+		int bi = m / 2;
+		for (Index i = 0; i < m; i++) {
+			for (Index j = 0; j < n; j++) {
+				if (i < bi) {
+					if ((i == p_graph->edges.at(j).from)
+							|| (i == p_graph->edges.at(j).to)) {
+						iRow[s] = i+1;
+						iRow[s] = j+1;
+						s++;
+					}
+				} else {
+					if (((i - bi) == p_graph->edges.at(j).from)
+							|| ((i - bi) == p_graph->edges.at(j).to)) {
+						iRow[s] = i+1;
+						iRow[s] = j+1;
+						s++;
+					}
+				}
+			}
+		}
 	} else {
-		int now;
-		int next;
+		// return the values of the jacobian of the constraints
+		Index s = 0;
+		for (Index i = 0; i < (m / 2); i++) {
+			for (Index j = 0; j < n; j++) {
+				if ((i == p_graph->edges.at(j).from)) {
+					values[s] = 1.0;
+					s++;
+				}
+				if (i == p_graph->edges.at(j).to) {
+					values[s] = -1.0;
+					s++;
+				}
+			}
+		}
+		for (Index i = 0; i < (m / 2); i++) {
+			for (Index j = 0; j < n; j++) {
+				if ((i == p_graph->edges.at(j).from)
+						|| (i == p_graph->edges.at(j).to)) {
+					values[s] = 1.0;
+					s++;
+				}
+			}
+		}
+	}
 
-		now = (*p_graph).destination;
-		(*p_request).AP_PathNode.push_back(now);
-		next = path_node[now];
-		while (next != -1) {
-			(*p_request).AP_PathNode.push_back(next);
-			(*p_request).AP_PathEdge.push_back(path_edge[now]);
-			//(*p_request).AP_CostSum += p_graph->edges[path_edge[now]].cost;
+	return true;
+}
 
-			(*p_request).BPMustNotPassEdges4AP[path_edge[now]] = false;
-			if (-1 != p_graph->edges[path_edge[now]].ithsrlg)
-				(*p_request).APSrlgs.push_back(
-						p_graph->edges[path_edge[now]].ithsrlg);
-			now = next;
-			next = path_node[now];
+//return the structure or values of the hessian
+bool franz_NLP::eval_h(Index n, const Number* x, bool new_x, Number obj_factor,
+		Index m, const Number* lambda, bool new_lambda, Index nele_hess,
+		Index* iRow, Index* jCol, Number* values) {
+	if (values == NULL) {
+		// return the structure. This is a symmetric matrix, fill the lower left
+		// triangle only.
 
+		// the hessian for this problem is actually dense
+		Index idx = 0;
+//		for (Index row = 0; row < n; row++) {
+//			for (Index col = 0; col <= row; col++) {
+//				iRow[idx] = row;
+//				jCol[idx] = col;
+//				idx++;
+//			}
+//		}
+		assert(idx == nele_hess);
+	} else {
+		// return the values. This is a symmetric matrix, fill the lower left
+		// triangle only
+
+		// fill the objective portion
+//		Index idx = 0;
+//		for (Index row = 0; row < n; row++) {
+//			for (Index col = 0; col <= row; col++) {
+//				values[idx] = 0.;
+//			}
+//		}
+
+	}
+
+	return true;
+}
+
+void franz_NLP::finalize_solution(SolverReturn status, Index n, const Number* x,
+		const Number* z_L, const Number* z_U, Index m, const Number* g,
+		const Number* lambda, Number obj_value, const IpoptData* ip_data,
+		IpoptCalculatedQuantities* ip_cq) {
+// here is where we would store the solution to variables, or write to a file, etc
+// so we could use the solution.
+
+// For this example, we write the solution to the console
+	std::cout << std::endl << std::endl << "Solution of the primal variables, x"
+			<< std::endl;
+	for (Index i = 0; i < n; i++) {
+		std::cout << "x[" << i << "] = " << x[i] << std::endl;
+		p_request->BPMustNotPassEdges4AP[i] = false;
+	}
+
+	std::cout << std::endl << std::endl
+			<< "Solution of the bound multipliers, z_L and z_U" << std::endl;
+	for (Index i = 0; i < n; i++) {
+		std::cout << "z_L[" << i << "] = " << z_L[i] << std::endl;
+	}
+	for (Index i = 0; i < n; i++) {
+		std::cout << "z_U[" << i << "] = " << z_U[i] << std::endl;
+	}
+
+	std::cout << std::endl << std::endl << "Objective value" << std::endl;
+	std::cout << "f(x*) = " << obj_value << std::endl;
+
+	std::cout << std::endl << "Final value of the constraints:" << std::endl;
+	for (Index i = 0; i < m; i++) {
+		std::cout << "g(" << i << ") = " << g[i] << std::endl;
+	}
+}
+
+
+
+int findAP_ILP_ipopt(Graph *p_graph, Request *p_request) {
+
+	// Create a new instance of your nlp
+	//  (use a SmartPtr, not raw)
+//	SmartPtr<TNLP> mynlp = new franz_NLP(p_graph, p_request);
+	SmartPtr<TNLP> mynlp = new franz_NLP(p_graph, p_request);
+
+	// Create a new instance of IpoptApplication
+	//  (use a SmartPtr, not raw)
+	// We are using the factory, since this allows us to compile this
+	// example with an Ipopt Windows DLL
+	SmartPtr<IpoptApplication> app = IpoptApplicationFactory();
+	app->RethrowNonIpoptException(true);
+
+	// Change some options
+	// Note: The following choices are only examples, they might not be
+	//       suitable for your optimization problem.
+	app->Options()->SetNumericValue("tol", 1e-7);
+//	app->Options()->SetNumericValue("max_iter",3);
+//	app->Options()->SetIntegerValue("tol");
+//	app->Options()->SetStringValue("mu_strategy", "adaptive");
+//	app->Options()->SetStringValue("output_file", "ipopt.out");
+
+	// The following overwrites the default name (ipopt.opt) of the
+	// options file
+	// app->Options()->SetStringValue("option_file_name", "hs071.opt");
+
+	// Initialize the IpoptApplication and process the options
+	ApplicationReturnStatus status;
+	status = app->Initialize();
+	if (status != Solve_Succeeded) {
+		std::cout << std::endl << std::endl
+				<< "*** Error during initialization!" << std::endl;
+		return (int) status;
+	}
+
+	// Ask Ipopt to solve the problem
+	status = app->OptimizeTNLP(mynlp);;//app->OptimizeTNLP(mynlp);
+
+	if (status == Solve_Succeeded) {
+		std::cout << std::endl << std::endl << "*** The problem solved!"
+				<< std::endl;
+	} else {
+		std::cout << std::endl << std::endl << "*** The problem FAILED!"
+				<< std::endl;
+	}
+
+	// As the SmartPtrs go out of scope, the reference count
+	// will be decremented and the objects will automatically
+	// be deleted.
+
+	return (int) status;
+
+}
+
+
+bool ILPAlgorithmBasicFlows_LocalSolver(Graph *p_graph) {
+
+	try {
+
+		/* Declares the optimization model. */
+		LocalSolver localsolver;
+		LSModel model = localsolver.getModel();
+
+		// 0-1 decisions
+		int twocolnum = 2 * p_graph->edgeNum;
+		int onecolnum = p_graph->edgeNum;
+//		LSExpression *x = new LSExpression(2 * p_graph->edgeNum);
+		vector<LSExpression> x; //=new vector<LSExpression>(2 * p_graph->edgeNum);
+		x.resize(2 * p_graph->edgeNum);
+//        x=(LSExpression *)malloc(2*p_graph->edgeNum*(sizeof(LSExpression)));
+		for (int i = 0; i < twocolnum; i++)
+			x[i] = model.boolVar();
+
+		// knapsackWeight <- 10*x0 + 60*x1 + 30*x2 + 40*x3 + 30*x4 + 20*x5 + 20*x6 + 2*x7;
+
+		for (int i = 0; i < p_graph->nodeNum; i++) {
+			LSExpression knapsackWeight = model.sum();
+			lsint knapsackBound;
+			knapsackBound = 0;
+			if (i == p_graph->source)
+				knapsackBound = 1;
+			if (i == p_graph->destination)
+				knapsackBound = -1;
+			for (int j = 0; j < onecolnum; j++) {
+				if (i == p_graph->edges.at(j).from)
+					knapsackWeight += x[j];
+				if (i == p_graph->edges.at(j).to)
+					knapsackWeight += (-1 * x[j]);
+			}
+			model.constraint(knapsackWeight <= knapsackBound);
 		}
 
-		(*p_request).APCostSum = dist[(*p_graph).destination];
-		(*p_request).APHopSum = hop[(*p_graph).destination];
-		for (unsigned int i = 0; i < (*p_request).APSrlgs.size(); i++) {
-			int srlg = (*p_request).APSrlgs[i];
-			for (unsigned int j = 0;
-					j < (*p_graph).srlgGroups[srlg].srlgMember.size(); j++) {
-				int srlgmem = (*p_graph).srlgGroups[srlg].srlgMember[j];
-				if ((*p_request).BPMustNotPassEdges4AP[srlgmem]
-						&& (*p_request).BPMustNotPassEdgesRLAP[srlgmem]) {
-					(*p_request).BPMustNotPassEdgesRLAP[srlgmem] = false;
-					p_request->RLAP_PathEdge.push_back(srlgmem);
+		for (int i = 0; i < p_graph->nodeNum; i++) {
+			LSExpression knapsackWeight = model.sum();
+			lsint knapsackBound;
+			knapsackBound = 0;
+			if (i == p_graph->source)
+				knapsackBound = 1;
+			if (i == p_graph->destination)
+				knapsackBound = -1;
+			for (int j = onecolnum; j < twocolnum; j++) {
+				if (i == p_graph->edges.at(j - onecolnum).from)
+					knapsackWeight += x[j];
+				if (i == p_graph->edges.at(j - onecolnum).to)
+					knapsackWeight += (-1 * x[j]);
+			}
+			model.constraint(knapsackWeight <= knapsackBound);
+		}
+
+		for (int i = 0; i < onecolnum; i++) {
+			LSExpression knapsackWeight = model.sum();
+			lsint knapsackBound;
+			knapsackBound = 1;
+
+			knapsackWeight += x[i];
+			knapsackWeight += x[i + onecolnum];
+
+			model.constraint(knapsackWeight <= knapsackBound);
+		}
+
+		for (unsigned int i = 0; i < p_graph->srlgGroupsNum; i++) {
+			unsigned srlglen = p_graph->srlgGroups.at(i).srlgMember.size();
+			for (unsigned j = 0; j < srlglen; j++) {
+				for (unsigned k = 0; k < srlglen; k++) {
+					LSExpression knapsackWeight = model.sum();
+					lsint knapsackBound;
+					knapsackBound = 1;
+					knapsackWeight += x[p_graph->srlgGroups.at(i).srlgMember.at(
+							j)];
+					knapsackWeight += x[p_graph->srlgGroups.at(i).srlgMember.at(
+							k)];
+					model.constraint(knapsackWeight <= knapsackBound);
 				}
 			}
 		}
 
-		cout << "succeed to find the AP cost:(" << (*p_request).APCostSum
-				<< ") hop:(" << (*p_request).APHopSum << ") :";
-		vector<int>::iterator it = (*p_request).AP_PathNode.end();
-		do {
-			it--;
-			cout << p_graph->node_index[(*it)] << " ";
-		} while (it != (*p_request).AP_PathNode.begin());
-		cout << endl;
-
-		cout << "edge list " << (*p_request).AP_PathEdge.size() << "  :";
-		for (unsigned i = 0; i < (*p_request).AP_PathEdge.size(); i++) {
-			cout << (*p_request).AP_PathEdge[i] << " ";
+		LSExpression obj = model.sum();
+		for (int i = 0; i < onecolnum; i++) {
+//			if (i < p_graph->edgeNum)
+			obj += p_graph->edges.at(i).cost * x[i];
+//			else
+//				obj += p_graph->edges.at(i - p_graph->edgeNum).cost * x[i];
 		}
-		cout << endl;
 
-		cout << "|AP|:" << p_request->AP_PathEdge.size() << "  |RLAP|:"
-				<< p_request->RLAP_PathEdge.size() << endl;
+		// minimize obj;
+		model.minimize(obj);
 
+		// close model, then solve
+		model.close();
+
+		/* Parameterizes the solver. */
+		LSPhase phase = localsolver.createPhase();
+		LSSolution solution = localsolver.getSolution();
+		phase.setTimeLimit(LimitedTime);
+		phase.setEnabled(true);
+//		localsolver.LSSolution();
+//		phase.setOptimizedObjective(SS_Optimal);
+
+		localsolver.solve();
+
+		vector<bool> apvis = vector<bool>(p_graph->edgeNum, false);
+		for (int i = 0; i < onecolnum; i++) {
+			if (x[i].getValue())
+				apvis[i] = true;
+
+		}
+
+		vector<bool> bpvis = vector<bool>(p_graph->edgeNum, false);
+		for (int i = onecolnum; i < twocolnum; i++) {
+			if (x[i].getValue())
+				bpvis[i - onecolnum] = true;
+
+		}
+		RecordResult(p_graph, apvis, bpvis);
 		return true;
+	} catch (const LSException& e) {
+		cout << "LSException occurred:" << e.getMessage() << endl;
 	}
+
+	return false;
 }

@@ -3,30 +3,24 @@ extern int demand_num;
 
 void DebugPrint(Graph *p_graph) {
 	for (int i = 0; i < demand_num; i++) {
-		cout << "disjointpath  " << i << endl;
+		cout << "PATH(" << i <<") ";
 		cout << "source node:" << (*p_graph).nid_nindex[(*p_graph).source];
 		cout << "  destination node:"
 				<< (*p_graph).nid_nindex[(*p_graph).destination] << endl;
-
-		//        cout<<"essential node ("<<demandEnodeSize[i]<<"):";
-		//        for(int j=0; j<demandEnodeSize[i]; j++)
-		//        {
-		//            cout<<node_index[demandEnode[i][j]]<<" ";
-		//        }
 	}
-	cout << "node size:" << (*p_graph).nodeNum << endl;
+	cout << "node size:" << (*p_graph).nodeNum <<"   ";
 	cout << "edge size:" << (*p_graph).edgeNum << endl;
 
-	cout << "node_index :";
-	for (int i = 0; i < (*p_graph).nodeNum; i++) {
-		cout << (*p_graph).nid_nindex[i] << " ";
-	}
-	cout << endl;
-	cout << "index_node :";
-	for (int i = 0; i < (*p_graph).nodeNum; i++) {
-		cout << (*p_graph).nindex_nid[i] << " ";
-	}
-	cout << endl;
+//	cout << "node_index :";
+//	for (int i = 0; i < (*p_graph).nodeNum; i++) {
+//		cout << (*p_graph).nid_nindex[i] << " ";
+//	}
+//	cout << endl;
+//	cout << "index_node :";
+//	for (int i = 0; i < (*p_graph).nodeNum; i++) {
+//		cout << (*p_graph).nindex_nid[i] << " ";
+//	}
+//	cout << endl;
 
 //
 //	for (unsigned int i = 0; i < p_graph->edges.size(); i++) {

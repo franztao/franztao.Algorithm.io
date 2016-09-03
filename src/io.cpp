@@ -75,7 +75,7 @@ int read_file(char ** const buff, const unsigned int spec, const char * const fi
         PRINT("Fail to open file %s, %s.\n", filename, strerror(errno));
         return 0;
     }
-    PRINT("Open file %s OK.\n", filename);
+   //PRINT("Open file %s OK.\n", filename);
 
     char line[MAX_LINE_LEN + 2];
     unsigned int cnt = 0;
@@ -90,7 +90,7 @@ int read_file(char ** const buff, const unsigned int spec, const char * const fi
         cnt++;
     }
     fclose(fp);
-    PRINT("There are %d lines in file %s.\n", cnt, filename);
+    //PRINT("There are %d lines in file %s.\n", cnt, filename);
 
     return cnt;
 }

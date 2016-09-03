@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
 
-	print_time("Experimante Begin");
+	//print_time("Experiment Beginn");
 	char *topo[MAX_EDGE_NUM];
 	int edge_num;
 
@@ -28,12 +28,13 @@ int main(int argc, char *argv[]) {
 	char *result_file = argv[4];
 	int alg = atoi(argv[5]);
 	if (argc == 1) {
-		string si = "0";
-		string suffix = "/home/franz/eclipse4cworkspace/SRLG_Franz/test";
+		string si = "6";
+		string suffix = "/home/myfiles/eclipse4cworkspace/SRLG_Franz/test";
 		string strtopo = "/topo.csv";
 		string strdemand = "/demand.csv";
 		string strsrlg = "/srlg.csv";
 		string strresult = "/result.csv";
+
 //		char argv1[100] ="/home/franz/eclipse4cworkspace/SRLG_Franz/test6/topo.csv";
 //		char argv2[100] ="/home/franz/eclipse4cworkspace/SRLG_Franz/test6/demand.csv";
 //		char argv3[100] ="/home/franz/eclipse4cworkspace/SRLG_Franz/test6/srlg.csv";
@@ -43,13 +44,14 @@ int main(int argc, char *argv[]) {
 //		srlg_file=argv3;
 //		result_file=argv4;
 
-		alg = algorithm_IHKSP;
+		alg = 0;
 		string s1 = (suffix + si + strtopo);
 		string s2 = (suffix + si + strdemand);
 		string s3 = (suffix + si + strsrlg);
 		string s4 = (suffix + si + strresult);
 
 		topo_file = (char *) malloc(sizeof(char) * (s1.length() + 1));
+
 		demand_file = (char *) malloc(sizeof(char) * (s2.length() + 1));
 		srlg_file = (char *) malloc(sizeof(char) * (s3.length() + 1));
 		result_file = (char *) malloc(sizeof(char) * (s4.length() + 1));
@@ -59,6 +61,8 @@ int main(int argc, char *argv[]) {
 		strcpy(result_file, s4.c_str());
 
 	}
+
+
 
 	//read topo.csv file
 	edge_num = read_file(topo, MAX_EDGE_NUM, topo_file);
@@ -85,7 +89,7 @@ int main(int argc, char *argv[]) {
 			topo_file);
 
 	//write disjoint paths to file.
-	write_result(result_file);
+//	write_result(result_file);
 	//release buffer data.
 	release_buff(topo, edge_num);
 	release_buff(demand, demand_num);

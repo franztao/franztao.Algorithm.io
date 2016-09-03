@@ -16,22 +16,20 @@ pthread_mutex_t KSP_mutex;
 
 void *KSPParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 
-	pthread_t tid = pthread_self();
-	cout << endl << "start----------thread: " << tid
-			<< "------------------------" << endl;
+//	pthread_t tid = pthread_self();
+//	cout << endl << "start----------thread: " << tid
+//			<< "------------------------" << endl;
 	//instead of waiting for another thread to perform PTHREAD_JOIN on it.
 
 	//pthread_detach(tid);
 	//ILPAlgorithmBasicFlows_glpk ILPAlgorithmBasicFlows_LocalSolver
 	KSPanswer = IHKSPAlgorithm(p_graph);	//ILPAlgorithmBasicFlows_glpk
 
-
-
 	pthread_mutex_lock(&KSP_mutex);
 	pthread_cond_signal(&KSP_cond);
 	pthread_mutex_unlock(&KSP_mutex);
-	cout << endl << "end----------thread: " << tid << "------------------------"
-			<< endl;
+//	cout << endl << "end----------thread: " << tid << "------------------------"
+//			<< endl;
 	pthread_exit(NULL);
 	return NULL;
 }

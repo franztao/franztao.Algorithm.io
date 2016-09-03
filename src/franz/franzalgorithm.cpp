@@ -6,7 +6,7 @@
  */
 #include "../head.h"
 #include"../route.h"
-#include "gurobi_c++.h"
+//#include "gurobi_c++.h"
 
 #include "../franz/networkflow.h"
 //#include "lib/lib_io.h"
@@ -124,259 +124,7 @@ void DivideAndConquer(Request *p_request) {
 
 }
 
-//find the first path(AP),if there is not AP,the algorithm end,otherwise return true and find BP
 
-bool findAP_ILP_gurobi(Graph *p_graph, Request *p_request) {
-	try {
-
-		GRBEnv env = GRBEnv();
-
-		GRBModel model = GRBModel(env);
-
-		// Create variables
-		vector<GRBVar> e = vector<GRBVar>(p_graph->edgeNum);
-		string str = "e";
-		char s[10000];
-		for (unsigned i = 0; i < p_graph->edgeNum; i++) {
-			sprintf(s, "%d", i);
-
-			if (!p_request->APMustPassEdges.at(i))
-				e.at(i) = model.addVar(1.0, 1.0, 0.0, GRB_BINARY, (str + s));
-			if (!p_request->APMustNotPassEdges.at(i))
-				e.at(i) = model.addVar(0.0, 0.0, 0.0, GRB_BINARY, (str + s));
-			if ((p_request->APMustPassEdges.at(i))
-					&& (p_request->APMustNotPassEdges.at(i))) {
-				e.at(i) = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, (str + s));
-			}
-
-		}
-
-		// Integrate new variables
-
-		model.update();
-
-		GRBLinExpr obj = 0.0;
-		for (int i = 0; i < p_graph->edgeNum; i++) {
-			obj += (p_graph->edges.at(i).cost * e.at(i));
-		}
-		model.setObjective(obj, GRB_MINIMIZE);
-		string strc = "c";
-		for (int i = 0; i < p_graph->nodeNum; i++) {
-			sprintf(s, "%d", i);
-			GRBLinExpr con = 0.0;
-			for (int j = 0; j < p_graph->edgeNum; j++) {
-				if (i == p_graph->edges.at(j).from)
-					con += e.at(j);
-				if (i == p_graph->edges.at(j).to)
-					con += (-1 * e.at(j));
-			}
-			if (i == p_graph->source)
-				model.addConstr(con == 1, (strc + s));
-			if (i == p_graph->destination)
-				model.addConstr(con == (-1), (strc + s));
-			if ((i != p_graph->source) && (i != p_graph->destination))
-				model.addConstr(con == 0, (strc + s));
-
-		}
-		for (int i = 0; i < p_graph->nodeNum; i++) {
-			sprintf(s, "%d", (i + p_graph->nodeNum));
-			GRBLinExpr con = 0.0;
-			for (int j = 0; j < p_graph->edgeNum; j++) {
-				if ((i == p_graph->edges.at(j).from)
-						|| ((i == p_graph->edges.at(j).to)))
-					con += e.at(j);
-			}
-			model.addConstr(con <= 2, (strc + s));
-		}
-
-// Optimize model
-
-		model.optimize();
-//#ifndef ConsolePrint
-		for (unsigned i = 0; i < e.size(); i++) {
-			cout << e.at(i).get(GRB_StringAttr_VarName) << " "
-					<< e.at(i).get(GRB_DoubleAttr_X) << endl;
-		}
-
-		cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
-//#endif
-		int now = p_graph->source;
-		int next;
-		int sum = 0;
-		int hop = 0;
-
-		(*p_request).AP_PathNode.push_back(now);
-		while (now != (p_graph->destination)) {
-			for (int i = 0; i < p_graph->edgeNum; i++) {
-				if ((1 == e.at(i).get(GRB_DoubleAttr_X))
-						&& (now == p_graph->edges.at(i).from)) {
-					(*p_request).AP_PathEdge.push_back(i);
-					(*p_request).BPMustNotPassEdges4AP[i] = false;
-					if (-1 != p_graph->edges[i].ithsrlg)
-						(*p_request).APSrlgs.push_back(
-								p_graph->edges[i].ithsrlg);
-					next = p_graph->edges.at(i).to;
-					sum += p_graph->edges.at(i).cost;
-					hop++;
-				}
-			}
-			now = next;
-			(*p_request).AP_PathNode.push_back(now);
-		}
-
-		(*p_request).APCostSum = sum;
-		(*p_request).APHopSum = hop;
-		for (unsigned int i = 0; i < (*p_request).APSrlgs.size(); i++) {
-			int srlg = (*p_request).APSrlgs[i];
-			for (unsigned int j = 0;
-					j < (*p_graph).srlgGroups[srlg].srlgMember.size(); j++) {
-				int srlgmem = (*p_graph).srlgGroups[srlg].srlgMember[j];
-				if ((*p_request).BPMustNotPassEdges4AP[srlgmem]
-						&& (*p_request).BPMustNotPassEdgesRLAP[srlgmem]) {
-					(*p_request).BPMustNotPassEdgesRLAP[srlgmem] = false;
-					p_request->RLAP_PathEdge.push_back(srlgmem);
-				}
-			}
-		}
-#ifndef ConsolePrint
-		cout << "succeed to find the AP cost:(" << (*p_request).APCostSum
-				<< ") hop:(" << (*p_request).APHopSum << ") :";
-		vector<int>::iterator it = (*p_request).AP_PathNode.begin();
-		do {
-			cout << p_graph->nid_nindex[(*it)] << " ";
-			it++;
-		} while (it != (*p_request).AP_PathNode.end());
-		cout << endl;
-
-		cout << "edge list " << (*p_request).AP_PathEdge.size() << "  :";
-		for (unsigned i = 0; i < (*p_request).AP_PathEdge.size(); i++) {
-			cout << (*p_request).AP_PathEdge[i] << " ";
-		}
-		cout << endl;
-
-		cout << "|AP|:" << p_request->AP_PathEdge.size() << "  |RLAP|:"
-				<< p_request->RLAP_PathEdge.size() << endl;
-#endif
-		return true;
-
-	} catch (GRBException e) {
-		cout << "Error code = " << e.getErrorCode() << endl;
-		cout << e.getMessage() << endl;
-	} catch (...) {
-		cout << "Exception during optimization" << endl;
-	}
-	return false;
-}
-
-//find the second path(BP),if there is not BP,the algorithm begin conquer and divide ,otherwise return true and the algorithm get srlg-min-min disjoint path
-bool findBP(Graph *p_graph, Request *p_request) {
-#ifndef ConsolePrint
-	cout << endl << "is finding the BP" << endl;
-#endif
-	typedef pair<int, int> P;
-	vector<int> dist((*p_graph).nodeNum, (-1));
-	vector<int> hop((*p_graph).nodeNum, (-1));
-	vector<int> path_node((*p_graph).nodeNum, (-1));
-	vector<int> path_edge((*p_graph).nodeNum, (-1));
-	priority_queue<P, vector<P>, greater<P> > que;
-	unsigned int len;
-	dist[(*p_graph).source] = 0;
-	hop[(*p_graph).source] = 0;
-	que.push(P(0, (*p_graph).source));
-
-	while (!que.empty()) {
-		P p = que.top();
-		que.pop();
-		int v = p.second;
-		if (dist[v] < p.first)
-			continue;
-		len = (*p_graph).topo_Node_fEdgeList[v].edgeList.size();
-		for (unsigned int i = 0; i < len; i++) {
-			Edge e = (*p_graph).edges.at(
-					(*p_graph).topo_Node_fEdgeList[v].edgeList[i]);
-			//BP must not pass the edges of AP or the related slrgs's edges about AP
-			if (!p_request->BPMustNotPassEdges4AP[e.id]
-					|| !p_request->BPMustNotPassEdgesRLAP[e.id])
-				continue;
-			if (-1 == dist[e.to]) {
-				dist[e.to] = dist[v] + e.cost;
-				hop[e.to] = hop[v] + 1;
-				path_node[e.to] = v;
-				path_edge[e.to] = e.id;
-				que.push(P(dist[e.to], e.to));
-			} else {
-				if (dist[e.to] > (dist[v] + e.cost)) {
-					dist[e.to] = dist[v] + e.cost;
-					hop[e.to] = hop[v] + 1;
-					path_node[e.to] = v;
-					path_edge[e.to] = e.id;
-					que.push(P(dist[e.to], e.to));
-				} else {
-					if (dist[e.to] == (dist[v] + e.cost)) {
-						if (hop[e.to] > (hop[v] + 1)) {
-							hop[e.to] = hop[v] + 1;
-							path_node[e.to] = v;
-							path_edge[e.to] = e.id;
-							que.push(P(dist[e.to], e.to));
-						}
-					}
-				}
-			}
-		}
-	}
-	if (-1 == path_node[(*p_graph).destination]) {
-#ifndef ConsolePrint
-		cout << "failed to find the BP : begin the franz's algorithm" << endl;
-#endif
-		return false;
-	} else {
-		int now;
-		int next;
-
-		now = (*p_graph).destination;
-		(*p_request).BP_PathNode.push_back(now);
-		next = path_node[now];
-		while (-1 != next) {
-			(*p_request).BP_PathNode.push_back(next);
-			(*p_request).BP_PathEdge.push_back(path_edge[now]);
-			(*p_request).BPCostSum += p_graph->edges[path_edge[now]].cost;
-
-			now = next;
-			next = path_node[now];
-
-		}
-#ifndef ConsolePrint
-		cout << "succeed to find the BP " << (*p_request).BPCostSum << "  :";
-		vector<int>::iterator it = (*p_request).BP_PathNode.end();
-		do {
-			it--;
-			cout << p_graph->nid_nindex[(*it)] << " ";
-		} while (it != (*p_request).BP_PathNode.begin());
-		cout << endl;
-#endif
-
-		DisjointPaths *dispath = new DisjointPaths(
-				p_request->AP_PathEdge.size(), p_request->BP_PathEdge.size());
-		std::copy(p_request->AP_PathEdge.begin(), p_request->AP_PathEdge.end(),
-				dispath->APnode.begin());
-		std::copy(p_request->BP_PathEdge.begin(), p_request->BP_PathEdge.end(),
-				dispath->BPnode.begin());
-		dispath->APcostsum = p_request->APCostSum;
-		dispath->BPcostsum = p_request->BPCostSum;
-
-		pthread_mutex_lock(&mutex_result);
-		if ((dispath->APcostsum) < (AlgorithmResult->APcostsum))
-			AlgorithmResult->getResult(dispath);
-		pthread_mutex_unlock(&mutex_result);
-
-//		sem_wait(&mutex_result);
-//		if (dispath->APsum < AlgorithmResult->APsum)
-//			AlgorithmResult->getResult(dispath);
-//		sem_post(&mutex_result);
-		delete dispath;
-		return true;
-	}
-}
 
 //construct G* graph.set the capacity of every edges.
 void BuildNetworkFlowGraph(Graph *p_graph, Request *p_request) {
@@ -435,13 +183,13 @@ void GetCutEdge(Graph& graph, Request &request) {
 	for (unsigned i = 0; i < request.APExlusionEdges.size(); i++) {
 		int id = request.APExlusionEdges[i];
 		cout << graph.nid_nindex[graph.edges[id].from] << "  "
-				<< graph.nid_nindex[graph.edges[id].to] << endl;
+		<< graph.nid_nindex[graph.edges[id].to] << endl;
 	}
 	cout << endl << "Inclusion: " << endl;
 	for (unsigned i = 0; i < request.APInclusionEdges.size(); i++) {
 		int id = request.APInclusionEdges[i];
 		cout << graph.nid_nindex[graph.edges[id].from] << "  "
-				<< graph.nid_nindex[graph.edges[id].to] << endl;
+		<< graph.nid_nindex[graph.edges[id].to] << endl;
 	}
 #endif
 }
@@ -463,7 +211,7 @@ void *ParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 	pthread_t tid = pthread_self();
 #ifndef ConsolePrint
 	cout << endl << "------------thread: " << tid << "------------------------"
-			<< endl;
+	<< endl;
 #endif
 	//instead of waiting for another thread to perform PTHREAD_JOIN on it.
 
@@ -477,14 +225,27 @@ void *ParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 	std::copy(p_set->Exlusion.begin(), p_set->Exlusion.end(),
 			p_request->APMustNotPassEdges.begin());
 
-	if (!findMustNodePath(p_graph, p_request)) { //findAP_dijastra findAP_ILP findAP_ILP_glpk  findAP_ILP_gurobi   findMustNodePath
-		printf("%ld thread do not find AP", tid);
+	bool existmustedge = false;
+	for (unsigned int i = 0; i < p_set->Inclusion.size(); i++) {
+		if (!p_request->APMustPassEdges.at(i)) {
+			existmustedge = true;
+		}
+	}
+
+	if (existmustedge) {
+		if (findAP_ILP_gurobi(p_graph, p_request)) { //findAP_dijastra findAP_ILP findAP_ILP_glpk  findAP_ILP_gurobi   findMustNodePath
+			//findAP_ILP_gurobi
+			if (!findBP(p_graph, p_request)) {
+				GetConflictingSRLGLinkSet(p_graph, p_request);
+				DivideAndConquer(p_request);
+			}
+		}
 	} else {
-		if (!findBP(p_graph, p_request)) {
-			GetConflictingSRLGLinkSet(p_graph, p_request);
-			DivideAndConquer(p_request);
-		} else {
-			printf("%ld thread find BP ,so find disjoint path", tid);
+		if (findAP_dijastra(p_graph, p_request)) {
+			if (!findBP(p_graph, p_request)) {
+				GetConflictingSRLGLinkSet(p_graph, p_request);
+				DivideAndConquer(p_request);
+			}
 		}
 	}
 
