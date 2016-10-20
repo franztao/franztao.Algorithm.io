@@ -31,7 +31,7 @@ void dfsGetSTCut(NetworkFlow & netflow, int s, Request & request) {
 	request.STNodeCut[s] = true;
 	netflow.used[s] = true;
 	for (unsigned int i = 0; i < netflow.G[s].newtworkedgelist.size(); i++) {
-		newtworkEdge&e = netflow.G[s].newtworkedgelist[i];
+		newtworkEdge &e = netflow.G[s].newtworkedgelist[i];
 		if ((!netflow.used[e.to]) && (0 < e.cap)) {
 			netflow.used[e.to] = true;
 			request.STNodeCut[e.to] = true;
@@ -45,8 +45,9 @@ void MaxFlowAlgorithm_fordfulkerson(Graph &graph, Request & request) {
 	NetworkFlow netflow(graph, request);
 	for (;;) {
 		netflow.clearUsedVector();
-		int augmentationflow = dfsNetworkFlow_fordfulkerson(graph.source, graph.destination,
-		INT_MAX, netflow);
+		int augmentationflow = dfsNetworkFlow_fordfulkerson(graph.source,
+				graph.destination,
+				INT_MAX, netflow);
 		if (0 == augmentationflow)
 			break;
 		maxflow += augmentationflow;

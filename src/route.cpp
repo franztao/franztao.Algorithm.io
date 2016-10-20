@@ -5,21 +5,116 @@
 #include "head.h"
 
 Graph *p_graph;
-DisjointPaths *AlgorithmResult;
+DisjointPathPair *AlgorithmResult;
+//mutex lock for saving reslut
 pthread_mutex_t mutex_result;
-pthread_mutex_t mutex_thread;
-void print_answer(DisjointPaths *FranzAlgorithmResult) {
+//pthread_mutex_t mutex_thread;
+int Algorithm;
+bool reverseDFS_mustedgeoutnode(Graph *p_graph, Request *p_request,
+		vector<int> &permute) {
 
-	cout << endl
-			<< "**************Successful to find disjoint path**************"
-			<< endl;
+	typedef pair<int, int> P;
+	vector<int> dist((*p_graph).nodeNum, (-1));
+	vector<int> hop((*p_graph).nodeNum, (-1));
+	priority_queue<P, vector<P>, greater<P> > que;
+	unsigned int len;
+	dist[p_graph->destination] = 0;
+	hop[p_graph->destination] = 0;
+	que.push(P(0, p_graph->destination));
+
+	while (!que.empty()) {
+		P p = que.top();
+		que.pop();
+		int v = p.second;
+
+		if (dist[v] < p.first)
+			continue;
+		len = (*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList.size();
+		for (unsigned int i = 0; i < len; i++) {
+
+			Edge &e = p_graph->getithEdge(
+					(*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList[i]);
+
+			if ((!p_request->APMustNotPassEdges[e.id])) //|| (!p_request->APMustPassEdges[e.id]))
+				continue;
+			if (-1 == dist[e.from]) {
+				dist[e.from] = dist[v] + e.cost;
+				hop[e.from] = hop[v] + 1;
+				que.push(P(dist[e.from], e.from));
+			} else {
+				if (dist[e.from] > (dist[v] + e.cost)) {
+					dist[e.from] = dist[v] + e.cost;
+					hop[e.from] = hop[v] + 1;
+					que.push(P(dist[e.from], e.from));
+				} else {
+					if (dist[e.from] == (dist[v] + e.cost)) {
+						if (hop[e.from] > (hop[v] + 1)) {
+							hop[e.from] = hop[v] + 1;
+							que.push(P(dist[e.from], e.from));
+						}
+					}
+				}
+			}
+		}
+	}
+//
+//	cout << "*****************" << endl;
+//	for (unsigned i = 0; i < p_graph->edgeNum; i++) {
+//		if (!p_request->APMustPassEdges[i]) {
+//			cout << "must" << " "
+//					<< p_graph->nid_nindex[p_graph->getithEdge(i).from] << " "
+//					<< p_graph->nid_nindex[p_graph->getithEdge(i).to] << endl;
+//		}
+//
+//	}
+//	cout << endl;
+//	for (unsigned i = 0; i < p_graph->edgeNum; i++) {
+//
+//		if (!p_request->APMustNotPassEdges[i]) {
+//			cout << "must not " << " "
+//					<< p_graph->nid_nindex[p_graph->getithEdge(i).from] << " "
+//					<< p_graph->nid_nindex[p_graph->getithEdge(i).to] << endl;
+//		}
+//	}
+//
+//	cout << "-------------" << endl;
+
+	for (unsigned i = 0; i < permute.size(); i++) {
+		if (-1 == dist[p_graph->getithEdge(permute.at(i)).to]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+//
+void printAnswer(DisjointPathPair *FranzAlgorithmResult, bool getanswer) {
+
+//	cout << endl
+//			<< "**************Successful to find disjoint path**************"
+//			<< endl;
+	if (!getanswer) {
+		cout << "APcost:" << "-1" << endl;
+		cout << "BPcost:" << "-1" << endl;
+		cout << "CostSum:" << "-1" << endl;
+		cout << "APhop:" << "-1" << endl;
+		cout << "BPhop:" << "-1" << endl;
+		cout << "HopSum:" << "-1" << endl;
+		return;
+	}
 	cout << "APcost:" << FranzAlgorithmResult->APcostsum << "  " << endl;
 	cout << "BPcost:" << FranzAlgorithmResult->BPcostsum << "  " << endl;
-
+	cout << "CostSum:"
+			<< (FranzAlgorithmResult->APcostsum
+					+ FranzAlgorithmResult->BPcostsum) << "  " << endl;
+	cout << "APhop:" << FranzAlgorithmResult->APhop << "  " << endl;
+	cout << "BPhop:" << FranzAlgorithmResult->BPhop << "  " << endl;
+	cout << "HopSum:"
+			<< (FranzAlgorithmResult->APhop + FranzAlgorithmResult->BPhop)
+			<< "  " << endl;
 	cout << "AP edge(" << (FranzAlgorithmResult->APhop - 1) << "): ";
 	unsigned int i = 0;
 	for (i = 0; i < FranzAlgorithmResult->APedge.size(); i++) {
-
 		record_result(WORK_PATH, FranzAlgorithmResult->APedge.at(i));
 		cout << FranzAlgorithmResult->APedge.at(i) << "   ";
 	}
@@ -29,12 +124,12 @@ void print_answer(DisjointPaths *FranzAlgorithmResult) {
 	for (i = 0; i < FranzAlgorithmResult->APedge.size(); i++) {
 
 		cout
-				<< p_graph->nid_nindex[p_graph->edges.at(
+				<< p_graph->nid_nindex[p_graph->getithEdge(
 						FranzAlgorithmResult->APedge.at(i)).from] << "   ";
 
 	}
 	cout
-			<< p_graph->nid_nindex[p_graph->edges.at(
+			<< p_graph->nid_nindex[p_graph->getithEdge(
 					FranzAlgorithmResult->APedge.at(i - 1)).to] << "   ";
 	cout << endl;
 
@@ -47,88 +142,139 @@ void print_answer(DisjointPaths *FranzAlgorithmResult) {
 	cout << "BP node(" << (FranzAlgorithmResult->BPhop) << "): ";
 	for (i = 0; i <= (FranzAlgorithmResult->BPedge.size() - 1); i++) {
 		cout
-				<< p_graph->nid_nindex[p_graph->edges.at(
+				<< p_graph->nid_nindex[p_graph->getithEdge(
 						FranzAlgorithmResult->BPedge.at(i)).from] << "   ";
 	}
 
 	cout
-			<< p_graph->nid_nindex[p_graph->edges.at(
+			<< p_graph->nid_nindex[p_graph->getithEdge(
 					FranzAlgorithmResult->BPedge.at(i - 1)).to] << "   ";
 	cout << endl << endl;
 
 }
 //verify whether the answer is really right.
-void verify_result(DisjointPaths *FranzAlgorithmResult) {
+void verify_result(DisjointPathPair *FranzAlgorithmResult) {
 
 }
+
 void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		char *demand[MAX_DEMAND_NUM], int demand_num, char *srlg[MAX_SRLG_NUM],
 		int srlg_num, int algorithm, char *str) {
 
-	AlgorithmResult = new DisjointPaths();
+	Algorithm = algorithm;
+	//init result's class .
+	AlgorithmResult = new DisjointPathPair();
 	p_graph = new Graph(edge_num);
-
-	if (!LoadData(p_graph, topo, edge_num, demand, demand_num, srlg,
+	//load the graph's topological detailed information
+	if (!LoadGraphData(p_graph, topo, edge_num, demand, demand_num, srlg,
 			srlg_num)) {
-		printf("Error:LoadData\n");
+		printf("Error:LoadGraphData\n");
 		return;
 	}
-
 	DebugPrint(p_graph);
-	if ((algorithm_IHKSP == algorithm) || (algorithm_all == algorithm)) {
-		AlgorithmResult->clear();
+
+	//franz
+	if ((algorithm_franz == algorithm) || (algorithm_all == algorithm)) {
+		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
-		print_time("IHKSPbegin\n");
-		if (KSPAlgorithmBasicFlows(p_graph)) { //ILPAlgorithmBasicFlows ILPAlgorithm_glpk
-			print_answer(AlgorithmResult);
+		print_time("");
+		if (FranzAlgorithmBasicFlows(p_graph)) {
+			printAnswer(AlgorithmResult, true);
 		} else {
-			cout << "||||||||Failure to find disjoint path||||||||" << endl;
+			printAnswer(AlgorithmResult, false);
+		}
+		if (AlgorithmResult->Isornot_Paralle)
+			cout << "isornot_parallar:" << 1 << endl;
+		else
+			cout << "isornot_parallar:" << 0 << endl;
+		print_time("FranzAlgorithmEnd");
+		cout << "--------------------------------------------" << endl << endl;
+	}
+
+	//COSE
+	if ((algorithm_COSE == algorithm) || (algorithm_all == algorithm)) {
+		AlgorithmResult->clearResult();
+		cout << endl << "--------------------------------------------" << endl;
+		print_time("");
+		if (CoSEAlgorithmBasicFlows(p_graph)) {
+			printAnswer(AlgorithmResult, true);
+		} else {
+			printAnswer(AlgorithmResult, false);
+		}
+		print_time("CoSEEnd");
+		cout << "--------------------------------------------" << endl << endl;
+	}
+
+	//KSP
+	if (((algorithm_IHKSP == algorithm) || (algorithm_all == algorithm))) {
+		AlgorithmResult->clearResult();
+		cout << endl << "--------------------------------------------" << endl;
+		print_time("");
+		if (KSPAlgorithmBasicFlows(p_graph)) { //ILPAlgorithmBasicFlows ILPAlgorithm_glpk
+			printAnswer(AlgorithmResult, true);
+		} else {
+			printAnswer(AlgorithmResult, false);
 		}
 		print_time("IHKSPEnd");
 		cout << "--------------------------------------------" << endl << endl;
 	}
 
-	if ((algorithm_franz == algorithm) || (algorithm_all == algorithm)) {
-		AlgorithmResult->clear();
-		cout << endl << "--------------------------------------------" << endl;
-		print_time("FranzAlgorithmBegin\n");
-		if (FranzAlgorithmBasicFlows(p_graph)) {
-			print_answer(AlgorithmResult);
-		} else {
-			cout << "||||||||Failure to find disjoint path||||||||" << endl;
-		}
-		print_time("FranzAlgorithmEnd");
-		cout << "--------------------------------------------" << endl << endl;
-	}
-
+	//ILP
 	if ((algorithm_ILP == algorithm) || (algorithm_all == algorithm)) {
-		AlgorithmResult->clear();
+		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
-		print_time("ILPBegin\n");
-		if (ILPAlgorithm_gurobi(p_graph)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
-			print_answer(AlgorithmResult);
+		print_time("");
+		if (IPAlgorithmBasicFlows(p_graph, algorithm_ILP)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
+			printAnswer(AlgorithmResult, true);
 		} else {
-			cout << "||||||||Failure to find disjoint path||||||||" << endl;
-
+			printAnswer(AlgorithmResult, false);
 		}
-		print_time("ILPEnd");
+		print_time("ILPminEnd");
 		cout << "--------------------------------------------" << endl << endl;
 	}
 
+	//IQP
 	if ((algorithm_IQP == algorithm) || (algorithm_all == algorithm)) {
-		AlgorithmResult->clear();
+		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
-		print_time("IQPBegin\n");
-		if (IQPAlgorithm_gurobi(p_graph)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
-			print_answer(AlgorithmResult);
+		print_time("");
+		if (IPAlgorithmBasicFlows(p_graph, algorithm_IQP)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
+			printAnswer(AlgorithmResult, true);
 		} else {
-			cout << "||||||||Failure to find disjoint path||||||||" << endl;
-
+			printAnswer(AlgorithmResult, false);
 		}
-		print_time("IQPEnd");
+		print_time("IQPminEnd");
 		cout << "--------------------------------------------" << endl << endl;
 	}
 
+	//ILPsum
+	if ((algorithm_ILP_sum == algorithm) || (algorithm_all == algorithm)) {
+		AlgorithmResult->clearResult();
+		cout << endl << "--------------------------------------------" << endl;
+		print_time("");
+		if (IPAlgorithmBasicFlows(p_graph, algorithm_ILP_sum)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
+			printAnswer(AlgorithmResult, true);
+		} else {
+			printAnswer(AlgorithmResult, false);
+		}
+		print_time("ILPsumEnd");
+		cout << "--------------------------------------------" << endl << endl;
+	}
+	//IQPsum
+	if ((algorithm_IQP_sum == algorithm) || (algorithm_all == algorithm)) {
+		AlgorithmResult->clearResult();
+		cout << endl << "--------------------------------------------" << endl;
+		print_time("");
+		if (IPAlgorithmBasicFlows(p_graph, algorithm_IQP_sum)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
+			printAnswer(AlgorithmResult, true);
+		} else {
+			printAnswer(AlgorithmResult, false);
+		}
+		print_time("IQPsumEnd");
+		cout << "--------------------------------------------" << endl << endl;
+	}
+
+	//get srlg.csv file of three types from topo.csv file
 	if (algorithm_getSRLGcsv == algorithm) {
 		char abusolutepath[100];
 		int i;
@@ -140,7 +286,16 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		getSRLGcsv(p_graph, abusolutepath);
 	}
 
-	verify_result(AlgorithmResult);
+	if (algorithm_statisticParallelFranzAlgorithm == algorithm) {
+		//firstly,i would know that the case have solution,then judge the algorithm run the split-part.
+		AlgorithmResult->clearResult();
+		FranzAlgorithmBasicFlows(p_graph);
+		if (AlgorithmResult->Isornot_Paralle) {
+			cout << "parallel:1" << endl;
+		}
+	}
+
+	//verify_result(AlgorithmResult);
 	free(p_graph);
 	return;
 }

@@ -41,10 +41,12 @@ public:
 		nodeSize = graph.nodeNum;
 		source = graph.source;
 		destination = graph.destination;
-		for (unsigned int i = 0; i < graph.edges.size(); i++) {
-			from = graph.edges[i].from;
-			to = graph.edges[i].to;
-			id = graph.edges[i].id;
+		for (unsigned int i = 0; i < graph.getEdgeSize(); i++) {
+			if(!request.APMustNotPassEdges.at(i))
+				continue;
+			from = graph.getithEdge(i).from;
+			to = graph.getithEdge(i).to;
+			id = graph.getithEdge(i).id;
 			cap = request.edgeCapacity.at(id); //graph.edges[i].capacity;
 #ifndef ConsolePrint
 			cout << id << " " << graph.nid_nindex[from] << " - "

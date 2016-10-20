@@ -12,9 +12,8 @@ bool judge_isStarProperty() {
 void eliminate_invalidnodeandedge() {
 }
 
-
 //load the demand,topo and srlg data.
-bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
+bool LoadGraphData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		char *demand[MAX_DEMAND_NUM], int demandnum, char *srlg[MAX_SRLG_NUM],
 		int srlgnum) {
 	edge_num = edgenum;
@@ -23,11 +22,14 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 
 	int int_stringofint;
 
+	string str;
+	char temp[64];
 //	(*p_request).source = (*p_graph).source;
 //	(*p_request).destination = (*p_graph).destination;
 
-	//load the topo structure of the graph from topo.csv
+//load the topo structure of the graph from topo.csv
 	for (int i = 0; i < edge_num; i++) {
+		stringstream ss;
 		int EdgeFlag, inEdgeFlag, outEdgeflag, EdgeWeight;
 		int j = 0;
 		int_stringofint = 0;
@@ -41,6 +43,31 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		}
 		EdgeFlag = int_stringofint;
 
+		int_stringofint = 0;
+		for (; j < ithtopoSize; j++) {
+			if (!(('0' <= topo[i][j]) && ('9' >= topo[i][j]))) {
+				j++;
+				break;
+			}
+			int_stringofint = int_stringofint * 10 + (topo[i][j] - '0');
+		}
+//		ss.clear();
+		sprintf(temp, "%d", int_stringofint);
+		str = string(temp);
+
+		if (p_graph->nindex_nid.end() == p_graph->nindex_nid.find(str)) {
+
+			p_graph->nindex_nid.insert(
+					pair<string, int>(str, p_graph->nodeNum));
+			p_graph->nid_nindex.insert(
+					pair<int, string>(p_graph->nodeNum, str));
+//			(*p_graph).nindex_nid[int_stringofint] = (*p_graph).nodeNum;
+//			(*p_graph).nid_nindex[(*p_graph).nodeNum] = int_stringofint;
+
+			(*p_graph).isValidNode[(*p_graph).nodeNum] = true;
+			(*p_graph).nodeNum++;
+		}
+		inEdgeFlag = (*p_graph).nindex_nid[str];
 
 		int_stringofint = 0;
 		for (; j < ithtopoSize; j++) {
@@ -50,36 +77,27 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 			}
 			int_stringofint = int_stringofint * 10 + (topo[i][j] - '0');
 		}
-		if (-1 == (*p_graph).nindex_nid[int_stringofint]) {
-			(*p_graph).nindex_nid[int_stringofint] = (*p_graph).nodeNum;
-			(*p_graph).nid_nindex[(*p_graph).nodeNum] = int_stringofint;
-			(*p_graph).isValidNode[(*p_graph).nodeNum] = true;
-			(*p_graph).nodeNum++;
-		}
-		inEdgeFlag = (*p_graph).nindex_nid[int_stringofint];
 
-		int_stringofint = 0;
-		for (; j < ithtopoSize; j++) {
-			if (!(('0' <= topo[i][j]) && ('9' >= topo[i][j]))) {
-				j++;
-				break;
-			}
-			int_stringofint = int_stringofint * 10 + (topo[i][j] - '0');
-		}
-
-		if (-1 == (*p_graph).nindex_nid[int_stringofint]) {
-			(*p_graph).nindex_nid[int_stringofint] = (*p_graph).nodeNum;
-			(*p_graph).nid_nindex[(*p_graph).nodeNum] = int_stringofint;
+		sprintf(temp, "%d", int_stringofint);
+		str = string(temp);
+//		if (-1 == (*p_graph).nindex_nid[int_stringofint]) {
+//			(*p_graph).nindex_nid[int_stringofint] = (*p_graph).nodeNum;
+//			(*p_graph).nid_nindex[(*p_graph).nodeNum] = int_stringofint;
+		if (p_graph->nindex_nid.end() == p_graph->nindex_nid.find(str)) {
+			p_graph->nindex_nid.insert(
+					pair<string, int>(str, p_graph->nodeNum));
+			p_graph->nid_nindex.insert(
+					pair<int, string>(p_graph->nodeNum, str));
 			(*p_graph).isValidNode[(*p_graph).nodeNum] = true;
 			(*p_graph).nodeNum++;
 
 		}
-		outEdgeflag = (*p_graph).nindex_nid[int_stringofint];
+		outEdgeflag = (*p_graph).nindex_nid[str];
 		int_stringofint = 0;
 
-		//for resolving the bug where forgetting set edge's cost in topo.csv
-		if(j == ithtopoSize){
-			int_stringofint=1;
+		//for solving the bug where forgetting set edge's cost in topo.csv
+		if (j == ithtopoSize) {
+			int_stringofint = 1;
 		}
 
 		for (; j < ithtopoSize; j++) {
@@ -102,6 +120,7 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 
 	//load the demanding disjoint path from demand.csv
 	for (int i = 0; i < demand_num; i++) {
+		stringstream ss;
 		int j = 0;
 		int demandStrLen = strlen(demand[i]);
 		for (int_stringofint = 0; j < demandStrLen; j++) {
@@ -112,7 +131,6 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 			int_stringofint = int_stringofint * 10 + (demand[i][j] - '0');
 		}
 
-
 		for (int_stringofint = 0; j < demandStrLen; j++) {
 			if (!(('0' <= demand[i][j]) && ('9' >= demand[i][j]))) {
 				j++;
@@ -121,7 +139,7 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 			int_stringofint = int_stringofint * 10 + (demand[i][j] - '0');
 		}
 
-		int_stringofint = int_stringofint % ((*p_graph).nodeNum);
+		int_stringofint = int_stringofint % (p_graph->nodeNum);
 
 		(*p_graph).source = int_stringofint;
 
@@ -134,32 +152,26 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		}
 
 		//resolve the bug that there are big number' source and destination in randomdemand's file
-		int_stringofint = int_stringofint % ((*p_graph).nodeNum);
+		int_stringofint = int_stringofint % (p_graph->nodeNum);
 
 		(*p_graph).destination = int_stringofint;
 
-		if (-1 == (*p_graph).nindex_nid[(*p_graph).source]) {
-//			(*p_graph).index_node[(*p_graph).source] = (*p_graph).nodeNum;
-//			(*p_graph).node_index[(*p_graph).nodeNum] = (*p_graph).source;
-//			(*p_graph).source = (*p_graph).nodeNum;
-//			(*p_graph).isValidNode[(*p_graph).nodeNum] = true;
-//			(*p_graph).nodeNum++;
-			return false;
+		sprintf(temp, "%d", (*p_graph).source);
+		str = string(temp);
 
+
+		if (p_graph->nindex_nid.end() == p_graph->nindex_nid.find(str)) {
+			return false;//if source no exist in the edges.return false;
 		} else {
-			(*p_graph).source = (*p_graph).nindex_nid[(*p_graph).source];
+			(*p_graph).source = (*p_graph).nindex_nid[str];
 		}
+		sprintf(temp, "%d", (*p_graph).destination);
+		str = string(temp);
 
-		if (-1 == (*p_graph).nindex_nid[(*p_graph).destination]) {
-//			(*p_graph).index_node[(*p_graph).destination] = (*p_graph).nodeNum;
-//			(*p_graph).node_index[(*p_graph).nodeNum] = (*p_graph).destination;
-//			(*p_graph).destination = (*p_graph).nodeNum;
-//			(*p_graph).isValidNode[(*p_graph).nodeNum] = true;
-//			(*p_graph).nodeNum++;
-			return false;
+		if (p_graph->nindex_nid.end() == p_graph->nindex_nid.find(str)) {
+			return false;//if destination no exist in the edges.return false;
 		} else {
-			(*p_graph).destination =
-					(*p_graph).nindex_nid[(*p_graph).destination];
+			(*p_graph).destination = (*p_graph).nindex_nid[str];
 		}
 	}
 
@@ -188,8 +200,8 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 					|| ((j == (ithsrlgSize)) && havanum)) {
 				member = int_stringofint;
 				srlgmem.srlgMember.push_back(member);
-				if(isUndirectedGraph){
-					res=p_graph->edges.at(member).revid;
+				if (isUndirectedGraph) {
+					res = p_graph->getithEdge(member).revedgeid;
 					srlgmem.srlgMember.push_back(res);
 				}
 				int_stringofint = 0;
@@ -207,10 +219,9 @@ bool LoadData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 	(*p_graph).srlgGroupsNum = srlg_num;
 
 	p_graph->TransformedToEdgeBelongingOnlySRLG();
-	p_graph->TransformToNostarGraph();//
+	p_graph->TransformToNostarGraph(); //
 	p_graph->ConstructGraphbyLink();
 	p_graph->InsertSRLGInfoToEdgeInfo();
-
 	//eliminate_invalidnodeandedge();
 	return true;
 }

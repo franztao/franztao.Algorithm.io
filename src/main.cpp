@@ -15,21 +15,19 @@ int main(int argc, char *argv[]) {
 	char *srlg[MAX_SRLG_NUM];
 	int srlg_num;
 
-
-
-//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/topo.csv
-//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/demand.csv
-//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/srlg.csv
-//	/home/franz/eclipse4cworkspace/SRLG_Franz/test2/result.csv
-
+	//char[] of absolute path of file
 	char *topo_file = argv[1];
 	char *demand_file = argv[2];
 	char *srlg_file = argv[3];
 	char *result_file = argv[4];
+	//algorthm types.
 	int alg = atoi(argv[5]);
+
+	//
 	if (argc == 1) {
-		string si = "6";
-		string suffix = "/home/myfiles/eclipse4cworkspace/SRLG_Franz/test";
+		string si = "1";
+		string suffix =
+				"/home/franz/franzDocuments/eclipse4cworkspace/SRLG_Franz/test/test";
 		string strtopo = "/topo.csv";
 		string strdemand = "/demand.csv";
 		string strsrlg = "/srlg.csv";
@@ -44,7 +42,7 @@ int main(int argc, char *argv[]) {
 //		srlg_file=argv3;
 //		result_file=argv4;
 
-		alg = 0;
+		alg = 0;//algorithm_getSRLGcsv;
 		string s1 = (suffix + si + strtopo);
 		string s2 = (suffix + si + strdemand);
 		string s3 = (suffix + si + strsrlg);
@@ -61,15 +59,13 @@ int main(int argc, char *argv[]) {
 		strcpy(result_file, s4.c_str());
 
 	}
-
-
-
 	//read topo.csv file
 	edge_num = read_file(topo, MAX_EDGE_NUM, topo_file);
 	if (edge_num == 0) {
 		printf("Please input valid topo file.\n");
 		return -1;
 	}
+
 	//read demand.csv file
 	demand_num = read_file(demand, MAX_DEMAND_NUM, demand_file);
 	if (demand_num != MAX_DEMAND_NUM) {
@@ -83,7 +79,6 @@ int main(int argc, char *argv[]) {
 		printf("Please input valid srlg file.\n");
 		return -1;
 	}
-
 	//begin to find disjoint paths.
 	search_route(topo, edge_num, demand, demand_num, srlg, srlg_num, alg,
 			topo_file);

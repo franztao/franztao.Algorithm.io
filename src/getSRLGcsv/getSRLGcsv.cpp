@@ -1,6 +1,8 @@
 #include"../head.h"
 #include <stack>
 #include <algorithm>
+
+//srlg1:starsrlg srlg2:neistarsrlg srlg3: randomsrlg
 void getStarSRLG(Graph *p_graph, char *str) {
 	for (int i = 0; i <= 19; i++) {
 		int node = int(ceil(i * 0.05 * p_graph->nodeNum));
@@ -10,15 +12,13 @@ void getStarSRLG(Graph *p_graph, char *str) {
 		unsigned int len;
 		int id = 0;
 		vector<bool> vis = vector<bool>(p_graph->nodeNum, false);
-
 		string st = string(str);
-		string s1 = "starsrlg/star_";
+		string s1 = "srlg1/";
 		stringstream ss;
 		ss << i;
 		string s2 = string(ss.str());
 		string s3 = ".csv";
 		st = st + s1 + s2 + s3;
-
 		//FILE *f = fopen(st.c_str(), "w");
 		ofstream out;
 		out.open(st.c_str(), ios::out);
@@ -26,10 +26,11 @@ void getStarSRLG(Graph *p_graph, char *str) {
 			cout << "Error opening file";
 			exit(1);
 		}
-
+		if (0 == i)
+			out << "\n";
 		int ran;
 		vector<int> per = vector<int>(p_graph->nodeNum);
-		for (int j = 0; j < p_graph->nodeNum; j++) {
+		for (unsigned int j = 0; j < p_graph->nodeNum; j++) {
 			srand(time(NULL));
 			ran = rand() % p_graph->nodeNum;
 			while (vis[ran]) {
@@ -38,25 +39,25 @@ void getStarSRLG(Graph *p_graph, char *str) {
 			vis[ran] = true;
 			per[j] = ran;
 		}
-		vis = vector<bool>(p_graph->nodeNum, false);
+//		vis = vector<bool>(p_graph->nodeNum, false);
 
 		int stklen = 0;
 		for (int j = 1; j <= node; j++) {
 			n = per[stklen];
 			stklen++;
-			len = p_graph->topo_Node_fEdgeList.at(n).edgeList.size();
-			if (len > 1) {
+			if (p_graph->ftopo_r_Node_c_EdgeList.at(n).edgeList.size() > 1) {
 				out << id;
 				id++;
 				for (k = 0;
-						k < p_graph->topo_Node_fEdgeList.at(n).edgeList.size();
+						k
+								< p_graph->ftopo_r_Node_c_EdgeList.at(n).edgeList.size();
 						k++) {
-					edge = p_graph->topo_Node_fEdgeList.at(n).edgeList.at(k);
+					edge = p_graph->ftopo_r_Node_c_EdgeList.at(n).edgeList.at(
+							k);
 					out << "," << edge;
 				}
 				out << "\n";
 			}
-
 		}
 		out.flush();
 		out.close();
@@ -73,7 +74,7 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 		int id = 0;
 		vector<bool> vis = vector<bool>(p_graph->nodeNum, false);
 		string st = string(str);
-		string s1 = "neistarsrlg/neistar_";
+		string s1 = "srlg2/";
 		stringstream ss;
 		ss << i;
 		string s2 = string(ss.str());
@@ -86,10 +87,11 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 			cout << "Error opening file";
 			exit(1);
 		}
-
+		if (i == 0)
+			out << "\n";
 		int ran;
 		vector<int> per = vector<int>(p_graph->nodeNum);
-		for (int j = 0; j < p_graph->nodeNum; j++) {
+		for (unsigned int j = 0; j < p_graph->nodeNum; j++) {
 			srand(time(NULL));
 			ran = rand() % p_graph->nodeNum;
 			while (vis[ran]) {
@@ -100,7 +102,7 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 		}
 		vis = vector<bool>(p_graph->nodeNum, false);
 
-		int stklen = 0;
+		unsigned int stklen = 0;
 		for (int j = 1; j <= node; j++) {
 
 			if (stklen == p_graph->nodeNum)
@@ -119,7 +121,7 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 			if (stklen == p_graph->nodeNum)
 				break;
 			vis[n] = true;
-			len = p_graph->topo_Node_fEdgeList.at(n).edgeList.size();
+			len = p_graph->ftopo_r_Node_c_EdgeList.at(n).edgeList.size();
 			int next = -1;
 			bool have = true;
 
@@ -127,23 +129,24 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 				out << id;
 				id++;
 				for (k = 0;
-						k < p_graph->topo_Node_fEdgeList.at(n).edgeList.size();
+						k
+								< p_graph->ftopo_r_Node_c_EdgeList.at(n).edgeList.size();
 						k++) {
-					edge = p_graph->topo_Node_fEdgeList.at(n).edgeList.at(k);
-					if (!vis[p_graph->edges.at(edge).to]) {
+					edge = p_graph->ftopo_r_Node_c_EdgeList.at(n).edgeList.at(
+							k);
+					if (!vis[p_graph->getithEdge(edge).to]) {
 						if (have) {
-							next = p_graph->edges.at(edge).to;
+							next = p_graph->getithEdge(edge).to; // p_graph->edges.at(edge).to;
 							have = false;
 							vis[next] = true;
 
 							for (unsigned int l = 0;
 									l
-											< p_graph->topo_Node_fEdgeList.at(
+											< p_graph->ftopo_r_Node_c_EdgeList.at(
 													next).edgeList.size();
 									l++) {
-								int e2 =
-										p_graph->topo_Node_fEdgeList.at(next).edgeList.at(
-												l);
+								int e2 = p_graph->ftopo_r_Node_c_EdgeList.at(
+										next).edgeList.at(l);
 								out << "," << e2;
 							}
 						}
@@ -172,7 +175,7 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 		vector<bool> vis = vector<bool>(p_graph->nodeNum, false);
 
 		string st = string(str);
-		string s1 = "randomsrlg/random_";
+		string s1 = "srlg3/";
 		stringstream ss;
 		ss << i;
 		string s2 = string(ss.str());
@@ -185,9 +188,11 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 			cout << "Error opening file";
 			exit(1);
 		}
+		if (i == 0)
+			out << "\n";
 		int ran;
 		vector<int> per = vector<int>(p_graph->nodeNum);
-		for (int j = 0; j < p_graph->nodeNum; j++) {
+		for (unsigned int j = 0; j < p_graph->nodeNum; j++) {
 			srand(time(NULL));
 			ran = rand() % p_graph->nodeNum;
 			while (vis[ran]) {
@@ -197,7 +202,7 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 			per[j] = ran;
 		}
 		vis = vector<bool>(p_graph->nodeNum, false);
-		int stklen = 0;
+		unsigned int stklen = 0;
 		for (int j = 1; j <= node; j++) {
 
 			if (stklen == p_graph->nodeNum)
@@ -220,12 +225,13 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 			n2 = rand() % p_graph->nodeNum;
 			if (vis[n2]) {
 				n2 = -1;
-				if ((p_graph->topo_Node_fEdgeList.at(n1).edgeList.size() <= 1)) {
+				if ((p_graph->ftopo_r_Node_c_EdgeList.at(n1).edgeList.size()
+						<= 1)) {
 					continue;
 				}
 			} else {
-				if ((((p_graph->topo_Node_fEdgeList.at(n1).edgeList.size())
-						+ (p_graph->topo_Node_fEdgeList.at(n2).edgeList.size()))
+				if ((((p_graph->ftopo_r_Node_c_EdgeList.at(n1).edgeList.size())
+						+ (p_graph->ftopo_r_Node_c_EdgeList.at(n2).edgeList.size()))
 						<= 1)) {
 					continue;
 				}
@@ -234,16 +240,17 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 
 			bool have = false;
 			if (-1 != n1) {
-				len = p_graph->topo_Node_fEdgeList.at(n1).edgeList.size();
+				len = p_graph->ftopo_r_Node_c_EdgeList.at(n1).edgeList.size();
 				if (len >= 1) {
 					out << id;
 					id++;
 					for (k = 0;
 							k
-									< p_graph->topo_Node_fEdgeList.at(n1).edgeList.size();
+									< p_graph->ftopo_r_Node_c_EdgeList.at(n1).edgeList.size();
 							k++) {
-						edge = p_graph->topo_Node_fEdgeList.at(n1).edgeList.at(
-								k);
+						edge =
+								p_graph->ftopo_r_Node_c_EdgeList.at(n1).edgeList.at(
+										k);
 						out << "," << edge;
 						have = true;
 					}
@@ -251,20 +258,21 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 			}
 
 			if (-1 != n2) {
-				len = p_graph->topo_Node_fEdgeList.at(n2).edgeList.size();
+				len = p_graph->ftopo_r_Node_c_EdgeList.at(n2).edgeList.size();
 				if (len >= 1) {
 					if (-1 == n1
-							|| ((p_graph->topo_Node_fEdgeList.at(n1).edgeList.size()
+							|| ((p_graph->ftopo_r_Node_c_EdgeList.at(n1).edgeList.size()
 									== 0) && (-1 != n1))) {
 						out << id;
 						id++;
 					}
 					for (k = 0;
 							k
-									< p_graph->topo_Node_fEdgeList.at(n2).edgeList.size();
+									< p_graph->ftopo_r_Node_c_EdgeList.at(n2).edgeList.size();
 							k++) {
-						edge = p_graph->topo_Node_fEdgeList.at(n2).edgeList.at(
-								k);
+						edge =
+								p_graph->ftopo_r_Node_c_EdgeList.at(n2).edgeList.at(
+										k);
 						out << "," << edge;
 						have = true;
 					}

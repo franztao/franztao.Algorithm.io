@@ -22,13 +22,13 @@ void processAuxilityAPInfo(Graph *p_graph, Request *p_request) {
 	while (now != (p_graph->destination)) {
 		for (int i = 0; i < p_graph->edgeNum; i++) {
 			if ((!p_request->BPMustNotPassEdges4AP[i])
-					&& (now == p_graph->edges.at(i).from)) {
+					&& (now == p_graph->getithEdge(i).from)) {
 				(*p_request).AP_PathEdge.push_back(i);
 //				(*p_request).BPMustNotPassEdges4AP[i] = false;
-				if (-1 != p_graph->edges[i].ithsrlg)
-					(*p_request).APSrlgs.push_back(p_graph->edges[i].ithsrlg);
-				next = p_graph->edges.at(i).to;
-				sum += p_graph->edges.at(i).cost;
+				if (-1 != p_graph->getithEdge(i).ithsrlg)
+					(*p_request).APSrlgs.push_back(p_graph->getithEdge(i).ithsrlg);
+				next = p_graph->getithEdge(i).to;
+				sum += p_graph->getithEdge(i).cost;
 				hop++;
 			}
 		}
@@ -53,12 +53,6 @@ void processAuxilityAPInfo(Graph *p_graph, Request *p_request) {
 #ifndef ConsolePrint
 	cout << "succeed to find the AP cost:(" << (*p_request).APCostSum
 	<< ") hop:(" << (*p_request).APHopSum << ") :";
-	vector<int>::iterator it = (*p_request).AP_PathNode.begin();
-	do {
-		cout << p_graph->nindex_nid[(*it)] << " ";
-		it++;
-	}while (it != (*p_request).AP_PathNode.end());
-	cout << endl;
 
 	cout << "edge list " << (*p_request).AP_PathEdge.size() << "  :";
 	for (unsigned i = 0; i < (*p_request).AP_PathEdge.size(); i++) {
@@ -118,7 +112,7 @@ bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 			glp_set_col_bnds(lp, i, GLP_DB, 0.0, 1.0);
 		}
 
-		glp_set_obj_coef(lp, i, p_graph->edges.at(i - 1).cost);
+		glp_set_obj_coef(lp, i, p_graph->getithEdge(i - 1).cost);
 	}
 	if (i <= p_graph->edgeNum) {
 		printf("EORROR:glp_set_obj_coef");
@@ -142,15 +136,15 @@ bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 			ar[index] = 0;
 			if (i < p_graph->nodeNum) {
 
-				if (i == p_graph->edges.at(j).from) {
+				if (i == p_graph->getithEdge(j).from) {
 					ar[index] = 1;
 				}
-				if (i == p_graph->edges.at(j).to) {
+				if (i == p_graph->getithEdge(j).to) {
 					ar[index] = -1;
 				}
 			} else {
-				if ((i == p_graph->edges.at(j).from)
-						|| (i == p_graph->edges.at(j).to)) {
+				if ((i == p_graph->getithEdge(j).from)
+						|| (i == p_graph->getithEdge(j).to)) {
 					ar[index] = 1;
 				}
 			}
@@ -188,13 +182,13 @@ bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 	while (now != (p_graph->destination)) {
 		for (int i = 0; i < p_graph->edgeNum; i++) {
 			if ((1 == glp_get_col_prim(lp, i + 1)) //e.at(i).get(GRB_DoubleAttr_X))
-			&& (now == p_graph->edges.at(i).from)) {
+			&& (now == p_graph->getithEdge(i).from)) {
 				(*p_request).AP_PathEdge.push_back(i);
 				(*p_request).BPMustNotPassEdges4AP[i] = false;
-				if (-1 != p_graph->edges[i].ithsrlg)
-					(*p_request).APSrlgs.push_back(p_graph->edges[i].ithsrlg);
-				next = p_graph->edges.at(i).to;
-				sum += p_graph->edges.at(i).cost;
+				if (-1 != p_graph->getithEdge(i).ithsrlg)
+					(*p_request).APSrlgs.push_back(p_graph->getithEdge(i).ithsrlg);
+				next = p_graph->getithEdge(i).to;
+				sum += p_graph->getithEdge(i).cost;
 				hop++;
 			}
 		}
@@ -216,25 +210,6 @@ bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 			}
 		}
 	}
-#ifndef ConsolePrint
-	cout << "succeed to find the AP cost:(" << (*p_request).APCostSum
-	<< ") hop:(" << (*p_request).APHopSum << ") :";
-	vector<int>::iterator it = (*p_request).AP_PathNode.begin();
-	do {
-		cout << p_graph->nindex_nid[(*it)] << " ";
-		it++;
-	}while (it != (*p_request).AP_PathNode.end());
-	cout << endl;
-
-	cout << "edge list " << (*p_request).AP_PathEdge.size() << "  :";
-	for (unsigned i = 0; i < (*p_request).AP_PathEdge.size(); i++) {
-		cout << (*p_request).AP_PathEdge[i] << " ";
-	}
-	cout << endl;
-
-	cout << "|AP|:" << p_request->AP_PathEdge.size() << "  |RLAP|:"
-	<< p_request->RLAP_PathEdge.size() << endl;
-#endif
 
 	glp_delete_prob(lp);
 	free(ia);
@@ -247,13 +222,19 @@ bool findAP_ILP_glpk(Graph *p_graph, Request *p_request) {
 bool findAP_ILP_gurobi(Graph *p_graph, Request *p_request) {
 	try {
 		GRBEnv env = GRBEnv();
+		unsigned edge_num = p_graph->edgeNum;
+		unsigned node_num = p_graph->nodeNum;
 		GRBModel model = GRBModel(env);
-
+		model.getEnv().set(GRB_IntParam_OutputFlag, 0);
 		// Create variables
-		vector<GRBVar> e = vector<GRBVar>(p_graph->edgeNum);
-		string str = "e";
-		char s[10000];
-		for (unsigned i = 0; i < p_graph->edgeNum; i++) {
+		vector<GRBVar> e; // = vector<GRBVar>(edge_num);
+		for (unsigned int i = 0; i < edge_num; i++) {
+			GRBVar ei;
+			e.push_back(ei);
+		}
+		string str = "vars";
+		char s[1000];
+		for (unsigned i = 0; i < edge_num; i++) {
 			sprintf(s, "%d", i);
 
 			if (!p_request->APMustPassEdges.at(i))
@@ -270,46 +251,57 @@ bool findAP_ILP_gurobi(Graph *p_graph, Request *p_request) {
 		// Integrate new variables
 
 		model.update();
-
 		GRBLinExpr obj = 0.0;
-		for (int i = 0; i < p_graph->edgeNum; i++) {
-			obj += (p_graph->edges.at(i).cost * e.at(i));
+		for (unsigned int i = 0; i < edge_num; i++) {
+			obj += (p_graph->getithEdge(i).cost * e.at(i));
 		}
 		model.setObjective(obj, GRB_MINIMIZE);
-		string strc = "c";
-		for (int i = 0; i < p_graph->nodeNum; i++) {
-			sprintf(s, "%d", i);
-			GRBLinExpr con = 0.0;
-			for (int j = 0; j < p_graph->edgeNum; j++) {
-				if (i == p_graph->edges.at(j).from)
-					con += e.at(j);
-				if (i == p_graph->edges.at(j).to)
-					con += (-1 * e.at(j));
+
+		string strc = "consinout";
+		for (unsigned int i = 0; i < node_num; i++) {
+			sprintf(s, "%u", i);
+			GRBLinExpr con_inout0 = 0.0;
+			for (unsigned int j = 0; j < p_graph->edgeNum; j++) {
+				if (i == p_graph->getithEdge(j).from) {
+					con_inout0 += e.at(j);
+				}
+				if (i == p_graph->getithEdge(j).to)
+					con_inout0 += (-1 * e.at(j));
 			}
 			if (i == p_graph->source)
-				model.addConstr(con == 1, (strc + s));
+				model.addConstr(con_inout0 == 1, (strc + s));
 			if (i == p_graph->destination)
-				model.addConstr(con == (-1), (strc + s));
+				model.addConstr(con_inout0 == (-1), (strc + s));
 			if ((i != p_graph->source) && (i != p_graph->destination))
-				model.addConstr(con == 0, (strc + s));
+				model.addConstr(con_inout0 == 0, (strc + s));
 
 		}
-		for (int i = 0; i < p_graph->nodeNum; i++) {
-			sprintf(s, "%d", (i + p_graph->nodeNum));
+
+		string strd = "consdegree";
+		for (unsigned int i = 0; i < edge_num; i++) {
+			sprintf(s, "%u", i);
 			GRBLinExpr con = 0.0;
-			for (int j = 0; j < p_graph->edgeNum; j++) {
-				if ((i == p_graph->edges.at(j).from)
-						|| ((i == p_graph->edges.at(j).to)))
+			for (unsigned int j = 0; j < p_graph->edgeNum; j++) {
+				if ((i == p_graph->getithEdge(j).from)
+						|| ((i == p_graph->getithEdge(j).to)))
 					con += e.at(j);
 			}
-			model.addConstr(con <= 2, (strc + s));
+			model.addConstr(con <= 2, (strd + s));
+		}
+// Optimize model
+
+//		cout<<model.getVars()<<endl;
+		model.optimize();
+
+		 int optimstatus = model.get(GRB_IntAttr_Status);
+		if (optimstatus != GRB_OPTIMAL) {
+			return false;
 		}
 
-// Optimize model
-		model.optimize();
 		bool SolutionIsInteger = true;
 
-		for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
+
+		for (unsigned int i = 0; i < edge_num; i++) {
 			if (e.at(i).get(GRB_DoubleAttr_X)) {
 				if (e.at(i).get(GRB_DoubleAttr_X) != 1.0) {
 					SolutionIsInteger = false;
@@ -326,22 +318,27 @@ bool findAP_ILP_gurobi(Graph *p_graph, Request *p_request) {
 
 		(*p_request).AP_PathNode.push_back(now);
 		while (now != (p_graph->destination)) {
-			for (int i = 0; i < p_graph->edgeNum; i++) {
-				if ((1 == e.at(i).get(GRB_DoubleAttr_X))
-						&& (now == p_graph->edges.at(i).from)) {
+			for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
+				if ((e.at(i).get(GRB_DoubleAttr_X))
+						&& (now == p_graph->getithEdge(i).from)) {
 					(*p_request).AP_PathEdge.push_back(i);
 					(*p_request).BPMustNotPassEdges4AP[i] = false;
-					if (-1 != p_graph->edges[i].ithsrlg)
+					if (-1 != p_graph->getithEdge(i).ithsrlg)
 						(*p_request).APSrlgs.push_back(
-								p_graph->edges[i].ithsrlg);
-					next = p_graph->edges.at(i).to;
-					sum += p_graph->edges.at(i).cost;
+								p_graph->getithEdge(i).ithsrlg);
+					next = p_graph->getithEdge(i).to;
+					sum += p_graph->getithEdge(i).cost;
 					hop++;
 				}
 			}
 			now = next;
 			(*p_request).AP_PathNode.push_back(now);
 		}
+
+		sort(p_request->APSrlgs.begin(), p_request->APSrlgs.end());
+		vector<int>::iterator pos;
+		pos = unique(p_request->APSrlgs.begin(), p_request->APSrlgs.end());
+		p_request->APSrlgs.erase(pos, p_request->APSrlgs.end());
 
 		(*p_request).APCostSum = sum;
 		(*p_request).APHopSum = hop;
@@ -388,11 +385,11 @@ bool findAP_dijastra(Graph *p_graph, Request *p_request) {
 
 		if (dist[v] < p.first)
 			continue;
-		len = (*p_graph).topo_Node_fEdgeList[v].edgeList.size();
+		len = (*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList.size();
 		for (unsigned int i = 0; i < len; i++) {
 
-			Edge e = (*p_graph).edges.at(
-					(*p_graph).topo_Node_fEdgeList[v].edgeList[i]);
+			Edge &e = p_graph->getithEdge(
+					(*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 
 			if (0 == (p_request->APMustNotPassEdges.size())) {
 				cout << "p_request->APedgestabu is " << "NULL" << endl;
@@ -433,22 +430,21 @@ bool findAP_dijastra(Graph *p_graph, Request *p_request) {
 		int next;
 
 		now = (*p_graph).destination;
-//		(*p_request).AP_PathNode.push_back(now);
-//		next = path_node[now];
 		vector<int> midnode;
 		vector<int> midedge;
 		next = path_node[now];
 		midnode.push_back(now);
 
+		p_request->APSrlgs.clear(); //
 		while (next != -1) {
 //			(*p_request).AP_PathNode.push_back(next);
 //			(*p_request).AP_PathEdge.push_back(path_edge[now]);
 			midnode.push_back(next);
 			midedge.push_back(path_edge[now]);
 			(*p_request).BPMustNotPassEdges4AP[path_edge[now]] = false;
-			if (-1 != p_graph->edges[path_edge[now]].ithsrlg)
+			if (-1 != p_graph->getithEdge(path_edge[now]).ithsrlg)
 				(*p_request).APSrlgs.push_back(
-						p_graph->edges[path_edge[now]].ithsrlg);
+						p_graph->getithEdge(path_edge[now]).ithsrlg);
 			now = next;
 			next = path_node[now];
 		}
@@ -461,6 +457,12 @@ bool findAP_dijastra(Graph *p_graph, Request *p_request) {
 
 		(*p_request).APCostSum = dist[(*p_graph).destination];
 		(*p_request).APHopSum = hop[(*p_graph).destination];
+
+		sort(p_request->APSrlgs.begin(), p_request->APSrlgs.end());
+		vector<int>::iterator pos;
+		pos = unique(p_request->APSrlgs.begin(), p_request->APSrlgs.end());
+		p_request->APSrlgs.erase(pos, p_request->APSrlgs.end());
+
 		for (unsigned int i = 0; i < (*p_request).APSrlgs.size(); i++) {
 			int srlg = (*p_request).APSrlgs[i];
 			for (unsigned int j = 0;
@@ -473,6 +475,7 @@ bool findAP_dijastra(Graph *p_graph, Request *p_request) {
 				}
 			}
 		}
+
 		return true;
 	}
 }

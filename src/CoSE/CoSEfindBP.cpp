@@ -3,7 +3,7 @@
 extern pthread_mutex_t mutex_result;
 extern DisjointPathPair *AlgorithmResult;
 //find the second path(BP),if there is not BP,the algorithm begin conquer and divide ,otherwise return true and the algorithm get srlg-min-min disjoint path
-bool findBP(Graph *p_graph, Request *p_request) {
+bool CoSEfindBP(Graph *p_graph, Request *p_request) {
 #ifndef ConsolePrint
 	cout << endl << "is finding the BP" << endl;
 #endif
@@ -80,7 +80,6 @@ bool findBP(Graph *p_graph, Request *p_request) {
 			midnode.push_back(next);
 			midedge.push_back(path_edge[now]);
 			(*p_request).BPCostSum += p_graph->getithEdge(path_edge[now]).cost;
-
 			now = next;
 			next = path_node[now];
 		}
@@ -110,8 +109,8 @@ bool findBP(Graph *p_graph, Request *p_request) {
 		dispath->APcostsum = p_request->APCostSum;
 		dispath->BPcostsum = p_request->BPCostSum;
 		dispath->APhop=p_request->AP_PathEdge.size()+1;
-				dispath->BPhop=p_request->BP_PathEdge.size()+1;
-				dispath->SolutionNotFeasible=false;
+		dispath->BPhop=p_request->BP_PathEdge.size()+1;
+		dispath->SolutionNotFeasible=false;
 
 		pthread_mutex_lock(&mutex_result);
 		if ((dispath->APcostsum) < (AlgorithmResult->APcostsum))

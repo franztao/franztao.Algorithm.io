@@ -6,7 +6,7 @@
 using namespace localsolver;
 using namespace std;
 
-extern DisjointPaths *AlgorithmResult;
+extern DisjointPathPair *AlgorithmResult;
 
 void RecordResult(Graph *p_graph, vector<bool>&APpath, vector<bool>&BPpath) {
 	AlgorithmResult->APcostsum = 0;
@@ -15,33 +15,36 @@ void RecordResult(Graph *p_graph, vector<bool>&APpath, vector<bool>&BPpath) {
 
 	while (state != p_graph->destination) {
 		for (unsigned int j = 0;
-				j < p_graph->topo_Node_fEdgeList.at(state).edgeList.size();
+				j < p_graph->ftopo_r_Node_c_EdgeList.at(state).edgeList.size();
 				j++) {
-			int iedge = p_graph->topo_Node_fEdgeList.at(state).edgeList.at(j);
+			int iedge = p_graph->ftopo_r_Node_c_EdgeList.at(state).edgeList.at(j);
 			if (APpath[iedge]) {
-				state = p_graph->edges.at(iedge).to;
+				state = p_graph->getithEdge(iedge).to;
 				AlgorithmResult->APedge.push_back(iedge);
-				AlgorithmResult->APcostsum += p_graph->edges.at(iedge).cost;
+				AlgorithmResult->APcostsum += p_graph->getithEdge(iedge).cost;
 				break;
 			}
 		}
 	}
-
+	AlgorithmResult->APhop = AlgorithmResult->APedge.size()+1 ;
 	state = p_graph->source;
 
 	while (state != p_graph->destination) {
 		for (unsigned int j = 0;
-				j < p_graph->topo_Node_fEdgeList.at(state).edgeList.size();
+				j < p_graph->ftopo_r_Node_c_EdgeList.at(state).edgeList.size();
 				j++) {
-			int iedge = p_graph->topo_Node_fEdgeList.at(state).edgeList.at(j);
+			int iedge = p_graph->ftopo_r_Node_c_EdgeList.at(state).edgeList.at(j);
 			if (BPpath[iedge]) {
-				state = p_graph->edges.at(iedge).to;
+				state = p_graph->getithEdge(iedge).to;
 				AlgorithmResult->BPedge.push_back(iedge);
-				AlgorithmResult->BPcostsum += p_graph->edges.at(iedge).cost;
+				AlgorithmResult->BPcostsum += p_graph->getithEdge(iedge).cost;
 				break;
 			}
 		}
 	}
+
+	AlgorithmResult->BPhop = AlgorithmResult->BPedge.size()+1 ;
+	AlgorithmResult->SolutionNotFeasible=false;
 }
 
 bool ILPAlgorithm_glpk(Graph *p_graph) {
@@ -73,7 +76,7 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 //		glp_set_col_kind(lp, i + index, GLP_IV);
 		glp_set_col_bnds(lp, i + index, GLP_DB, 0.0, 1.0);
 //		glp_set_col_stat(lp, i+ index,GLP_NF);
-		glp_set_obj_coef(lp, i, p_graph->edges.at(i - 1).cost);
+		glp_set_obj_coef(lp, i, p_graph->getithEdge(i - 1).cost);
 
 	}
 	//BPedge
@@ -168,10 +171,10 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 			ja[index] = j + 1;
 			ar[index] = 0;
 			if (j < jlimit1) {
-				if (i == p_graph->edges.at(j).from) {
+				if (i == p_graph->getithEdge(j).from) {
 					ar[index] = 1;
 				}
-				if (i == p_graph->edges.at(j).to) {
+				if (i == p_graph->getithEdge(j).to) {
 					ar[index] = -1;
 				}
 			}
@@ -186,10 +189,10 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 			ja[index] = j + 1;
 			ar[index] = 0;
 			if ((j < jlimit2) && (j >= jlimit1)) {
-				if (i == p_graph->edges.at(j - jlimit1).from) {
+				if (i == p_graph->getithEdge(j - jlimit1).from) {
 					ar[index] = 1;
 				}
-				if (i == p_graph->edges.at(j - jlimit1).to) {
+				if (i == p_graph->getithEdge(j - jlimit1).to) {
 					ar[index] = -1;
 				}
 			}
@@ -296,11 +299,13 @@ bool ILPAlgorithm_glpk(Graph *p_graph) {
 		return true;
 }
 
-bool IQPAlgorithm_gurobi(Graph *p_graph) {
+bool IQPAlgorithm_gurobi(Graph *p_graph, int type) {
 	try {
-
 		GRBEnv env = GRBEnv();
 		GRBModel model = GRBModel(env);
+		model.getEnv().set(GRB_IntParam_OutputFlag, 0);
+		model.getEnv().set(GRB_DoubleParam_TimeLimit, LimitedTime);
+		model.getEnv().set(GRB_IntParam_Threads,ThreadNum);
 		// Create variables
 		vector<GRBVar> APe = vector<GRBVar>((p_graph->edgeNum));
 		vector<GRBVar> BPe = vector<GRBVar>((p_graph->edgeNum));
@@ -325,8 +330,20 @@ bool IQPAlgorithm_gurobi(Graph *p_graph) {
 		model.update();
 
 		GRBLinExpr obj = 0.0;
-		for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
-			obj += (p_graph->edges.at(i).cost * APe.at(i));
+		if (type == algorithm_IQP) {
+			for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
+				obj += (p_graph->getithEdge(i).cost * APe.at(i));
+
+			}
+		}
+
+		if (type == algorithm_IQP_sum) {
+			for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
+				obj += (p_graph->getithEdge(i).cost * APe.at(i));
+				obj += (p_graph->getithEdge(i).cost * BPe.at(i));
+
+			}
+
 		}
 		model.setObjective(obj, GRB_MINIMIZE);
 
@@ -336,9 +353,9 @@ bool IQPAlgorithm_gurobi(Graph *p_graph) {
 			sprintf(s, "%d", i);
 			GRBLinExpr con = 0.0;
 			for (unsigned int j = 0; j < p_graph->edgeNum; j++) {
-				if (i == p_graph->edges.at(j).from)
+				if (i == p_graph->getithEdge(j).from)
 					con += APe.at(j);
-				if (i == p_graph->edges.at(j).to)
+				if (i == p_graph->getithEdge(j).to)
 					con += (-1 * APe.at(j));
 			}
 			if (i == p_graph->source)
@@ -355,9 +372,9 @@ bool IQPAlgorithm_gurobi(Graph *p_graph) {
 			sprintf(s, "%d", i);
 			GRBLinExpr con = 0.0;
 			for (unsigned int j = 0; j < p_graph->edgeNum; j++) {
-				if (i == p_graph->edges.at(j).from)
+				if (i == p_graph->getithEdge(j).from)
 					con += BPe.at(j);
-				if (i == p_graph->edges.at(j).to)
+				if (i == p_graph->getithEdge(j).to)
 					con += (-1 * BPe.at(j));
 			}
 			if (i == p_graph->source)
@@ -382,12 +399,12 @@ bool IQPAlgorithm_gurobi(Graph *p_graph) {
 			sprintf(s, "%d", i);
 			GRBLinExpr APcon = 0.0;
 			for (unsigned j = 0; j < APe.size(); j++) {
-				if (i == p_graph->edges.at(j).ithsrlg)
+				if (i == p_graph->getithEdge(j).ithsrlg)
 					APcon += APe.at(j);
 			}
 			GRBLinExpr BPcon = 0.0;
 			for (unsigned j = 0; j < BPe.size(); j++) {
-				if (i == p_graph->edges.at(j).ithsrlg)
+				if (i == p_graph->getithEdge(j).ithsrlg)
 					BPcon += BPe.at(j);
 			}
 
@@ -397,6 +414,11 @@ bool IQPAlgorithm_gurobi(Graph *p_graph) {
 		// Optimize model
 		model.optimize();
 
+		int optimstatus = model.get(GRB_IntAttr_Status);
+
+		if (optimstatus != GRB_OPTIMAL) {
+			return false;
+		}
 		bool SolutionIsInteger = true;
 
 		for (unsigned i = 0; i < APe.size(); i++) {
@@ -428,7 +450,7 @@ bool IQPAlgorithm_gurobi(Graph *p_graph) {
 		}
 		RecordResult(p_graph, apvis, bpvis);
 
-		if (INT_MAX == AlgorithmResult->APcostsum)
+		if (AlgorithmResult->SolutionNotFeasible)
 			return false;
 		else
 			return true;
@@ -442,11 +464,14 @@ bool IQPAlgorithm_gurobi(Graph *p_graph) {
 	return false;
 }
 
-bool ILPAlgorithm_gurobi(Graph *p_graph) {
+bool ILPAlgorithm_gurobi(Graph *p_graph, int type) {
 	try {
 
 		GRBEnv env = GRBEnv();
 		GRBModel model = GRBModel(env);
+		model.getEnv().set(GRB_IntParam_OutputFlag, 0);
+//		model.getEnv().set(GRB_DoubleParam_TimeLimit, LimitedTime);
+//		model.getEnv().set(GRB_IntParam_Threads,ThreadNum);
 		// Create variables
 		vector<GRBVar> APe = vector<GRBVar>((p_graph->edgeNum));
 		vector<GRBVar> BPe = vector<GRBVar>((p_graph->edgeNum));
@@ -472,8 +497,21 @@ bool ILPAlgorithm_gurobi(Graph *p_graph) {
 		model.update();
 
 		GRBLinExpr obj = 0.0;
-		for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
-			obj += (p_graph->edges.at(i).cost * APe.at(i));
+
+		if (type == algorithm_ILP) {
+			for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
+				obj += (p_graph->getithEdge(i).cost * APe.at(i));
+
+			}
+		}
+
+		if (type == algorithm_ILP_sum) {
+			for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
+				obj += (p_graph->getithEdge(i).cost * APe.at(i));
+				obj += (p_graph->getithEdge(i).cost * BPe.at(i));
+
+			}
+
 		}
 		model.setObjective(obj, GRB_MINIMIZE);
 
@@ -483,9 +521,9 @@ bool ILPAlgorithm_gurobi(Graph *p_graph) {
 			sprintf(s1, "%d", i);
 			GRBLinExpr con = 0.0;
 			for (unsigned int j = 0; j < p_graph->edgeNum; j++) {
-				if (i == p_graph->edges.at(j).from)
+				if (i == p_graph->getithEdge(j).from)
 					con += APe.at(j);
-				if (i == p_graph->edges.at(j).to)
+				if (i == p_graph->getithEdge(j).to)
 					con += (-1 * APe.at(j));
 			}
 			if (i == p_graph->source)
@@ -502,9 +540,9 @@ bool ILPAlgorithm_gurobi(Graph *p_graph) {
 			sprintf(s1, "%d", i);
 			GRBLinExpr con = 0.0;
 			for (unsigned int j = 0; j < p_graph->edgeNum; j++) {
-				if (i == p_graph->edges.at(j).from)
+				if (i == p_graph->getithEdge(j).from)
 					con += BPe.at(j);
-				if (i == p_graph->edges.at(j).to)
+				if (i == p_graph->getithEdge(j).to)
 					con += (-1 * BPe.at(j));
 			}
 			if (i == p_graph->source)
@@ -526,11 +564,12 @@ bool ILPAlgorithm_gurobi(Graph *p_graph) {
 
 		strc = "SrlgDisjoint";
 		for (int i = 0; i < p_graph->srlgGroupsNum; i++) {
-
 			for (unsigned j = 0;
 					j < p_graph->srlgGroups.at(i).srlgMember.size(); j++) {
 				for (unsigned k = 0;
 						k < p_graph->srlgGroups.at(i).srlgMember.size(); k++) {
+					if(j==k)
+						continue;
 					sprintf(s1, "%d", j);
 					sprintf(s2, "%d", k);
 					GRBLinExpr con = 0.0;
@@ -545,6 +584,12 @@ bool ILPAlgorithm_gurobi(Graph *p_graph) {
 
 		// Optimize model
 		model.optimize();
+
+		int optimstatus = model.get(GRB_IntAttr_Status);
+
+		if (optimstatus != GRB_OPTIMAL) {
+			return false;
+		}
 
 		bool SolutionIsInteger = true;
 
@@ -577,7 +622,7 @@ bool ILPAlgorithm_gurobi(Graph *p_graph) {
 		}
 		RecordResult(p_graph, apvis, bpvis);
 
-		if (INT_MAX == AlgorithmResult->APcostsum)
+		if (AlgorithmResult->SolutionNotFeasible)
 			return false;
 		else
 			return true;
