@@ -10,8 +10,8 @@ export LD_LIBRARY_PATH=/home/franz/Downloads/gurobi563/linux64/lib:$LD_LIBRARY_P
 #1.franz algorithm:-3
 
 
-example_i=19
-example_num=19
+example_i=300
+example_num=315
 
 srlgdensity_i=0
 srlgdensity_num=19
@@ -19,7 +19,7 @@ srlgdensity_num=19
 srlgtype_i=1
 srlgtype_num=3
 
-demandnumber=999 #99 #9999
+demandnumber=9 #99 #9999
 
 date=$(date +%Y%m%d%H%M%S)
 

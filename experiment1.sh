@@ -1,13 +1,9 @@
 #!/bin/bash
 #Program:
-#	enum many random demand to compare the performance of my #algprithm and ILP.
+#	 compare the performance of my #algprithm and ILP.
 #History:
 #2015/07/16	franz	first release
 
-#lo=($pwd)
-#pwd
-#echo -e "your directory: ${lo}"
- 
 #PATH=/bin:/sbin:/usr/bin:/usr/sdbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LD_LIBRARY_PATH=/home/franz/Downloads/gurobi563/linux64/lib:$LD_LIBRARY_PATH
   
@@ -16,8 +12,8 @@ export LD_LIBRARY_PATH=/home/franz/Downloads/gurobi563/linux64/lib:$LD_LIBRARY_P
 startalgorithm=1
 algorithmlen=6
 
-startexamplelen=19
-examplelen=19
+startexamplelen=202
+examplelen=218
 
 startsrlglen=0
 srlglen=19
