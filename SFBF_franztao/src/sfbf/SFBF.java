@@ -8,8 +8,8 @@ import data.InputData;
 import data.TestResult;
 
 public class SFBF {
-	
-	public int lamdalenght = 100000;
+
+	// public int lamdalenght = 100000;
 	// control query rightshift
 	public boolean QueryTimewithshifting;
 
@@ -19,9 +19,9 @@ public class SFBF {
 	// k is the hash function's number
 	public int k;
 	// hash function' generation key
-	public HashGenerationMatrice[] hashgenmatrice;
+	public HashGenerationMatrice[] hashRootMatrice;
 	// key's length
-	public int R = 32;
+	public int R = 100000;
 	// key's width
 	public int w = 32;
 	// current datanum in this bloomfilter
@@ -30,97 +30,99 @@ public class SFBF {
 	public int[] n;
 	public int[] m;
 
-	
-	public int[] lamda = new int[lamdalenght];
+	public int[] lamda = new int[this.R];
 
 	public int ii;
 
-	public int databitlength;
+	public int dataBitSize;
 
-	public int cachesize;
-	public int curent_cachesize;
+	public int cacheSize;
+	public int curentCacheSize;
 
-	public int currentinsertingbloomfiter_i;
-	public int maxm;
-	public int maxmloc;
+	public int currentInsertingBF_ii;
+	public int max_m;
+	public int ii4max_m;
 
-	public Vector<SFBloomFilter> SFbloomfilterGroup;
+	public Vector<SFBFVector> SFBFVectorGroup;
 
-	public Vector<Long> timestamp;
-	public Long timerecord;
+	public Vector<Long> SFBFVectorTimeStamp;
+	public Long timeSum;
 
 	// public TestResult testresult;
 
 	public int reset_num;
 
-	public int bloomfiltersumsize;
+	public int BFCacheSumSize;
 
 	public long timestart, timeend;
 
 	public long eachaccessbloom;
-	public int currentmaxbloomfilterbitlen;
-	public int ithbloomfilterbitlen[];
-	public int currentinsertingbloomfiterlen;
+	public int currentMaxBFVectorBitLength;
+	public int ithBFvectorBitLength[];
+	public int currentInsertingBFSize;
 	public int SpaceSizeOfFilter;
 	public int ExtensionRound;
 	public boolean boolean4test3;
 
 	public int replacestrategy;
+	public final int Random4Replace = 0;
+	public final int Time4Replace = 1;
+	public final int Max4Replace = 2;
+
 	public int[][] vectorsfbf;// = new int[this.k][6];
 	public boolean[][] flagsfbf;// = new boolean[this.k][6];
 
 	public SFBF(int hashfunctionnum, int id, boolean querytimewithshifting, HashGenerationMatrice[] hashgenmatrice2,
 			int[] lamda, int cachesize, int replacestrategy) {
 		// this.lamda=lamda;
-		this.cachesize = cachesize;
+		this.cacheSize = cachesize;
 
-		for (int i = 0; i < lamdalenght; i++) {
+		for (int i = 0; i < this.R; i++) {
 			this.lamda[i] = lamda[i];
 		}
 		this.QueryTimewithshifting = querytimewithshifting;
-		// this.testresult = result;
 		this.id = id;
-		this.hashgenmatrice = hashgenmatrice2;
-		initparameter(hashfunctionnum);
+		this.hashRootMatrice = hashgenmatrice2;
+		initParameters(hashfunctionnum);
 
-		SFbloomfilterGroup = new Vector<SFBloomFilter>();
-		SFBloomFilter bf = new SFBloomFilter(this.m[ii]);
-		SFbloomfilterGroup.add(bf);
+		SFBFVectorGroup = new Vector<SFBFVector>();
+		SFBFVector bf = new SFBFVector(this.m[ii]);
+		SFBFVectorGroup.add(bf);
 
-		timestamp = new Vector<Long>();
-		this.timerecord = Long.MIN_VALUE;
+		SFBFVectorTimeStamp = new Vector<Long>();
+		this.timeSum = Long.MIN_VALUE;
 		// timestamp.add(System.currentTimeMillis());
-		timestamp.add(this.timerecord);
-		this.timerecord++;
+		SFBFVectorTimeStamp.add(this.timeSum);
+		this.timeSum++;
 
 		this.replacestrategy = replacestrategy;
 
 	}
 
-	private void initparameter(int hashfunctionnum) {
+	private void initParameters(int hashfunctionnum) {
 		// TODO Auto-generated method stub
 		ii = 0;
 		this.k = hashfunctionnum;
 		this.vectorsfbf = new int[this.k][6];
 		this.flagsfbf = new boolean[this.k][6];
-		this.n = new int[lamdalenght];
-		this.m = new int[lamdalenght];
-		this.ithbloomfilterbitlen = new int[lamdalenght];
+		this.n = new int[this.R];
+		this.m = new int[this.R];
+		this.ithBFvectorBitLength = new int[this.R];
 
 		this.n[ii] = 64;
 		this.m[ii] = 1024;
-		this.ithbloomfilterbitlen[0] = 10;
+		this.ithBFvectorBitLength[0] = 10;
 
 		this.nl = 0;
-		this.databitlength = 32;
+		this.dataBitSize = 32;
 
-		this.currentinsertingbloomfiter_i = 0;
-		this.maxm = this.m[ii];
-		this.maxmloc = 0;
-		this.currentmaxbloomfilterbitlen = 10;
+		this.currentInsertingBF_ii = 0;
+		this.max_m = this.m[ii];
+		this.ii4max_m = 0;
+		this.currentMaxBFVectorBitLength = 10;
 
-		this.curent_cachesize = this.m[ii];
-		this.bloomfiltersumsize = this.curent_cachesize;
+		this.curentCacheSize = this.m[ii];
+		this.BFCacheSumSize = this.curentCacheSize;
 
 		this.reset_num = 0;
 
@@ -132,54 +134,49 @@ public class SFBF {
 		this.boolean4test3 = true;
 	}
 
-	private void hashkey(InputData a, byte[] bloomfiltervalue) {
+	private void mapKeytoValue(InputData a, byte[] BFVectorValue) {
 		// TODO Auto-generated method stub
-		// int lmax_insert_ii = (int) (Math.log(this.m[this.insert_ii]) /
-		// Math.log(2.0));
-		int bytenum;
-		int bitnum;
-		int valueloc;
-		int mid;
+		int byteIndex;
+		int bitIndex;
+		int multiplicationValue;
+		int temp;
 		for (int l = 0; l < this.k; l++) {
-			valueloc = 0;
-			for (int i = 0; i < this.currentinsertingbloomfiterlen; i++) {
-				mid = 0;
-				int bit = a.inputdata_int & (hashgenmatrice[l].row[i].colbit_int);
-				mid = countOne(bit);
-				if ((mid & 1) != 0)
-					if (mid != 0)
-						valueloc = valueloc | (1 << (this.currentinsertingbloomfiterlen - i - 1));
+			multiplicationValue = 0;
+			for (int i = 0; i < this.currentInsertingBFSize; i++) {
+				temp = 0;
+				int bit = a.inputData_INT & (hashRootMatrice[l].row[i].colbit_int);
+				temp = countOne(bit);
+				if (0 != (temp & 1))
+					if (0 != temp)
+						multiplicationValue = multiplicationValue | (1 << (this.currentInsertingBFSize - i - 1));
 			}
 
-			bytenum = valueloc >>> 3;
-			bitnum = valueloc % 8;
+			byteIndex = multiplicationValue >>> 3;
+			bitIndex = multiplicationValue % 8;
 
-			byte midbyte = (byte) (1 << bitnum);
-			bloomfiltervalue[bytenum] = (byte) ((bloomfiltervalue[bytenum]) | midbyte);
+			byte tempbyte = (byte) (1 << bitIndex);
+			BFVectorValue[byteIndex] = (byte) ((BFVectorValue[byteIndex]) | tempbyte);
 		}
 	}
 
 	public boolean Lightweightquery(InputData a) {
-
-		// this.lmax_i= (int) (Math.log(this.m[this.maxmloc]) / Math.log(2.0));
-		// int lmax = (int) (Math.log(this.m[this.maxmloc]) / Math.log(2.0));
-
-		int midaddr[] = new int[this.k];
+		int hashvalue[] = new int[this.k];
 		int bytenum;
 		int bitnum;
 		int valueloc;
-		int mid = 0;
+		int temp = 0;
+		// with shift operation
 		if (this.QueryTimewithshifting) {
 			for (int l = 0; l < this.k; l++) {
 				valueloc = 0;
-				for (int i = 0; i < this.currentmaxbloomfilterbitlen; i++) {
-					mid = 0;
-					int bit = a.inputdata_int & (hashgenmatrice[l].row[i].colbit_int);
-					mid = countOne(bit);
-					if ((mid & 1) != 0)
-						valueloc = valueloc | (1 << (this.currentmaxbloomfilterbitlen - i - 1));
+				for (int i = 0; i < this.currentMaxBFVectorBitLength; i++) {
+					temp = 0;
+					int bit = a.inputData_INT & (hashRootMatrice[l].row[i].colbit_int);
+					temp = countOne(bit);
+					if (0 != (temp & 1))
+						valueloc = valueloc | (1 << (this.currentMaxBFVectorBitLength - i - 1));
 				}
-				midaddr[l] = valueloc;
+				hashvalue[l] = valueloc;
 			}
 		}
 
@@ -189,53 +186,53 @@ public class SFBF {
 			}
 		}
 		for (int i = 0; i <= this.ii; i++) {
-			int hashfun_i;
-			for (hashfun_i = 0; hashfun_i < this.k; hashfun_i++) {
+			int i_hashfunnum;
+			for (i_hashfunnum = 0; i_hashfunnum < this.k; i_hashfunnum++) {
 				if (this.QueryTimewithshifting) {
-					mid = midaddr[hashfun_i] >>> (this.currentmaxbloomfilterbitlen - this.ithbloomfilterbitlen[i]);
+					temp = hashvalue[i_hashfunnum] >>> (this.currentMaxBFVectorBitLength
+							- this.ithBFvectorBitLength[i]);
 
 				} else {
-					// System.out.println(hashfun_i);
-
+					//// ????? what meaning of if (this.id >= 3) {
 					if (this.id >= 3) {
-						if (flagsfbf[hashfun_i][this.ithbloomfilterbitlen[i] - 10] == false) {
+						if (flagsfbf[i_hashfunnum][this.ithBFvectorBitLength[i] - 10] == false) {
 							valueloc = 0;
-							for (int ij = 0; ij < this.ithbloomfilterbitlen[i]; ij++) {
-								mid = 0;
-								int bit = a.inputdata_int & (hashgenmatrice[hashfun_i].row[ij].colbit_int);
-								mid = countOne(bit);
-								if ((mid & 1) != 0)
-									valueloc = valueloc | (1 << (this.ithbloomfilterbitlen[i] - ij - 1));
+							for (int ij = 0; ij < this.ithBFvectorBitLength[i]; ij++) {
+								temp = 0;
+								int bit = a.inputData_INT & (hashRootMatrice[i_hashfunnum].row[ij].colbit_int);
+								temp = countOne(bit);
+								if ((temp & 1) != 0)
+									valueloc = valueloc | (1 << (this.ithBFvectorBitLength[i] - ij - 1));
 							}
-							mid = valueloc;
-							vectorsfbf[hashfun_i][this.ithbloomfilterbitlen[i] - 10] = valueloc;
-							flagsfbf[hashfun_i][this.ithbloomfilterbitlen[i] - 10] = true;
+							temp = valueloc;
+							vectorsfbf[i_hashfunnum][this.ithBFvectorBitLength[i] - 10] = valueloc;
+							flagsfbf[i_hashfunnum][this.ithBFvectorBitLength[i] - 10] = true;
 						} else {
-							mid = vectorsfbf[hashfun_i][this.ithbloomfilterbitlen[i] - 10];
+							temp = vectorsfbf[i_hashfunnum][this.ithBFvectorBitLength[i] - 10];
 						}
 					} else {
 						valueloc = 0;
-						for (int ij = 0; ij < this.ithbloomfilterbitlen[i]; ij++) {
-							mid = 0;
-							int bit = a.inputdata_int & (hashgenmatrice[hashfun_i].row[ij].colbit_int);
-							mid = countOne(bit);
-							if ((mid & 1) != 0)
-								valueloc = valueloc | (1 << (this.ithbloomfilterbitlen[i] - ij - 1));
+						for (int ij = 0; ij < this.ithBFvectorBitLength[i]; ij++) {
+							temp = 0;
+							int bit = a.inputData_INT & (hashRootMatrice[i_hashfunnum].row[ij].colbit_int);
+							temp = countOne(bit);
+							if ((temp & 1) != 0)
+								valueloc = valueloc | (1 << (this.ithBFvectorBitLength[i] - ij - 1));
 						}
-						mid = valueloc;
+						temp = valueloc;
 					}
 				}
-				bytenum = mid >>> 3;
-				bitnum = mid % 8;
-				if ((SFbloomfilterGroup.get(i).bloomfiltervalue[bytenum] & (1 << bitnum)) == 0) {
+				bytenum = temp >>> 3;
+				bitnum = temp % 8;
+				if (0 == (SFBFVectorGroup.get(i).bitVectorBYTEs[bytenum] & (1 << bitnum))) {
 					break;
 				}
 			}
-			if (hashfun_i == this.k) {
+			if (i_hashfunnum == this.k) {
 				this.eachaccessbloom += (this.ii - i + 1);
 				// timestamp.set(i, System.currentTimeMillis());/////////
-				timestamp.set(i, this.timerecord);
-				this.timerecord++;
+				SFBFVectorTimeStamp.set(i, this.timeSum);
+				this.timeSum++;
 				return true;
 			}
 		}
@@ -245,116 +242,104 @@ public class SFBF {
 
 	public void InsertionandExtensionOperation(InputData a) {
 		// System.out.println(this.nl+"aa"+this.n[this.insert_ii]+"aa"+a.seq+"aa"+this.cachesize+"aa"+this.curent_cachesize);
-		if (this.nl == this.n[this.currentinsertingbloomfiter_i]) {
+		if (this.nl == this.n[this.currentInsertingBF_ii]) {
 			// System.out.println(this.curent_cachesize+" -
 
-			if (this.curent_cachesize < this.cachesize) {
+			if (this.curentCacheSize < this.cacheSize) {
 				this.m[ii + 1] = (int) (Math.pow(2, this.lamda[ii + 1] - 1) * this.m[0]);
-				if ((this.m[ii + 1] + this.curent_cachesize) <= this.cachesize) {
-					// System.out.println(" this.lamda[ii + 1] "+ this.lamda[ii
-					// + 1] +"\n");
-					// System.out.println("this.m[ii + 1]"+this.m[ii +
-					// 1]+"this.curent_cachesize"+this.curent_cachesize+"\n");
-					this.curent_cachesize = this.m[ii + 1] + this.curent_cachesize;
+				if ((this.m[ii + 1] + this.curentCacheSize) <= this.cacheSize) {
+					this.curentCacheSize = this.m[ii + 1] + this.curentCacheSize;
 					this.n[ii + 1] = (int) (Math.pow(2, this.lamda[ii + 1] - 1) * this.n[0]);
 					this.nl = 0;
-					if (this.m[ii + 1] > this.maxm) {
-						this.maxm = this.m[ii + 1];
-						this.maxmloc = ii + 1;
-						this.currentmaxbloomfilterbitlen = (int) (Math.log(this.m[this.maxmloc]) / Math.log(2.0));
+					if (this.m[ii + 1] > this.max_m) {
+						this.max_m = this.m[ii + 1];
+						this.ii4max_m = ii + 1;
+						this.currentMaxBFVectorBitLength = (int) (Math.log(this.m[this.ii4max_m]) / Math.log(2.0));
 					}
 					ii++;
-					this.currentinsertingbloomfiter_i = ii;
-					this.currentinsertingbloomfiterlen = (int) (Math.log(this.m[this.currentinsertingbloomfiter_i])
-							/ Math.log(2.0));
-					this.ithbloomfilterbitlen[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
+					this.currentInsertingBF_ii = ii;
+					this.currentInsertingBFSize = (int) (Math.log(this.m[this.currentInsertingBF_ii]) / Math.log(2.0));
+					this.ithBFvectorBitLength[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
 
-					SFBloomFilter bf = new SFBloomFilter(this.m[ii]);
-					SFbloomfilterGroup.add(bf);
+					SFBFVector bf = new SFBFVector(this.m[ii]);
+					SFBFVectorGroup.add(bf);
 					// timestamp.add(System.currentTimeMillis());
-					timestamp.add(this.timerecord);
-					this.timerecord++;
-					this.bloomfiltersumsize = this.curent_cachesize;
+					SFBFVectorTimeStamp.add(this.timeSum);
+					this.timeSum++;
+					this.BFCacheSumSize = this.curentCacheSize;
 
 					ExtensionRound = ExtensionRound + 1;
 					SpaceSizeOfFilter = SpaceSizeOfFilter + this.m[ii];
 
 				} else {
-					int remain = (this.cachesize - this.curent_cachesize) / this.m[0];
-					// System.out.println("aaaaaaaaaaa:" + remain);
-					if (remain >= 1) {
-						int increment = (int) (Math.ceil(Math.log(remain * 1.0) / Math.log(2.0)));
-						this.m[ii + 1] = (int) (Math.pow(2, increment) * this.m[0]);
-						if (this.m[ii + 1] > this.maxm) {
-							this.maxm = this.m[ii + 1];
-							this.maxmloc = ii + 1;
-							this.currentmaxbloomfilterbitlen = (int) (Math.log(this.m[this.maxmloc]) / Math.log(2.0));
+					int remainCacheSize = (this.cacheSize - this.curentCacheSize) / this.m[0];
+					if (remainCacheSize >= 1) {
+						int increment_m = (int) (Math.ceil(Math.log(remainCacheSize * 1.0) / Math.log(2.0)));
+						this.m[ii + 1] = (int) (Math.pow(2, increment_m) * this.m[0]);
+						if (this.m[ii + 1] > this.max_m) {
+							this.max_m = this.m[ii + 1];
+							this.ii4max_m = ii + 1;
+							this.currentMaxBFVectorBitLength = (int) (Math.log(this.m[this.ii4max_m]) / Math.log(2.0));
 						}
 
-						this.n[ii + 1] = (int) (Math.pow(2, increment) * this.n[0]);
+						this.n[ii + 1] = (int) (Math.pow(2, increment_m) * this.n[0]);
 						this.nl = 0;
 						ii++;
 
-						this.ithbloomfilterbitlen[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
-						this.currentinsertingbloomfiter_i = ii;
-						this.currentinsertingbloomfiterlen = (int) (Math.log(this.m[this.currentinsertingbloomfiter_i])
+						this.ithBFvectorBitLength[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
+						this.currentInsertingBF_ii = ii;
+						this.currentInsertingBFSize = (int) (Math.log(this.m[this.currentInsertingBF_ii])
 								/ Math.log(2.0));
-						SFBloomFilter bf = new SFBloomFilter(this.m[ii]);
-						SFbloomfilterGroup.add(bf);
+						SFBFVector bf = new SFBFVector(this.m[ii]);
+						SFBFVectorGroup.add(bf);
 						// timestamp.add(System.currentTimeMillis());
-						timestamp.add(this.timerecord);
-						this.timerecord++;
-						this.curent_cachesize += this.m[ii];
+						SFBFVectorTimeStamp.add(this.timeSum);
+						this.timeSum++;
+						this.curentCacheSize += this.m[ii];
 
 					}
-					this.bloomfiltersumsize = this.curent_cachesize;
-					this.curent_cachesize = this.cachesize;
+					this.BFCacheSumSize = this.curentCacheSize;
+					this.curentCacheSize = this.cacheSize;
 
 				}
 
 			} else {
-
-				sfbf_replacestrategy();
-
+				SFBFReplaceOpearation();
 			}
 
 		}
-		hashkey(a, SFbloomfilterGroup.get(this.currentinsertingbloomfiter_i).bloomfiltervalue);
+		mapKeytoValue(a, SFBFVectorGroup.get(this.currentInsertingBF_ii).bitVectorBYTEs);
 		this.nl++;
 	}
 
-	private void sfbf_replacestrategy() {
+	private void SFBFReplaceOpearation() {
 		// TODO Auto-generated method stub
-		int loc = 0;
-		if (this.replacestrategy == 0) {
-			long mintimestamp = timestamp.get(0);
-
+		int replaceithVector = 0;
+		if (this.replacestrategy == this.Time4Replace) {
+			long mintimestamp = SFBFVectorTimeStamp.get(0);
 			for (int i = 1; i <= this.ii; i++) {
-				if (this.timestamp.get(i) <= mintimestamp) {
-					mintimestamp = this.timestamp.get(i);
-					loc = i;
+				if (this.SFBFVectorTimeStamp.get(i) < mintimestamp) {
+					mintimestamp = this.SFBFVectorTimeStamp.get(i);
+					replaceithVector = i;
 				}
 			}
 		}
-		if (this.replacestrategy == 1) {
+		if (this.replacestrategy == this.Random4Replace) {
 			Random r = new Random();
 			int data = r.nextInt();
 			data = data > 0 ? data : -data;
 			data = data % (this.ii + 1);
-			loc = data;
+			replaceithVector = data;
 		}
-		if (this.replacestrategy == 2) {
-			loc = this.maxmloc;
+		if (this.replacestrategy == this.Max4Replace) {
+			replaceithVector = this.ii4max_m;
 		}
-		this.currentinsertingbloomfiter_i = loc;
-		this.currentinsertingbloomfiterlen = (int) (Math.log(this.m[this.currentinsertingbloomfiter_i])
-				/ Math.log(2.0));
+		this.currentInsertingBF_ii = replaceithVector;
+		this.currentInsertingBFSize = (int) (Math.log(this.m[this.currentInsertingBF_ii]) / Math.log(2.0));
 		this.nl = 0;
-		SFbloomfilterGroup.get(this.currentinsertingbloomfiter_i).flush();
-		// timestamp.set(this.currentinsertingbloomfiter_i,
-		// System.currentTimeMillis());
-		timestamp.set(this.currentinsertingbloomfiter_i, this.timerecord);
-		this.timerecord++;
+		SFBFVectorGroup.get(this.currentInsertingBF_ii).flush();
+		SFBFVectorTimeStamp.set(this.currentInsertingBF_ii, this.timeSum);
+		this.timeSum++;
 		if (this.boolean4test3 == true) {
 			this.reset_num++;
 		}
@@ -379,30 +364,30 @@ public class SFBF {
 		int mid = 0;
 		for (int hashfun_i = 0; hashfun_i < this.k; hashfun_i++) {
 			valueloc = 0;
-			for (int i = 0; i < this.currentmaxbloomfilterbitlen; i++) {
+			for (int i = 0; i < this.currentMaxBFVectorBitLength; i++) {
 				mid = 0;
-				int bit = a.inputdata_int & (hashgenmatrice[hashfun_i].row[i].colbit_int);
+				int bit = a.inputData_INT & (hashRootMatrice[hashfun_i].row[i].colbit_int);
 				mid = countOne(bit);
 				if ((mid & 1) != 0)
-					valueloc = valueloc | (1 << (this.currentmaxbloomfilterbitlen - i - 1));
+					valueloc = valueloc | (1 << (this.currentMaxBFVectorBitLength - i - 1));
 			}
 			currentdatahashvalue[hashfun_i] = valueloc;
 		}
 		for (int i = 0; i <= this.ii; i++) {
 			int l;
 			for (l = 0; l < this.k; l++) {
-				mid = currentdatahashvalue[l] >>> (this.currentmaxbloomfilterbitlen - this.ithbloomfilterbitlen[i]);
+				mid = currentdatahashvalue[l] >>> (this.currentMaxBFVectorBitLength - this.ithBFvectorBitLength[i]);
 				bytenum = mid >>> 3;
 				bitnum = mid % 8;
-				if ((SFbloomfilterGroup.get(i).bloomfiltervalue[bytenum] & (1 << bitnum)) == 0) {
+				if ((SFBFVectorGroup.get(i).bitVectorBYTEs[bytenum] & (1 << bitnum)) == 0) {
 					break;
 				}
 			}
 			if (l == this.k) {
 				this.eachaccessbloom += (this.ii - i + 1);
 				// timestamp.set(i, System.currentTimeMillis());
-				timestamp.set(i, this.timerecord);
-				this.timerecord++;
+				SFBFVectorTimeStamp.set(i, this.timeSum);
+				this.timeSum++;
 				return true;
 			}
 		}
@@ -410,83 +395,81 @@ public class SFBF {
 
 		for (int hashfun_i = 0; hashfun_i < this.k; hashfun_i++) {
 			inserthashintvalue2bloomfilter(currentdatahashvalue[hashfun_i],
-					SFbloomfilterGroup.get(this.currentinsertingbloomfiter_i).bloomfiltervalue);
+					SFBFVectorGroup.get(this.currentInsertingBF_ii).bitVectorBYTEs);
 		}
 		// timestamp.set(this.currentinsertingbloomfiter_i,
 		// System.currentTimeMillis());
-		timestamp.set(this.currentinsertingbloomfiter_i, this.timerecord);
-		this.timerecord++;
+		SFBFVectorTimeStamp.set(this.currentInsertingBF_ii, this.timeSum);
+		this.timeSum++;
 		this.nl++;
 
-		if (this.nl == this.n[this.currentinsertingbloomfiter_i]) {
-			if (this.curent_cachesize < this.cachesize) {
+		if (this.nl == this.n[this.currentInsertingBF_ii]) {
+			if (this.curentCacheSize < this.cacheSize) {
 				this.m[ii + 1] = (int) (Math.pow(2, this.lamda[ii + 1] - 1) * this.m[0]);
-				if ((this.m[ii + 1] + this.curent_cachesize) <= this.cachesize) {
-					this.curent_cachesize = this.m[ii + 1] + this.curent_cachesize;
+				if ((this.m[ii + 1] + this.curentCacheSize) <= this.cacheSize) {
+					this.curentCacheSize = this.m[ii + 1] + this.curentCacheSize;
 					this.n[ii + 1] = (int) (Math.pow(2, this.lamda[ii + 1] - 1) * this.n[0]);
 					this.nl = 0;
-					this.maxm = this.m[ii + 1];
-					this.maxmloc = ii + 1;
-					this.currentmaxbloomfilterbitlen = (int) (Math.log(this.m[this.maxmloc]) / Math.log(2.0));
+					this.max_m = this.m[ii + 1];
+					this.ii4max_m = ii + 1;
+					this.currentMaxBFVectorBitLength = (int) (Math.log(this.m[this.ii4max_m]) / Math.log(2.0));
 					ii++;
-					this.currentinsertingbloomfiter_i = ii;
-					this.currentinsertingbloomfiterlen = (int) (Math.log(this.m[this.currentinsertingbloomfiter_i])
-							/ Math.log(2.0));
-					this.ithbloomfilterbitlen[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
+					this.currentInsertingBF_ii = ii;
+					this.currentInsertingBFSize = (int) (Math.log(this.m[this.currentInsertingBF_ii]) / Math.log(2.0));
+					this.ithBFvectorBitLength[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
 
-					SFBloomFilter bf = new SFBloomFilter(this.m[ii]);
-					SFbloomfilterGroup.add(bf);
+					SFBFVector bf = new SFBFVector(this.m[ii]);
+					SFBFVectorGroup.add(bf);
 					// timestamp.add(System.currentTimeMillis());
-					timestamp.add(this.timerecord);
-					this.timerecord++;
-					this.bloomfiltersumsize = this.curent_cachesize;
+					SFBFVectorTimeStamp.add(this.timeSum);
+					this.timeSum++;
+					this.BFCacheSumSize = this.curentCacheSize;
 				} else {
-					int remain = (this.cachesize - this.curent_cachesize) / this.m[0];
+					int remain = (this.cacheSize - this.curentCacheSize) / this.m[0];
 					if (remain >= 1) {
 						int increment = (int) (Math.ceil(Math.log(remain * 1.0) / Math.log(2.0)));
 						this.m[ii + 1] = (int) (Math.pow(2, increment) * this.m[0]);
-						if (this.m[ii + 1] > this.maxm) {
-							this.maxm = this.m[ii + 1];
-							this.maxmloc = ii + 1;
-							this.currentmaxbloomfilterbitlen = (int) (Math.log(this.m[this.maxmloc]) / Math.log(2.0));
+						if (this.m[ii + 1] > this.max_m) {
+							this.max_m = this.m[ii + 1];
+							this.ii4max_m = ii + 1;
+							this.currentMaxBFVectorBitLength = (int) (Math.log(this.m[this.ii4max_m]) / Math.log(2.0));
 						}
 
 						this.n[ii + 1] = (int) (Math.pow(2, increment) * this.n[0]);
 						this.nl = 0;
 						ii++;
 
-						this.ithbloomfilterbitlen[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
-						this.currentinsertingbloomfiter_i = ii;
-						this.currentinsertingbloomfiterlen = (int) (Math.log(this.m[this.currentinsertingbloomfiter_i])
+						this.ithBFvectorBitLength[ii] = (int) (Math.log(this.m[ii]) / Math.log(2.0));
+						this.currentInsertingBF_ii = ii;
+						this.currentInsertingBFSize = (int) (Math.log(this.m[this.currentInsertingBF_ii])
 								/ Math.log(2.0));
-						SFBloomFilter bf = new SFBloomFilter(this.m[ii]);
-						SFbloomfilterGroup.add(bf);
+						SFBFVector bf = new SFBFVector(this.m[ii]);
+						SFBFVectorGroup.add(bf);
 						// timestamp.add(System.currentTimeMillis());
-						timestamp.add(this.timerecord);
-						this.timerecord++;
-						this.curent_cachesize += this.m[ii];
+						SFBFVectorTimeStamp.add(this.timeSum);
+						this.timeSum++;
+						this.curentCacheSize += this.m[ii];
 					}
-					this.bloomfiltersumsize = this.curent_cachesize;
-					this.curent_cachesize = this.cachesize;
+					this.BFCacheSumSize = this.curentCacheSize;
+					this.curentCacheSize = this.cacheSize;
 
 				}
 			} else {
-				long mintimestamp = timestamp.get(0);
+				long mintimestamp = SFBFVectorTimeStamp.get(0);
 				int loc = 0;
 				for (int i = 1; i <= this.ii; i++) {
-					if (this.timestamp.get(i) <= mintimestamp) {
-						mintimestamp = this.timestamp.get(i);
+					if (this.SFBFVectorTimeStamp.get(i) <= mintimestamp) {
+						mintimestamp = this.SFBFVectorTimeStamp.get(i);
 						loc = i;
 					}
 				}
-				this.currentinsertingbloomfiter_i = loc;
-				this.currentinsertingbloomfiterlen = (int) (Math.log(this.m[this.currentinsertingbloomfiter_i])
-						/ Math.log(2.0));
+				this.currentInsertingBF_ii = loc;
+				this.currentInsertingBFSize = (int) (Math.log(this.m[this.currentInsertingBF_ii]) / Math.log(2.0));
 				this.nl = 0;
-				SFbloomfilterGroup.get(this.currentinsertingbloomfiter_i).flush();
+				SFBFVectorGroup.get(this.currentInsertingBF_ii).flush();
 				// timestamp.set(loc, System.currentTimeMillis());
-				timestamp.set(loc, this.timerecord);
-				this.timerecord++;
+				SFBFVectorTimeStamp.set(loc, this.timeSum);
+				this.timeSum++;
 
 				if (this.boolean4test3 == true) {
 					this.reset_num++;
@@ -514,8 +497,8 @@ public class SFBF {
 
 	private void inserthashintvalue2bloomfilter(int hashintvalue, byte[] bloomfiltervalue) {
 		// TODO Auto-generated method stub
-		hashintvalue = hashintvalue >>> (this.currentmaxbloomfilterbitlen
-				- this.ithbloomfilterbitlen[currentinsertingbloomfiter_i]);
+		hashintvalue = hashintvalue >>> (this.currentMaxBFVectorBitLength
+				- this.ithBFvectorBitLength[currentInsertingBF_ii]);
 		int bytenum = hashintvalue >>> 3;
 		int bitnum = hashintvalue % 8;
 		byte midbyte = (byte) (1 << bitnum);
