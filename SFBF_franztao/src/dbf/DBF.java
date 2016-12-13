@@ -7,6 +7,9 @@ import data.HashGenerationMatrice;
 import data.InputData;
 
 public class DBF {
+	
+	public int len_bloomfiltervectorlength=1000000;
+	
 	public HashGenerationMatrice[] hashgenmatrice;
 	public int ii;
 	public int k;
@@ -75,7 +78,7 @@ public class DBF {
 		// timestamp.add(System.currentTimeMillis());
 		timestamp.add(this.timerecord);
 		this.timerecord++;
-		bloomfiltervectorlength =new int [1000];// new Vector<Integer>();
+		bloomfiltervectorlength =new int [len_bloomfiltervectorlength];// new Vector<Integer>();
 		bloomfiltervectorlength[0]=1;
 
 		this.replacestrategy = replacestrategy;

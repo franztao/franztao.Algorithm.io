@@ -8,6 +8,8 @@ import data.InputData;
 import data.TestResult;
 
 public class SFBF {
+	
+	public int lamdalenght = 100000;
 	// control query rightshift
 	public boolean QueryTimewithshifting;
 
@@ -28,7 +30,7 @@ public class SFBF {
 	public int[] n;
 	public int[] m;
 
-	public int lamdalenght = 1000;
+	
 	public int[] lamda = new int[lamdalenght];
 
 	public int ii;
@@ -64,8 +66,9 @@ public class SFBF {
 	public boolean boolean4test3;
 
 	public int replacestrategy;
-	public int[][] vectorsfbf = new int[this.k][6];
-	public boolean[][] flagsfbf = new boolean[this.k][6];
+	public int[][] vectorsfbf;// = new int[this.k][6];
+	public boolean[][] flagsfbf;// = new boolean[this.k][6];
+
 	public SFBF(int hashfunctionnum, int id, boolean querytimewithshifting, HashGenerationMatrice[] hashgenmatrice2,
 			int[] lamda, int cachesize, int replacestrategy) {
 		// this.lamda=lamda;
@@ -98,6 +101,8 @@ public class SFBF {
 		// TODO Auto-generated method stub
 		ii = 0;
 		this.k = hashfunctionnum;
+		this.vectorsfbf = new int[this.k][6];
+		this.flagsfbf = new boolean[this.k][6];
 		this.n = new int[lamdalenght];
 		this.m = new int[lamdalenght];
 		this.ithbloomfilterbitlen = new int[lamdalenght];
@@ -177,7 +182,7 @@ public class SFBF {
 				midaddr[l] = valueloc;
 			}
 		}
-		
+
 		for (int j = 0; j < this.k; j++) {
 			for (int i = 0; i < 6; i++) {
 				flagsfbf[j][i] = false;
