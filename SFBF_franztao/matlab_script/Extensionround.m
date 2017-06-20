@@ -1,0 +1,33 @@
+filemat=csvread('F:\\workspace\\SFBF_franztao\\src\\file\\Extension round.txt');
+sfbfmat1=filemat(1:301);
+sfbfmat2=filemat(302:602);
+sfbfmat3=filemat(603:903);
+sfbfmat4=filemat(904:1204);
+sfbfmat5=filemat(1205:1505);
+dmat=filemat(1506:1806);
+%bmat=filemat(1801:2100);
+sfbfmat1=(sfbfmat1');
+sfbfmat2=(sfbfmat2');
+sfbfmat3=(sfbfmat3');
+sfbfmat4=(sfbfmat4');
+sfbfmat5=(sfbfmat5');
+dmat=(dmat');
+%bmat=(bmat');
+linewidth=2;
+xlabel('Data Set Size');
+ylabel('Extension round');
+grid on;
+%axis([0,300,0,0.01]);
+%set(gca,'XDir','reverse','YDir','normal');
+hold on;
+plot(sfbfmat1,'r-','LineWidth',linewidth);
+plot(sfbfmat2,'g-','LineWidth',linewidth);
+plot(sfbfmat3,'c-','LineWidth',linewidth);
+plot(sfbfmat4,'m-','LineWidth',linewidth);
+plot(sfbfmat5,'b-','LineWidth',linewidth);
+plot(dmat,'k-','LineWidth',linewidth);
+legend('SFBF-1,2,3,4','SFBF-1,1,2,3','SFBF-1,1+[1,2]','SFBF-1,1+[1,2,3]','SFBF-1,1,2,2,3,3','DBF',2);
+%legend('SFBF-1,2,3,4','SFBF-1,1,2,3','SFBF-1,1+[1,2]','SFBF-1,1+[1,2,3]','SFBF-1,1,2,2,3,3',2);
+hold off;
+
+

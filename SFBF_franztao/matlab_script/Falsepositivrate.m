@@ -1,0 +1,35 @@
+filemat=csvread('F:\\workspace\\SFBF_franztao\\src\\file\\False positive rate.txt');
+sfbfmat1=filemat(1:301);
+sfbfmat2=filemat(302:602);
+sfbfmat3=filemat(603:903);
+sfbfmat4=filemat(904:1204);
+sfbfmat5=filemat(1205:1505);
+dmat=filemat(1506:1806);
+bmat=filemat(1807:2107);
+searchdatalength=10000;
+sfbfmat1=(sfbfmat1')./searchdatalength;
+sfbfmat2=(sfbfmat2')./searchdatalength;
+sfbfmat3=(sfbfmat3')./searchdatalength;
+sfbfmat4=(sfbfmat4')./searchdatalength;
+sfbfmat5=(sfbfmat5')./searchdatalength;
+dmat=(dmat')./searchdatalength;
+bmat=(bmat')./searchdatalength;
+linewidth=1;
+xlabel('Data Set Size');
+ylabel('False positive rate');
+grid on;
+%axis([0,300,0,0.01]);
+%set(gca,'XDir','reverse','YDir','normal');
+hold on;
+plot(sfbfmat1,'r-','LineWidth',linewidth);
+plot(sfbfmat2,'g-','LineWidth',linewidth);
+plot(sfbfmat3,'c-','LineWidth',linewidth);
+plot(sfbfmat4,'m-','LineWidth',linewidth);
+plot(sfbfmat5,'b-','LineWidth',linewidth); 
+plot(dmat,'k-','LineWidth',1);
+plot(bmat,'y-','LineWidth',1);
+%legend('SFBF-1,2,3,4','SFBF-1,1,2,3','SFBF-1,1+[1,2]','SFBF-1,1+[1,2,3]','SFBF-1,1,2,2,3,3',2);
+legend('SFBF-1,2,3,4','SFBF-1,1,2,3','SFBF-1,1+[1,2]','SFBF-1,1+[1,2,3]','SFBF-1,1,2,2,3,3','DBF','BBF',2);
+hold off;
+
+
