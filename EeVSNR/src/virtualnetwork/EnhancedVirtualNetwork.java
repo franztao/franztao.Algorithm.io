@@ -269,6 +269,7 @@ public class EnhancedVirtualNetwork {
 
 	}
 
+	int git;
 	boolean constructMultipleKnapsackProbem(MulitpleKnapsack mKP) {
 		for (int i = 0; i < this.VNR.nodeSize; i++) {
 			for (int j = 0; j < Knapsacks.size(); j++) {
