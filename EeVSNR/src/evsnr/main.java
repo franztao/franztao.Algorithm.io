@@ -37,8 +37,12 @@ public class main {
 		EnhancedVirtualNetwork EVNR1=new EnhancedVirtualNetwork(8,4,4,VNR1);
 		EVNR1.faultInit();
 		EVNR1.computeItems();
-		
-		EVNR1.FailureDependentAugmentNodeEdge4Survivability(3);
+		EVNR1.AugmentNodeEdge4Survivability(4,EVNR1.FailureDependent);
+		System.out.println("------------------"+"----------------");
+		EnhancedVirtualNetwork EVNR2=new EnhancedVirtualNetwork(8,4,4,VNR1);
+		EVNR2.faultInit();
+		EVNR2.computeItems();
+		EVNR2.AugmentNodeEdge4Survivability(4,EVNR1.FailureIndependent);
 		
 		
 	}

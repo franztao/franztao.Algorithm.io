@@ -94,7 +94,7 @@ public class MulitpleKnapsack {
 			for (int j = 0; j < this.knapsackNumber; j++) {
 				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
 					solution[i] = j;
-					System.out.println(j);
+//					System.out.println(j);
 				}
 			}
 		}
