@@ -1,8 +1,8 @@
 #!/bin/bash
 #Program:
-#	 compare the performance of my #algprithm and ILP.
+#	
 #History:
-#2015/07/16	franz	first release
+#2016/07/16	franz	first release
 
 #PATH=/bin:/sbin:/usr/bin:/usr/sdbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LD_LIBRARY_PATH=/home/franz/Downloads/gurobi563/linux64/lib:$LD_LIBRARY_PATH

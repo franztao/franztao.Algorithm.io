@@ -9,7 +9,7 @@
 #include"../route.h"
 
 bool bool_IPgetAnswer;
-extern Graph *p_graph;
+extern GraphTopo *p_graph;
 
 pthread_cond_t ILP_cond;
 pthread_mutex_t ILP_mutex;
@@ -39,7 +39,7 @@ void *IPParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 	return NULL;
 }
 
-bool IPAlgorithmBasicFlows(Graph *p_graph, int type) {
+bool IPAlgorithmBasicFlows(GraphTopo *p_graph, int type) {
 	pthread_t tid;
 	int rc;
 	bool_IPgetAnswer = false;

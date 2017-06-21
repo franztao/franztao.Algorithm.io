@@ -1,7 +1,7 @@
 #include "../head.h"
 #include"../route.h"
 
-extern Graph *p_graph;
+extern GraphTopo *p_graph;
 extern DisjointPathPair *AlgorithmResult;
 
 //sem_t mutex_thread;
@@ -38,7 +38,7 @@ void CoSEDivideAndConquer(Request *p_request) {
 				p_set_ex->Inclusion.begin());
 		std::copy(raw_set->Exlusion.begin(), raw_set->Exlusion.end(),
 				p_set_ex->Exlusion.begin());
-		p_set_ex->Exlusion.at(p_request->APInclusionEdges[i]) = false;
+		p_set_ex->Exlusion.at(p_request->APInclusionEdges[i]) = false; //
 
 		rc = pthread_create(tid_ex, NULL, CoSEParallelThread, p_set_ex);
 		if (rc) {
@@ -47,7 +47,7 @@ void CoSEDivideAndConquer(Request *p_request) {
 		}
 		tidvec.push_back(*tid_ex);
 
-		raw_set->Inclusion.at(p_request->APInclusionEdges[i]) = false;
+		raw_set->Inclusion.at(p_request->APInclusionEdges[i]) = false; //
 
 	}
 
@@ -62,7 +62,7 @@ class PATHsrlg {
 public:
 	vector<int> srlg;
 };
-bool addnewPaths(Graph *p_graph, Request *p_request, PATHsrlg &psrlg) {
+bool addnewPaths(GraphTopo *p_graph, Request *p_request, PATHsrlg &psrlg) {
 	typedef pair<int, int> P;
 	vector<int> dist((*p_graph).nodeNum, (-1));
 	vector<int> hop((*p_graph).nodeNum, (-1));
@@ -81,7 +81,7 @@ bool addnewPaths(Graph *p_graph, Request *p_request, PATHsrlg &psrlg) {
 			continue;
 		len = (*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList.size();
 		for (unsigned int i = 0; i < len; i++) {
-			Edge &e = p_graph->getithEdge(
+			EdgeClass &e = p_graph->getithEdge(
 					(*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 			if (0 == (p_request->APMustNotPassEdges.size())) {
 				cout << "p_request->APedgestabu is " << "NULL" << endl;
@@ -138,7 +138,7 @@ bool addnewPaths(Graph *p_graph, Request *p_request, PATHsrlg &psrlg) {
 //	paths_L.push_back(psrlg);
 	return true;
 }
-void GetConflictingSRLGSet(Graph *p_graph, Request *p_request) {
+void GetConflictingSRLGSet(GraphTopo *p_graph, Request *p_request) {
 	vector<int> conflictingSRLGset_T;
 	//p_request->APInclusionEdges.size()
 //	vector<int>path;
@@ -294,7 +294,7 @@ void *CoSEParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 }
 
 //the main structure of our algorithm
-bool CoSEAlgorithmBasicFlows(Graph *p_graph) {
+bool CoSEAlgorithmBasicFlows(GraphTopo *p_graph) {
 	p_graph->DesignAllEdgtoHaveSRLG();
 //	finishparallel_getresult = false;
 	InclusionExclusionSet *innclusionexclusionset = new InclusionExclusionSet(

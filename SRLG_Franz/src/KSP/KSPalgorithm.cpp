@@ -7,9 +7,9 @@
 #include"../head.h"
 #include<bitset>
 extern DisjointPathPair *AlgorithmResult;
-extern Graph *p_graph;
+extern GraphTopo *p_graph;
 //reverse edge and get the shortest path's array from destination node to every other node
-void ReverseEdgeGetSSP(Graph *p_graph, vector<int> &dis) {
+void ReverseEdgeGetSSP(GraphTopo *p_graph, vector<int> &dis) {
 	typedef pair<int, int> P;
 	vector<int> hop((*p_graph).nodeNum, (-1));
 	priority_queue<P, vector<P>, greater<P> > que;
@@ -26,7 +26,7 @@ void ReverseEdgeGetSSP(Graph *p_graph, vector<int> &dis) {
 			continue;
 		len = (*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList.size();
 		for (unsigned int i = 0; i < len; i++) {
-			Edge e = p_graph->getithEdge(
+			EdgeClass e = p_graph->getithEdge(
 					(*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList[i]);
 			if (-1 == dis[e.from]) {
 				dis[e.from] = dis[v] + e.cost;
@@ -77,7 +77,7 @@ public:
 	}
 };
 //Compute the (i+1)th shortest path pi using dijstra and A* salgorithm.
-bool GetKthShotestPath(Graph &graph, Request &request, int iterative,
+bool GetKthShotestPath(GraphTopo &graph, Request &request, int iterative,
 		vector<int> &h) {
 
 	vector<int> path_node = vector<int>(graph.nodeNum, (-1));
@@ -121,7 +121,7 @@ bool GetKthShotestPath(Graph &graph, Request &request, int iterative,
 		}
 		for (unsigned int i = 0;
 				i < graph.ftopo_r_Node_c_EdgeList[v].edgeList.size(); i++) {
-			Edge e = graph.getithEdge(
+			EdgeClass e = graph.getithEdge(
 					graph.ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 			if (e.to == graph.source) {
 				continue;
@@ -209,7 +209,7 @@ bool nodeedgelistcomp(const int& pfirst, const int& psecond) {
 }
 
 //sort every node's neighbor edge
-void SortEdges(Graph *p_graph) {
+void SortEdges(GraphTopo *p_graph) {
 	int nodesize = p_graph->nodeNum;
 	//****there is a bug in the  sort function.
 	for (int i = 0; i < nodesize; i++) {
@@ -224,7 +224,7 @@ void SortEdges(Graph *p_graph) {
 					nodeedgelistcomp);
 	}
 }
-bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
+bool ITKSPAlgorithm(GraphTopo *p_graph, Request *p_request) {
 
 	typedef pair<int, int> P;
 	vector<int> dist((*p_graph).nodeNum, (-1));
@@ -245,7 +245,7 @@ bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 		for (unsigned int i = 0;
 				i < (*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList.size();
 				i++) {
-			Edge e = p_graph->getithEdge(
+			EdgeClass e = p_graph->getithEdge(
 					(*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 			if (!p_request->BPMustNotPassEdges4AP[e.id]
 					|| !p_request->BPMustNotPassEdgesRLAP[e.id])
@@ -326,7 +326,7 @@ bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 	}
 	return false;
 }
-bool IHKSPAlgorithm(Graph *p_graph) {
+bool IHKSPAlgorithm(GraphTopo *p_graph) {
 	int ite = 0;
 
 	vector<int> dest_dis = vector<int>(p_graph->nodeNum, -1); //-1 represent inf

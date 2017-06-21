@@ -35,7 +35,7 @@ public:
 
 	vector<int> level;
 
-	NetworkFlow(Graph &graph, Request&request) {
+	NetworkFlow(GraphTopo &graph, Request&request) {
 		int from, to, cap, id;
 		G = vector<newtworkEdgelist>(graph.nodeNum);
 		nodeSize = graph.nodeNum;
@@ -65,6 +65,6 @@ public:
 
 };
 
-extern void MaxFlowAlgorithm_fordfulkerson(Graph &graph, Request & request);
+extern void MaxFlowAlgorithm_fordfulkerson(GraphTopo &graph, Request & request);
 
 #endif /* NETWORKFLOW_H_ */

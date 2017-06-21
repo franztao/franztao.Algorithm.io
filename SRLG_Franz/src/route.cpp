@@ -4,13 +4,13 @@
 #include "lib/lib_time.h"
 #include "head.h"
 
-Graph *p_graph;
+GraphTopo *p_graph;
 DisjointPathPair *AlgorithmResult;
 //mutex lock for saving reslut
 pthread_mutex_t mutex_result;
 //pthread_mutex_t mutex_thread;
 int Algorithm;
-bool reverseDFS_mustedgeoutnode(Graph *p_graph, Request *p_request,
+bool reverseDFS_mustedgeoutnode(GraphTopo *p_graph, Request *p_request,
 		vector<int> &permute) {
 
 	typedef pair<int, int> P;
@@ -32,7 +32,7 @@ bool reverseDFS_mustedgeoutnode(Graph *p_graph, Request *p_request,
 		len = (*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList.size();
 		for (unsigned int i = 0; i < len; i++) {
 
-			Edge &e = p_graph->getithEdge(
+			EdgeClass &e = p_graph->getithEdge(
 					(*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList[i]);
 
 			if ((!p_request->APMustNotPassEdges[e.id])) //|| (!p_request->APMustPassEdges[e.id]))
@@ -164,7 +164,7 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 	Algorithm = algorithm;
 	//init result's class .
 	AlgorithmResult = new DisjointPathPair();
-	p_graph = new Graph(edge_num);
+	p_graph = new GraphTopo(edge_num);
 	//load the graph's topological detailed information
 	if (!LoadGraphData(p_graph, topo, edge_num, demand, demand_num, srlg,
 			srlg_num)) {
@@ -173,28 +173,39 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 	}
 	DebugPrint(p_graph);
 
+//	p_graph->getithEdge(0).from
+
+
+
+
+
 	//franz
-	if ((algorithm_franz == algorithm) || (algorithm_all == algorithm)) {
-		AlgorithmResult->clearResult();
-		cout << endl << "--------------------------------------------" << endl;
-		print_time("");
-		if (FranzAlgorithmBasicFlows(p_graph)) {
-			printAnswer(AlgorithmResult, true);
-		} else {
-			printAnswer(AlgorithmResult, false);
-		}
-		if (AlgorithmResult->Isornot_Paralle)
-			cout << "isornot_parallar:" << 1 << endl;
-		else
-			cout << "isornot_parallar:" << 0 << endl;
-		print_time("FranzAlgorithmEnd");
-		cout << "--------------------------------------------" << endl << endl;
-	}
+	if ((algorithm_franz == algorithm) || (Algorithm_All == algorithm)) {
+
+				AlgorithmResult->clearResult();
+				cout << endl << "--------------------------------------------" << endl;
+				cout << "SCLS"<<endl;
+				print_time("");
+				if (FranzAlgorithmBasicFlows(p_graph)) {
+					printAnswer(AlgorithmResult, true);
+				} else {
+					printAnswer(AlgorithmResult, false);
+				}
+				if (AlgorithmResult->Isornot_Paralle)
+					cout << "isornot_parallar:" << 1 << endl;
+				else
+					cout << "isornot_parallar:" << 0 << endl;
+				print_time("FranzAlgorithmEnd");
+				cout << "--------------------------------------------" << endl << endl;
+			}
+
 
 	//COSE
-	if ((algorithm_COSE == algorithm) || (algorithm_all == algorithm)) {
+	if ((algorithm_COSE == algorithm) || (Algorithm_All == algorithm)) {
+
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
+		cout << "COSE"<<endl;
 		print_time("");
 		if (CoSEAlgorithmBasicFlows(p_graph)) {
 			printAnswer(AlgorithmResult, true);
@@ -205,10 +216,28 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		cout << "--------------------------------------------" << endl << endl;
 	}
 
-	//KSP
-	if (((algorithm_IHKSP == algorithm) || (algorithm_all == algorithm))) {
+
+/*	//TA
+	if ((algorithm_TA == algorithm) || (algorithm_all == algorithm)) {
+		cout << "TA"<<endl;
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
+		print_time("");
+		if (TAAlgorithmBasicFlows(p_graph)) {
+			printAnswer(AlgorithmResult, true);
+		} else {
+			printAnswer(AlgorithmResult, false);
+		}
+		print_time("TAEnd");
+		cout << "--------------------------------------------" << endl << endl;
+	}
+*/
+	//KSP
+	if (((algorithm_IHKSP == algorithm) || (Algorithm_All == algorithm))) {
+
+		AlgorithmResult->clearResult();
+		cout << endl << "--------------------------------------------" << endl;
+		cout << "KSP"<<endl;
 		print_time("");
 		if (KSPAlgorithmBasicFlows(p_graph)) { //ILPAlgorithmBasicFlows ILPAlgorithm_glpk
 			printAnswer(AlgorithmResult, true);
@@ -220,9 +249,11 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 	}
 
 	//ILP
-	if ((algorithm_ILP == algorithm) || (algorithm_all == algorithm)) {
+	if ((algorithm_ILP == algorithm) || (Algorithm_All == algorithm)) {
+
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
+		cout << "ILP"<<endl;
 		print_time("");
 		if (IPAlgorithmBasicFlows(p_graph, algorithm_ILP)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
 			printAnswer(AlgorithmResult, true);
@@ -234,9 +265,11 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 	}
 
 	//IQP
-	if ((algorithm_IQP == algorithm) || (algorithm_all == algorithm)) {
+	if ((algorithm_IQP == algorithm) || (Algorithm_All == algorithm)) {
+
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
+		cout << "IQP"<<endl;
 		print_time("");
 		if (IPAlgorithmBasicFlows(p_graph, algorithm_IQP)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
 			printAnswer(AlgorithmResult, true);
@@ -247,7 +280,7 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		cout << "--------------------------------------------" << endl << endl;
 	}
 
-	//ILPsum
+	/*//ILPsum
 	if ((algorithm_ILP_sum == algorithm) || (algorithm_all == algorithm)) {
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
@@ -273,9 +306,10 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		print_time("IQPsumEnd");
 		cout << "--------------------------------------------" << endl << endl;
 	}
-
+*/
 	//get srlg.csv file of three types from topo.csv file
 	if (algorithm_getSRLGcsv == algorithm) {
+
 		char abusolutepath[100];
 		int i;
 		int len = strlen(str);

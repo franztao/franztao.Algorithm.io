@@ -3,7 +3,7 @@
 #include <algorithm>
 
 //srlg1:starsrlg srlg2:neistarsrlg srlg3: randomsrlg
-void getStarSRLG(Graph *p_graph, char *str) {
+void getStarSRLG(GraphTopo *p_graph, char *str) {
 	for (int i = 0; i <= 19; i++) {
 		int node = int(ceil(i * 0.05 * p_graph->nodeNum));
 		int n;
@@ -64,7 +64,7 @@ void getStarSRLG(Graph *p_graph, char *str) {
 	}
 }
 
-void getNeiStarSRLG(Graph *p_graph, char *str) {
+void getNeiStarSRLG(GraphTopo *p_graph, char *str) {
 	for (int i = 0; i <= 19; i++) {
 		int node = int(ceil(i * 0.05 * p_graph->nodeNum));
 		int n;
@@ -163,7 +163,7 @@ void getNeiStarSRLG(Graph *p_graph, char *str) {
 	}
 }
 
-void getRandomSRLG(Graph *p_graph, char *str) {
+void getRandomSRLG(GraphTopo *p_graph, char *str) {
 	for (int i = 0; i <= 19; i++) {
 		int node = int(ceil(i * 0.05 * p_graph->nodeNum));
 		int n1;
@@ -286,7 +286,7 @@ void getRandomSRLG(Graph *p_graph, char *str) {
 		out.close();
 	}
 }
-void getSRLGcsv(Graph *p_graph, char *str) {
+void getSRLGcsv(GraphTopo *p_graph, char *str) {
 	getStarSRLG(p_graph, str);
 	getNeiStarSRLG(p_graph, str);
 	getRandomSRLG(p_graph, str);

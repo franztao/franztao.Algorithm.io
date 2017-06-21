@@ -13,7 +13,7 @@ void eliminate_invalidnodeandedge() {
 }
 
 //load the demand,topo and srlg data.
-bool LoadGraphData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
+bool LoadGraphData(GraphTopo *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		char *demand[MAX_DEMAND_NUM], int demandnum, char *srlg[MAX_SRLG_NUM],
 		int srlgnum) {
 	edge_num = edgenum;
@@ -114,7 +114,6 @@ bool LoadGraphData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		if (1 == WeightSort) {
 			EdgeWeight = 1;
 		}
-
 		p_graph->AddEdges(EdgeFlag, inEdgeFlag, outEdgeflag, EdgeWeight);
 	}
 
@@ -159,9 +158,8 @@ bool LoadGraphData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		sprintf(temp, "%d", (*p_graph).source);
 		str = string(temp);
 
-
 		if (p_graph->nindex_nid.end() == p_graph->nindex_nid.find(str)) {
-			return false;//if source no exist in the edges.return false;
+			return false; //if source no exist in the edges.return false;
 		} else {
 			(*p_graph).source = (*p_graph).nindex_nid[str];
 		}
@@ -169,12 +167,23 @@ bool LoadGraphData(Graph *p_graph, char *topo[MAX_EDGE_NUM], int edgenum,
 		str = string(temp);
 
 		if (p_graph->nindex_nid.end() == p_graph->nindex_nid.find(str)) {
-			return false;//if destination no exist in the edges.return false;
+			return false; //if destination no exist in the edges.return false;
 		} else {
 			(*p_graph).destination = (*p_graph).nindex_nid[str];
 		}
 	}
 
+	if (isUndirectedGraph) {
+		unsigned int edge = p_graph->edgeNum;
+		for (unsigned i = 0; i < edge; i++) {
+			EdgeClass fe = p_graph->getithEdge(i);
+			p_graph->getithEdge(i).revedgeid = p_graph->edgeNum;
+			EdgeClass re(fe.to, fe.from, fe.cost, fe.id, p_graph->edgeNum, 1, -1, i);
+			p_graph->AddEdges(re);
+			p_graph->edgeNum++;
+		}
+
+	}
 	//load the srlg structure from srlg.csv
 	for (int i = 0; i < srlg_num; i++) {
 		//int group;

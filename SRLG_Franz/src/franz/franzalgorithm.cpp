@@ -12,7 +12,7 @@
 //#include "lib/lib_io.h"
 //#include <glpk.h>
 
-extern Graph *p_graph;
+extern GraphTopo *p_graph;
 extern pthread_mutex_t mutex_result;
 extern DisjointPathPair *AlgorithmResult;
 extern pthread_mutex_t mutex_thread;
@@ -125,7 +125,7 @@ void DivideAndConquer(Request *p_request) {
 }
 
 //construct G* graph.set the capacity of every edges.
-void BuildNetworkFlowGraph(Graph *p_graph, Request *p_request) {
+void BuildNetworkFlowGraph(GraphTopo *p_graph, Request *p_request) {
 	int AP = p_request->AP_PathEdge.size();
 	int RLAP = p_request->RLAP_PathEdge.size();
 	for (unsigned int i = 0; i < p_graph->getEdgeSize(); i++) {
@@ -141,12 +141,11 @@ void BuildNetworkFlowGraph(Graph *p_graph, Request *p_request) {
 }
 
 //get the cut set.
-void GetCutEdge(Graph& graph, Request &request) {
+void GetCutEdge(GraphTopo& graph, Request &request) {
 	for (unsigned int i = 0; i < graph.edgeNum; i++) {
-		Edge &e = graph.getithEdge(i);
+		EdgeClass &e = graph.getithEdge(i);
 		if ((1 == request.edgeCapacity[e.id])
-				&& (false == request.STNodeCut[e.from])
-				&& (true == request.STNodeCut[e.to])) {
+				&&(false == request.STNodeCut[e.from])&& (true == request.STNodeCut[e.to])) {//
 			if ((true == request.APMustPassEdges[e.id])
 					&& (true == request.APMustNotPassEdges[e.id])) {
 				request.APInclusionEdges.push_back(e.id);
@@ -174,6 +173,8 @@ void GetCutEdge(Graph& graph, Request &request) {
 
 				}
 			}
+			//positive cut.
+//			request.APExlusionEdges.clear();
 
 			sort(request.APInclusionEdges.begin(),
 					request.APInclusionEdges.end());
@@ -200,7 +201,7 @@ void GetCutEdge(Graph& graph, Request &request) {
 }
 
 //get confiliting srlg link edge set.
-void GetConflictingSRLGLinkSet(Graph *p_graph, Request *p_request) {
+void GetConflictingSRLGLinkSet(GraphTopo *p_graph, Request *p_request) {
 
 	BuildNetworkFlowGraph(p_graph, p_request);
 	MaxFlowAlgorithm_fordfulkerson((*p_graph), (*p_request));
@@ -298,7 +299,7 @@ void *franzParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 }
 
 //the main structure of our algorithm
-bool FranzAlgorithmBasicFlows(Graph *p_graph) {
+bool FranzAlgorithmBasicFlows(GraphTopo *p_graph) {
 
 //	sem_init(&mutex_result, 0, 1);
 	pthread_mutex_init(&mutex_result, NULL);

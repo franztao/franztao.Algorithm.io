@@ -1,7 +1,7 @@
 #include "../head.h"
 #include"gurobi_c++.h"
 //COSE algorithm,find a mustnode path ,using ILP.
-bool CoSE_findAP_ILP_gurobi(Graph *p_graph, Request *p_request) {
+bool CoSE_findAP_ILP_gurobi(GraphTopo *p_graph, Request *p_request) {
 	try {
 		GRBEnv env = GRBEnv();
 		unsigned edge_num = p_graph->edgeNum;
@@ -21,7 +21,7 @@ bool CoSE_findAP_ILP_gurobi(Graph *p_graph, Request *p_request) {
 			sprintf(s, "%d", i);
 //			if (!p_request->APMustPassEdges.at(i))
 //				e.at(i) = model.addVar(1.0, 1.0, 0.0, GRB_BINARY, (str + s));
-			if (!p_request->APMustNotPassEdges.at(i))
+			if (!p_request->APMustNotPassEdges.at(i))//
 				e.at(i) = model.addVar(0.0, 0.0, 0.0, GRB_BINARY, (str + s));
 			if ((p_request->APMustNotPassEdges.at(i))) {
 				e.at(i) = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, (str + s));
@@ -171,7 +171,7 @@ bool CoSE_findAP_ILP_gurobi(Graph *p_graph, Request *p_request) {
 	}
 	return false;
 }
-bool CoSE_findAP_dijastra(Graph *p_graph, Request *p_request) {
+bool CoSE_findAP_dijastra(GraphTopo *p_graph, Request *p_request) {
 	typedef pair<int, int> P;
 	vector<int> dist((*p_graph).nodeNum, (-1));
 	vector<int> hop((*p_graph).nodeNum, (-1));
@@ -194,7 +194,7 @@ bool CoSE_findAP_dijastra(Graph *p_graph, Request *p_request) {
 
 		for (unsigned int i = 0; i < len; i++) {
 
-			Edge &e = p_graph->getithEdge(
+			EdgeClass &e = p_graph->getithEdge(
 					(*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 
 			if (0 == (p_request->APMustNotPassEdges.size())) {

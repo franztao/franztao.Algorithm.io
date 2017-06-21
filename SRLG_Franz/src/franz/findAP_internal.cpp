@@ -1,8 +1,8 @@
 #include "../head.h"
 
 pthread_mutex_t findAP_permute_mutex;
-Graph *findAP_interval_p_graph;
-bool findAP_orderedegde_dijastra(Graph *p_graph, Request *p_request, int source,
+GraphTopo *findAP_interval_p_graph;
+bool findAP_orderedegde_dijastra(GraphTopo *p_graph, Request *p_request, int source,
 		int destination, vector<int>& node_vis, vector<int>& edge_vis) {
 	typedef pair<int, int> P;
 	vector<int> dist((*p_graph).nodeNum, (-1));
@@ -22,7 +22,7 @@ bool findAP_orderedegde_dijastra(Graph *p_graph, Request *p_request, int source,
 			continue;
 		len = (*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList.size();
 		for (unsigned int i = 0; i < len; i++) {
-			Edge &e = p_graph->getithEdge(
+			EdgeClass &e = p_graph->getithEdge(
 					(*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 			if (!p_request->APMustNotPassEdges[e.id])
 				continue;
@@ -69,7 +69,7 @@ bool findAP_orderedegde_dijastra(Graph *p_graph, Request *p_request, int source,
 	return true;
 }
 
-void record_APinfo(Graph *p_graph, Request *p_request, vector<int>& path_node,
+void record_APinfo(GraphTopo *p_graph, Request *p_request, vector<int>& path_node,
 		vector<int>& path_edge) {
 	int now;
 	int next;
@@ -190,7 +190,7 @@ void *findAP_permute_dijastraParallelThread(void *vargp) {
 	pthread_exit(NULL);
 	return NULL;
 }
-bool findAP_interval_dijastra(Graph *p_graph, Request *p_request,
+bool findAP_interval_dijastra(GraphTopo *p_graph, Request *p_request,
 		vector<int> &permute) {
 	pthread_mutex_init(&findAP_permute_mutex, NULL);
 	sort(permute.begin(), permute.end());
