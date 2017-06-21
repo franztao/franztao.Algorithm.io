@@ -4,6 +4,7 @@ import data.HashGenerationMatrice;
 import data.InputData;
 
 public class A2BF {
+	int haha;
 	private HashGenerationMatrice[] hashgenmatrice;
 	public int k;
 	// key's length
@@ -29,7 +30,7 @@ public class A2BF {
 		this.lmax = (int) (Math.ceil(Math.log(cachesize / 2.0) / Math.log(2.0)));
 		this.active = 0;
 		this.activesize[0] = this.activesize[1] = 0;
-		this.n = cachesize >> 5;// >>1 两个bloom过滤器 >>4 1024 : 64
+		this.n = cachesize >> 5;// >>1 涓や釜bloom杩囨护鍣� >>4 1024 : 64
 		this.A2BFBloomFilterGroup = new A2BFBloomFilter(this.m);
 		this.reset_num = 0;
 		this.hit_num = 0;
