@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import gurobi.GRBException;
+import gurobi.*;
 import multipleknapsack.MulitpleKnapsack;
 
 /**
@@ -68,18 +68,18 @@ public class EnhancedVirtualNetwork {
 		// Vector<Integer> neighborEdgeBandwith;
 	}
 
-	
-	class UsedResource{
+	class UsedResource {
 		int initNodeNumber;
 		int initNodeComputation;
 		int initEdgeBandwith;
-		
+
 		int usedNodeNumber;
 		int usedNodeComputation;
 		int usedEdgeBandwith;
 	}
+
 	UsedResource usedResource;
-	
+
 	starStructure Items[];
 	Vector<starStructure> Knapsacks;
 
@@ -103,8 +103,8 @@ public class EnhancedVirtualNetwork {
 		Items = new starStructure[this.VNR.nodeSize];
 
 		this.serviceNumber = serviceNumber;
-		
-		this.usedResource=new UsedResource();
+
+		this.usedResource = new UsedResource();
 
 	}
 
@@ -197,16 +197,15 @@ public class EnhancedVirtualNetwork {
 
 		backupNodeSize = 3;
 		enhacnedNodeSize = 4;
-		
-		usedResource.initEdgeBandwith=18;
-		usedResource.initNodeComputation=16;
-		usedResource.initNodeNumber=4;
-		
-		usedResource.usedEdgeBandwith=18;
-		usedResource.usedNodeComputation=16;
-		usedResource.usedNodeNumber=4;
-		
-		
+
+		usedResource.initEdgeBandwith = 18;
+		usedResource.initNodeComputation = 16;
+		usedResource.initNodeNumber = 4;
+
+		usedResource.usedEdgeBandwith = 18;
+		usedResource.usedNodeComputation = 16;
+		usedResource.usedNodeNumber = 4;
+
 	}
 
 	void constructKnapsacks(int failurenodeID) {
@@ -255,6 +254,9 @@ public class EnhancedVirtualNetwork {
 		constructKnapsacks(failurenodeID);
 		MulitpleKnapsack MKP = new MulitpleKnapsack(this.VNR.nodeSize, Knapsacks.size(), this.nodeSize);
 		constructMultipleKnapsackProbem(MKP, failurtype);
+		if (failurenodeID == 3) {
+			MKP.matchingMatrix[1][5] = Integer.MAX_VALUE;
+		}
 		int solution[] = new int[this.VNR.nodeSize];
 		if (MKP.optimalSoutionILP(solution)) {
 			augmentNodeEdge(solution, failurenodeID);
@@ -273,6 +275,7 @@ public class EnhancedVirtualNetwork {
 		int virutialNode2NewVirtualNode[] = new int[this.VNR.nodeSize];
 		for (int i = 0; i < this.VNR.nodeSize; i++) {
 			virutialNode2NewVirtualNode[i] = Knapsacks.elementAt(solution[i]).starNodeEnhancedVNID;
+			System.out.println(virutialNode2NewVirtualNode[i] + 1);
 		}
 
 		for (int i = 0; i < this.VNR.nodeSize; i++) {
@@ -347,17 +350,25 @@ public class EnhancedVirtualNetwork {
 
 					}
 				}
+
 			}
 		}
 		for (int i = 0; i < Knapsacks.size(); i++) {
-			mKP.ithUnionKnapsack[i] = Knapsacks.elementAt(i).starNodeEnhancedVNID;
+			mKP.ithKapsack2ithUnionKnapsack[i] = Knapsacks.elementAt(i).starNodeEnhancedVNID;
+			System.out.print((mKP.ithKapsack2ithUnionKnapsack[i] + 1) + "\t ");
 		}
+		System.out.println();
 		for (int i = 0; i < this.nodeSize; i++) {
-			mKP.capacityUnionKnapsack[i] = this.nodeComputationCapacity[i];
+			mKP.unionKnapsackCapacity[i] = this.nodeComputationCapacity[i];
+			System.out.print((i + 1) + ":" + mKP.unionKnapsackCapacity[i] + "\t ");
 		}
+		System.out.println();
 		for (int i = 0; i < this.VNR.nodeSize; i++) {
 			mKP.capacityItem[i] = this.VNR.nodeComputationDemand[i];
+			System.out.print(mKP.capacityItem[i] + "\t ");
 		}
+		System.out.println();
+
 		for (int i = 0; i < this.VNR.nodeSize; i++) {
 			for (int j = 0; j < Knapsacks.size(); j++) {
 				// System.out.print("i: "+i+"j: "+j+" --"+matchingMatrix[i][j]);
@@ -368,16 +379,17 @@ public class EnhancedVirtualNetwork {
 					// final int transformExistedNodeCost = 100000;
 					// final int addNodeComputaionCost = 1000;
 					// final int addEdgeBandwithCost = 1;
+					int printint = mKP.matchingMatrix[i][j];
 					if ((mKP.matchingMatrix[i][j] / addNewNodeCost) > 0)
 						System.out.print("N+");
-					mKP.matchingMatrix[i][j] = mKP.matchingMatrix[i][j] % addNewNodeCost;
-					if ((mKP.matchingMatrix[i][j] / transformExistedNodeCost) > 0)
+					printint = printint % addNewNodeCost;
+					if ((printint / transformExistedNodeCost) > 0)
 						System.out.print("M+");
-					mKP.matchingMatrix[i][j] = mKP.matchingMatrix[i][j] % transformExistedNodeCost;
-					if ((mKP.matchingMatrix[i][j] / addNodeComputaionCost) > 0)
-						System.out.print("(" + (mKP.matchingMatrix[i][j] / addNodeComputaionCost) + ")+");
-					mKP.matchingMatrix[i][j] = mKP.matchingMatrix[i][j] % addNodeComputaionCost;
-					System.out.print(mKP.matchingMatrix[i][j] + "\t  ");
+					printint = printint % transformExistedNodeCost;
+					if ((printint / addNodeComputaionCost) > 0)
+						System.out.print("(" + (printint / addNodeComputaionCost) + ")+");
+					printint = printint % addNodeComputaionCost;
+					System.out.print(printint + "\t  ");
 				}
 			}
 			System.out.println("");
@@ -386,37 +398,196 @@ public class EnhancedVirtualNetwork {
 
 	}
 
-	public void computeUsedResource(){
-		int number=0;
-		int resource=0;
-		for(int i=0;i<this.nodeSize;i++){
-			if(this.usedNodeComputation[i]>0){
-				resource+=this.usedNodeComputation[i];
+	public void computeUsedResource() {
+		int number = 0;
+		int resource = 0;
+		for (int i = 0; i < this.nodeSize; i++) {
+			if (this.usedNodeComputation[i] > 0) {
+				resource += this.usedNodeComputation[i];
 				number++;
 			}
 		}
-		System.out.print((number-this.usedResource.usedNodeNumber)+" Node + ");
-		System.out.print((resource-this.usedResource.usedNodeComputation)+" Computation + ");
-		this.usedResource.usedNodeNumber=number;
-		this.usedResource.usedNodeComputation=resource;
-		
-		number=0;
-		for(int i=0;i<this.nodeSize;i++){
-			for(int j=0;j<this.nodeSize;j++){
-				number+=this.usedEdgeBandwith[i][j];
+		System.out.print((number - this.usedResource.usedNodeNumber) + " Node + ");
+		System.out.print((resource - this.usedResource.usedNodeComputation) + " Computation + ");
+		this.usedResource.usedNodeNumber = number;
+		this.usedResource.usedNodeComputation = resource;
+
+		number = 0;
+		for (int i = 0; i < this.nodeSize; i++) {
+			for (int j = 0; j < this.nodeSize; j++) {
+				number += this.usedEdgeBandwith[i][j];
 			}
 		}
-		number=number/2;
-		System.out.println((number-this.usedResource.usedEdgeBandwith)+" Bandwith \n");
-		this.usedResource.usedEdgeBandwith=number;
+		number = number / 2;
+		System.out.println((number - this.usedResource.usedEdgeBandwith) + " Bandwith \n");
+		this.usedResource.usedEdgeBandwith = number;
 	}
-	public boolean AugmentNodeEdge4Survivability(int failurenodenumber, boolean failurtype) throws GRBException {
+
+	public boolean HeursitcAlgorithm4Survivability(int failurenodenumber, boolean failurtype) throws GRBException {
 		System.out.println("------------------" + failurtype + "----------------");
 		for (int i = 0; i < failurenodenumber; i++) {
 			if (!ithNode(i, failurtype)) {
 				return false;
 			}
 			computeUsedResource();
+		}
+		return true;
+
+	}
+
+	/**
+	 * @return
+	 * 
+	 */
+	public boolean OptimalAlgorithmIP4Survivability() {
+		// TODO Auto-generated method stub
+		try {
+			GRBEnv env = new GRBEnv("EeVSN Algorithm IP");
+			GRBModel model = new GRBModel(env);
+
+			// Create variables
+			GRBVar TransfromMatrix[][][];
+			TransfromMatrix = new GRBVar[this.enhacnedNodeSize + 1][this.VNR.nodeSize][this.nodeSize];
+			for (int i = 0; i <= this.enhacnedNodeSize; i++) {
+				for (int j = 0; j < this.VNR.nodeSize; j++) {
+					for (int k = 0; k < this.nodeSize; k++) {
+						if (0 == i) {
+							if (k == this.virtualNode2EnhancedVirtualNode[j]) {
+								TransfromMatrix[i][j][k] = model.addVar(1.0, 1.0, 0.0, GRB.BINARY,
+										"T" + i + " r:" + j + " c:" + k);
+							} else {
+								TransfromMatrix[i][j][k] = model.addVar(0.0, 0.0, 0.0, GRB.BINARY,
+										"T" + i + " r:" + j + " c:" + k);
+							}
+						} else {
+							TransfromMatrix[i][j][k] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
+									"T" + i + " r:" + j + " c:" + k);
+						}
+					}
+				}
+			}
+
+			GRBVar EnhancedGraphMatrix[][];
+			EnhancedGraphMatrix = new GRBVar[this.nodeSize][this.nodeSize];
+			for (int j = 0; j < this.nodeSize; j++) {
+				for (int k = 0; k < this.nodeSize; k++) {
+					EnhancedGraphMatrix[j][k] = model.addVar(0.0, 100, 0.0, GRB.INTEGER, "EGM" + " r:" + j + " c:" + k);
+				} // Integer.MAX_VALUE
+			}
+
+			GRBVar UsedNodeVector[];
+			UsedNodeVector = new GRBVar[this.nodeSize];
+			for (int j = 0; j < this.nodeSize; j++) {
+				UsedNodeVector[j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "UNV" + ": " + j);
+			}
+
+			// Integrate new variables
+			model.update();
+			GRBLinExpr objexpr = new GRBLinExpr();
+			for (int i = 0; i < this.nodeSize; i++) {
+				objexpr.addTerm(this.addNewNodeCost, UsedNodeVector[i]);
+				for (int j = 0; j < this.nodeSize; j++) {
+					objexpr.addTerm(1.0, EnhancedGraphMatrix[i][j]);
+				}
+			}
+			model.setObjective(objexpr, GRB.MINIMIZE);
+
+			// Add constraint
+			for (int k = 0; k < this.nodeSize; k++) {
+				GRBLinExpr conexpr = new GRBLinExpr();
+				for (int i = 0; i <= this.enhacnedNodeSize; i++) {
+					for (int j = 0; j < this.VNR.nodeSize; j++) {
+						conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
+					}
+				}
+				model.addConstr(conexpr, GRB.LESS_EQUAL, UsedNodeVector[k], "Con usedNode:" + k);
+			}
+
+			for (int i = 0; i <= this.enhacnedNodeSize; i++) {
+				for (int j = 0; j < this.VNR.nodeSize; j++) {
+					GRBLinExpr conexpr = new GRBLinExpr();
+					for (int k = 0; k < this.nodeSize; k++) {
+						conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
+					}
+					model.addConstr(conexpr, GRB.EQUAL, 1.0, "Con all VN Node have a embedding:" + i);
+				}
+			}
+
+			for (int i = 1; i <= this.enhacnedNodeSize; i++) {
+				GRBLinExpr conexpr = new GRBLinExpr();
+				for (int j = 0; j < this.VNR.nodeSize; j++) {
+					conexpr.addTerm(1.0, TransfromMatrix[i - 1][j][i - 1]);
+				}
+				model.addConstr(conexpr, GRB.EQUAL, 0.0, "Con Tiji=false :" + i);
+			}
+
+			// T*ESM>VSM
+			for (int i = 0; i <= this.enhacnedNodeSize; i++) {
+				for (int j = 0; j < this.VNR.nodeSize; j++) {
+					for (int l = 0; l < this.serviceNumber; l++) {
+						GRBLinExpr conexpr = new GRBLinExpr();
+						for (int k = 0; k < this.nodeSize; k++) {
+							if (this.nodeServiceType[k][l + 1])
+								conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
+						}
+						if (this.VNR.nodeServiceType[j] == (l + 1)) {
+							model.addConstr(conexpr, GRB.GREATER_EQUAL, 1.0, "T " + i + "T*ESM" + "r " + j + "c: " + l);
+						} else {
+							model.addConstr(conexpr, GRB.GREATER_EQUAL, 0.0, "T " + i + "T*ESM" + "r " + j + "c: " + l);
+						}
+					}
+				}
+			}
+
+			// MACN*T<MBC
+			for (int i = 0; i <= this.enhacnedNodeSize; i++) {
+				for (int j = 0; j < this.nodeSize; j++) {
+					GRBLinExpr conexpr = new GRBLinExpr();
+					for (int k = 0; k < this.VNR.nodeSize; k++) {
+						conexpr.addTerm(this.VNR.nodeComputationDemand[k], TransfromMatrix[i][k][j]);
+					}
+					model.addConstr(conexpr, GRB.LESS_EQUAL, this.nodeComputationCapacity[j],
+							"T " + i + "MACN*T" + "r " + j);
+				}
+			}
+
+			// (MAG*T)'*T<MBG
+
+			for (int i = 0; i <= this.enhacnedNodeSize; i++) {
+				// T'*MAG'
+				GRBQuadExpr TMAG[][] = new GRBQuadExpr[this.nodeSize][this.nodeSize];
+				for (int j = 0; j < this.nodeSize; j++) {
+					for (int t = 0; t < this.nodeSize; t++) {
+						TMAG[j][t] = new GRBQuadExpr();
+						for (int k = 0; k < this.VNR.nodeSize; k++) {
+							for (int l = 0; l < this.VNR.nodeSize; l++) {
+								// TMAG[j][k].addTerm(this.VNR.edgeBandwithDemand[k][l],
+								// TransfromMatrix[i][l][j]);
+								for (int p = 0; p < this.VNR.nodeSize; p++) {
+									Integer inte = this.VNR.edgeBandwithDemand[k][p];
+									TMAG[j][t].addTerm(inte.doubleValue(), TransfromMatrix[i][k][j],
+											TransfromMatrix[i][p][t]);
+								}
+							}
+						}
+						model.addQConstr(TMAG[j][t], GRB.GREATER_EQUAL, EnhancedGraphMatrix[j][t],
+								"T " + i + "T'*MAG'*T" + "r " + j + " c " + t);
+					}
+				}
+			}
+			model.optimize();
+			int optimstatus = model.get(GRB.IntAttr.Status);
+			if (optimstatus != GRB.OPTIMAL) {
+				return false;
+			}
+			for (int i = 0; i < this.nodeSize; i++) {
+				System.out.print(i + ":" + UsedNodeVector[i].get(GRB.DoubleAttr.X));
+			}
+			System.out.println();
+
+		} catch (GRBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return true;
 

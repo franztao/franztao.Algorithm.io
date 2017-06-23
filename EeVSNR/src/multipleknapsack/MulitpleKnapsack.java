@@ -15,8 +15,8 @@ public class MulitpleKnapsack {
 	public int matchingMatrix[][];
 
 	public int unionKnapsackSize;
-	public int ithUnionKnapsack[];
-	public int capacityUnionKnapsack[];
+	public int ithKapsack2ithUnionKnapsack[];
+	public int unionKnapsackCapacity[];
 	public int capacityItem[];
 
 	public MulitpleKnapsack(int row, int col, int unionKnapsackSize) {
@@ -24,9 +24,9 @@ public class MulitpleKnapsack {
 		this.knapsackNumber = col;
 		this.unionKnapsackSize = unionKnapsackSize;
 		matchingMatrix = new int[row][col];
-		ithUnionKnapsack = new int[col];
+		ithKapsack2ithUnionKnapsack = new int[col];
 		capacityItem = new int[row];
-		capacityUnionKnapsack = new int[unionKnapsackSize];
+		unionKnapsackCapacity = new int[unionKnapsackSize];
 	}
 
 	public boolean optimalSoutionILP(int solution[]) throws GRBException {
@@ -55,7 +55,6 @@ public class MulitpleKnapsack {
 			for (int j = 0; j < this.knapsackNumber; j++) {
 				if (Integer.MAX_VALUE != this.matchingMatrix[i][j])
 					objexpr.addTerm(this.matchingMatrix[i][j], varx[i][j]);
-				// System.out.println("FFF");
 			}
 		}
 		// String path = System.getgetProperty("java.library.path");
@@ -78,11 +77,11 @@ public class MulitpleKnapsack {
 		for (int i = 0; i < this.knapsackNumber; i++) {
 			for (int j = 0; j < this.itemNumber; j++) {
 				if (Integer.MAX_VALUE != this.matchingMatrix[j][i])
-					conexpr1[this.ithUnionKnapsack[i]].addTerm(this.capacityItem[j], varx[j][i]);
+					conexpr1[this.ithKapsack2ithUnionKnapsack[i]].addTerm(this.capacityItem[j], varx[j][i]);
 			}
 		}
 		for (int i = 0; i < this.unionKnapsackSize; i++) {
-			model.addConstr(conexpr1[i], GRB.LESS_EQUAL, this.capacityUnionKnapsack[i], "constraint_col <" + i);
+			model.addConstr(conexpr1[i], GRB.LESS_EQUAL, this.unionKnapsackCapacity[i], "constraint_col <" + i);
 		}
 
 		model.optimize();
@@ -94,7 +93,7 @@ public class MulitpleKnapsack {
 			for (int j = 0; j < this.knapsackNumber; j++) {
 				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
 					solution[i] = j;
-//					System.out.println(j);
+					System.out.println(j);
 				}
 			}
 		}
