@@ -37,8 +37,7 @@ public class VirtualNetworkRequest {
 		labeltoID = new HashMap<String, Integer>();
 	}
 
-	public void faultInit() {
-		// TODO Auto-generated method stub
+	public void initSample1() {
 		nodeComputationDemand[0] = 2;
 		nodeComputationDemand[1] = 3;
 		nodeComputationDemand[2] = 5;
@@ -77,5 +76,49 @@ public class VirtualNetworkRequest {
 		labeltoID.put("V2", 1);
 		labeltoID.put("V3", 2);
 		labeltoID.put("V4", 3);
+	}
+
+	/**
+	 * 
+	 */
+	public void initSample2() {
+		nodeComputationDemand[0] = 3;
+		nodeComputationDemand[1] = 4;
+
+		edgeBandwithDemand[0][1] = 3;
+		edgeBandwithDemand[1][0] = 3;
+
+		edgeSize = 1;
+
+		for (int i = 0; i < nodeSize; i++) {
+			for (int j = 0; j < nodeSize; j++) {
+				if (0 != edgeBandwithDemand[i][j]) {
+					topology[i][j] = true;
+				}
+			}
+		}
+
+		nodeServiceType[0] = 1;
+		nodeServiceType[1] = 2;
+
+		nodeLabel[0] = "V1";
+		nodeLabel[1] = "V2";
+
+		labeltoID.put("V1", 0);
+		labeltoID.put("V2", 1);
+	}
+
+	public void initSample3() {
+		nodeComputationDemand[0] = 3;
+
+		edgeSize = 0;
+
+
+		nodeServiceType[0] = 1;
+
+		nodeLabel[0] = "V1";
+
+		labeltoID.put("V1", 0);
+		
 	}
 }
