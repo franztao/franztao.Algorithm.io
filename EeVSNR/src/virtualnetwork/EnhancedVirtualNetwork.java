@@ -261,7 +261,7 @@ public class EnhancedVirtualNetwork {
 		usedResource.usedNodeComputation = 7;
 		usedResource.usedNodeNumber = 2;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -546,6 +546,9 @@ public class EnhancedVirtualNetwork {
 										"T" + i + " r:" + j + " c:" + k);
 							} else {
 								TransfromMatrix[i][j][k] = model.addVar(0.0, 0.0, 0.0, GRB.CONTINUOUS,
+							
+										
+										
 										"T" + i + " r:" + j + " c:" + k);
 							}
 						} else {
@@ -605,7 +608,7 @@ public class EnhancedVirtualNetwork {
 					for (int k = 0; k < this.nodeSize; k++) {
 						conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
 					}
-					model.addConstr(conexpr, GRB.EQUAL, 1.0, "Con all VN Node have a embedding:" + i+" "+j);
+					model.addConstr(conexpr, GRB.EQUAL, 1.0, "Con all VN Node have a embedding:" + i + " " + j);
 				}
 			}
 
@@ -614,7 +617,7 @@ public class EnhancedVirtualNetwork {
 				for (int j = 0; j < this.VNR.nodeSize; j++) {
 					conexpr.addTerm(1.0, TransfromMatrix[i - 1][j][i - 1]);
 				}
-				model.addConstr(conexpr, GRB.EQUAL, 0.0, "Con Tiji=false :" );
+				model.addConstr(conexpr, GRB.EQUAL, 0.0, "Con Tiji=false :");
 			}
 
 			// T*ESM>VSM
@@ -643,7 +646,7 @@ public class EnhancedVirtualNetwork {
 						conexpr.addTerm(this.VNR.nodeComputationDemand[k], TransfromMatrix[i][k][j]);
 					}
 					model.addConstr(conexpr, GRB.LESS_EQUAL, this.nodeComputationCapacity[j],
-							 "MACN*T" +"T " + i + "r " + j);
+							"MACN*T" + "T " + i + "r " + j);
 				}
 			}
 
@@ -677,7 +680,7 @@ public class EnhancedVirtualNetwork {
 				return false;
 			}
 			for (int i = 0; i < this.nodeSize; i++) {
-				System.out.print(i + ": " + UsedNodeVector[i].get(GRB.DoubleAttr.X)+"  ");
+				System.out.print(i + ": " + UsedNodeVector[i].get(GRB.DoubleAttr.X) + "  ");
 			}
 			System.out.println();
 
@@ -688,7 +691,5 @@ public class EnhancedVirtualNetwork {
 		return true;
 
 	}
-
-	
 
 }
