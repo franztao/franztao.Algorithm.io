@@ -238,6 +238,7 @@ public class EnhancedVirtualNetwork {
 		nodeServiceType[0][1] = true;
 		nodeServiceType[0][2] = true;
 		nodeServiceType[1][2] = true;
+		nodeServiceType[2][1] = true;
 		nodeServiceType[3][1] = true;
 		nodeServiceType[3][2] = true;
 
@@ -352,14 +353,23 @@ public class EnhancedVirtualNetwork {
 			MKP.matchingMatrix[1][5] = Integer.MAX_VALUE;
 		}
 		int solution[] = new int[this.VNR.nodeSize];
-		MKP.optimalSoutionDP(solution);
-		if (MKP.optimalSoutionILP(solution)) {
-			augmentNodeEdge(solution, failurenodeID, Method);
-			return true;
-		} else {
-			System.out.println("Failure node: " + failurenodeID + ", there is not solution");
-			return false;
+		
+		if(this.Method==this.MethodDP){
+			if(!MKP.optimalSoutionDP(solution)){
+				System.out.println("Failure node: " + failurenodeID + ", there is not solution");
+				return false;
+			}
 		}
+		
+		if(this.Method==this.MethodILP){
+			if(!MKP.optimalSoutionILP(solution)){
+				System.out.println("Failure node: " + failurenodeID + ", there is not solution");
+				return false;
+			}
+		}
+		augmentNodeEdge(solution, failurenodeID, Method);
+		return true;
+		
 	}
 
 	/**
@@ -372,13 +382,13 @@ public class EnhancedVirtualNetwork {
 		if (Method == this.MethodILP) {
 			for (int i = 0; i < this.VNR.nodeSize; i++) {
 				virutialNode2NewVirtualNode[i] = Knapsacks.elementAt(solution[i]).starNodeEnhancedVNID;
-				System.out.println(virutialNode2NewVirtualNode[i] + 1);
+//				System.out.println("00000 "+virutialNode2NewVirtualNode[i] + 1);
 			}
 		}
 		if (Method == this.MethodDP) {
 			for (int i = 0; i < this.VNR.nodeSize; i++) {
 				virutialNode2NewVirtualNode[i] = solution[i];
-				System.out.println(virutialNode2NewVirtualNode[i] + 1);
+//				System.out.println(virutialNode2NewVirtualNode[i] + 1);
 			}
 		}
 
@@ -692,10 +702,10 @@ public class EnhancedVirtualNetwork {
 			if (optimstatus != GRB.OPTIMAL) {
 				return false;
 			}
-			for (int i = 0; i < this.nodeSize; i++) {
-				System.out.print(i + ": " + UsedNodeVector[i].get(GRB.DoubleAttr.X) + "  ");
-			}
-			System.out.println();
+//			for (int i = 0; i < this.nodeSize; i++) {
+//				System.out.print(i + ": " + UsedNodeVector[i].get(GRB.DoubleAttr.X) + "  ");
+//			}
+//			System.out.println();
 
 		} catch (GRBException e) {
 			// TODO Auto-generated catch block

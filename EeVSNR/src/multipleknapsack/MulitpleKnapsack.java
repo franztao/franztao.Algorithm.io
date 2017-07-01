@@ -70,7 +70,7 @@ public class MulitpleKnapsack {
 			int d;
 			for (int j = 0; j < dimensionMultiple; j++) {
 				for (int k = 0; k < this.knapsackNumber; k++) {
-					if (this.matchingMatrix[i - 1][k] !=Integer.MAX_VALUE) {
+					if (this.matchingMatrix[i - 1][k] != Integer.MAX_VALUE) {
 						int ithunionbag = this.ithKapsack2ithUnionKnapsack[k];
 						if ((dims[ithunionbag] - this.capacityItem[i - 1]) > 0) {
 							int newinteger = 0;
@@ -83,7 +83,7 @@ public class MulitpleKnapsack {
 							if (dp[i - 1][newinteger] != -1) {
 								if (dp[i][j] == -1) {
 									dp[i][j] = dp[i - 1][newinteger] + this.matchingMatrix[i - 1][k];
-									select[i][j] = newinteger;
+									select[i][j] = ithunionbag;
 								} else {
 									// dp[i][j] = Math.min(dp[i][j],
 									// dp[i - 1][newinteger] +
@@ -100,11 +100,11 @@ public class MulitpleKnapsack {
 				}
 				d = this.unionKnapsackSize - 1;
 				dims[d]++;
-//
-//				for (int t = 0; t < this.unionKnapsackSize; t++) {
-//					System.out.print(dims[t]+ "  ");
-//				}
-//				System.out.println();
+				//
+				// for (int t = 0; t < this.unionKnapsackSize; t++) {
+				// System.out.print(dims[t]+ " ");
+				// }
+				// System.out.println();
 
 				while (dims[d] == (this.unionKnapsackCapacity[d] + 1)) {
 					dims[d] -= (this.unionKnapsackCapacity[d] + 1);
@@ -116,10 +116,19 @@ public class MulitpleKnapsack {
 				}
 			}
 		}
-		
-		
+
 		if (dp[this.itemNumber][dimensionMultiple - 1] != -1) {
-			System.out.println("----DP optimal solution: (" + dp[this.itemNumber][dimensionMultiple - 1]+") ");
+			int index = this.itemNumber ;
+			int recurse = dimensionMultiple - 1;
+			while (index > 0) {
+				solution[index-1] = select[index][recurse];
+				recurse -= (radix[select[index][recurse]] * this.capacityItem[index-1]);
+				index--;
+			}
+//			for(int i=0;i< this.itemNumber;i++){
+//				System.out.println("+++"+solution[i]);
+//			}
+			System.out.println("----DP optimal solution: (" + dp[this.itemNumber][dimensionMultiple - 1] + ") ");
 			return true;
 		} else {
 			System.out.println("----DP exist no optimal solution");
@@ -187,7 +196,7 @@ public class MulitpleKnapsack {
 		if (optimstatus != GRB.OPTIMAL) {
 			return false;
 		}
-		System.out.println("---ILP optimal solution: (" + model.get(GRB.DoubleAttr.ObjVal)+" )");
+		System.out.println("---ILP optimal solution: (" + model.get(GRB.DoubleAttr.ObjVal) + " )");
 		for (int i = 0; i < this.itemNumber; i++) {
 			for (int j = 0; j < this.knapsackNumber; j++) {
 				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
