@@ -16,6 +16,11 @@ import multipleknapsack.MulitpleKnapsack;
  */
 public class EnhancedVirtualNetwork {
 
+	public final int MethodILP = 1;
+	public final int MethodDP = 2;
+
+	public final int Method = MethodILP;
+
 	public final boolean FailureDependent = true;
 	public final boolean FailureIndependent = false;
 	final int addNewNodeCost = 10000000;
@@ -347,8 +352,9 @@ public class EnhancedVirtualNetwork {
 			MKP.matchingMatrix[1][5] = Integer.MAX_VALUE;
 		}
 		int solution[] = new int[this.VNR.nodeSize];
+		MKP.optimalSoutionDP(solution);
 		if (MKP.optimalSoutionILP(solution)) {
-			augmentNodeEdge(solution, failurenodeID);
+			augmentNodeEdge(solution, failurenodeID, Method);
 			return true;
 		} else {
 			System.out.println("Failure node: " + failurenodeID + ", there is not solution");
@@ -359,12 +365,21 @@ public class EnhancedVirtualNetwork {
 	/**
 	 * @param solution
 	 */
-	private void augmentNodeEdge(int[] solution, int failurenodeID) {
+	private void augmentNodeEdge(int[] solution, int failurenodeID, int Method) {
 		// TODO Auto-generated method stub
+
 		int virutialNode2NewVirtualNode[] = new int[this.VNR.nodeSize];
-		for (int i = 0; i < this.VNR.nodeSize; i++) {
-			virutialNode2NewVirtualNode[i] = Knapsacks.elementAt(solution[i]).starNodeEnhancedVNID;
-			System.out.println(virutialNode2NewVirtualNode[i] + 1);
+		if (Method == this.MethodILP) {
+			for (int i = 0; i < this.VNR.nodeSize; i++) {
+				virutialNode2NewVirtualNode[i] = Knapsacks.elementAt(solution[i]).starNodeEnhancedVNID;
+				System.out.println(virutialNode2NewVirtualNode[i] + 1);
+			}
+		}
+		if (Method == this.MethodDP) {
+			for (int i = 0; i < this.VNR.nodeSize; i++) {
+				virutialNode2NewVirtualNode[i] = solution[i];
+				System.out.println(virutialNode2NewVirtualNode[i] + 1);
+			}
 		}
 
 		for (int i = 0; i < this.VNR.nodeSize; i++) {
@@ -546,9 +561,7 @@ public class EnhancedVirtualNetwork {
 										"T" + i + " r:" + j + " c:" + k);
 							} else {
 								TransfromMatrix[i][j][k] = model.addVar(0.0, 0.0, 0.0, GRB.CONTINUOUS,
-							
-										
-										
+
 										"T" + i + " r:" + j + " c:" + k);
 							}
 						} else {
