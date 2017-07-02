@@ -13,6 +13,7 @@ import java.util.Map;
 public class VirtualNetwork {
 	public int nodeSize;
 	public boolean topology[][];
+	public int vnode2snode[];
 
 	public int nodeComputationDemand[];
 	public int edgeBandwithDemand[][];
@@ -22,26 +23,28 @@ public class VirtualNetwork {
 
 	public String nodeLabel[];
 	public Map<String, Integer> labeltoID;
-	
+
+	public boolean sampleInit;
 	/**
 	 * @param vnp
 	 */
 	public VirtualNetwork(VirtualNetworkParameter vnp) {
-		this.nodeSize = (int) (vnp.nodeSizeMinimum+Math.random()*(vnp.nodeSizeMaximum-vnp.nodeSizeMinimum));
-		nodeComputationDemand = new int[nodeSize];
-		
-		topology = new boolean[nodeSize][nodeSize];
-		edgeBandwithDemand = new int[nodeSize][nodeSize];
+		this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
+		this.vnode2snode = new int[nodeSize];
+		this.nodeComputationDemand = new int[nodeSize];
+
+		this.topology = new boolean[nodeSize][nodeSize];
+		this.edgeBandwithDemand = new int[nodeSize][nodeSize];
 
 		this.serviceNumber = vnp.serviceNumber;
-		nodeServiceType = new int[nodeSize + 1];
-		
-		nodeLabel = new String[nodeSize];
-		labeltoID = new HashMap<String, Integer>();
-		
+		this.nodeServiceType = new int[nodeSize + 1];
+
+		this.nodeLabel = new String[nodeSize];
+		this.labeltoID = new HashMap<String, Integer>();
+		this.sampleInit=vnp.sampleInit;
 		init();
-		if(vnp.sampleInit){
-			this.nodeSize=4;
+		if (vnp.sampleInit) {
+			this.nodeSize = 4;
 			initSample1();
 		}
 	}
@@ -50,11 +53,11 @@ public class VirtualNetwork {
 	 * 
 	 */
 	private void init() {
-		String str="VN_";
-		for(int i=0;i<this.nodeSize;i++){
-			this.nodeLabel[i] = str+(i+1);
+		String str = "VN_";
+		for (int i = 0; i < this.nodeSize; i++) {
+			this.nodeLabel[i] = str + (i + 1);
 
-			labeltoID.put(str+(i+1), 0);
+			labeltoID.put(str + (i + 1), 0);
 		}
 	}
 
@@ -86,13 +89,13 @@ public class VirtualNetwork {
 		nodeServiceType[2] = 3;
 		nodeServiceType[3] = 4;
 	}
+
 	public void initSample2() {
 		nodeComputationDemand[0] = 3;
 		nodeComputationDemand[1] = 4;
 
 		edgeBandwithDemand[0][1] = 3;
 		edgeBandwithDemand[1][0] = 3;
-
 
 		for (int i = 0; i < nodeSize; i++) {
 			for (int j = 0; j < nodeSize; j++) {

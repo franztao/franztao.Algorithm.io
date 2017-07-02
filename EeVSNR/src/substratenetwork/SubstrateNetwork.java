@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import virtualnetwork.VirtualNetworkParameter;
+import virtualnetwork.EnhancedVirtualNetwork;
 import virtualnetwork.VirtualNetwork;
 
 public class SubstrateNetwork {
@@ -19,11 +20,13 @@ public class SubstrateNetwork {
 
 	public int serviceNumber;
 	public boolean serviceType[][];
+	public Vector<Integer> serviceTypeVector;
 
 	public String nodeLabel[];
 	public Map<String, Integer> labeltoID;
 
-	public Vector<VirtualNetwork> vnq;
+	public Vector<VirtualNetwork> vnquest;
+	public Vector<EnhancedVirtualNetwork> evn;
 	public int timeSpan;
 
 	/**
@@ -43,10 +46,14 @@ public class SubstrateNetwork {
 		// service
 		this.serviceNumber = snp.serviceNumber;
 		serviceType = new boolean[nodeSize][serviceNumber + 1];
+		serviceTypeVector = new Vector<Integer>();
 
 		// label
 		nodeLabel = new String[nodeSize];
 		labeltoID = new HashMap<String, Integer>();
+
+		vnquest = new Vector<VirtualNetwork>();
+		evn = new Vector<EnhancedVirtualNetwork>();
 		if (snp.sampleInit) {
 			faultInit();
 		} else {
@@ -67,20 +74,22 @@ public class SubstrateNetwork {
 
 		// edge bandwith
 		for (int i = 0; i < this.nodeSize; i++) {
-			for (int j = 0; j < this.nodeSize; j++) {
+			for (int j = 0; j < i; j++) {
 				double ran = Math.random();
-				if (ran < snp.node2nodeProbability)
+				if (ran < snp.node2nodeProbability) {
 					this.topology[i][j] = true;
-				else
-					this.topology[i][j] = false;
+					this.topology[j][i] = true;
+				}
 
 			}
 		}
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.nodeSize; j++) {
-				if (this.topology[i][j])
+				if (this.topology[i][j]) {
 					this.edgeBandwithCapacity[i][j] = (int) (snp.edgeBandwithMinimum
 							+ Math.random() * (snp.edgeBandwithMaximum - snp.edgeBandwithMinimum));
+					this.edgeBandwithCapacity[j][i] =this.edgeBandwithCapacity[i][j] ;
+				}
 			}
 		}
 
@@ -89,6 +98,7 @@ public class SubstrateNetwork {
 			for (int j = 0; j < this.serviceNumber; j++) {
 				if (Math.random() > snp.serivecProbability) {
 					this.serviceType[i][j + 1] = true;
+					serviceTypeVector.addElement(j + 1);
 				}
 			}
 		}
@@ -166,22 +176,63 @@ public class SubstrateNetwork {
 		// for(int i=0;i<this.timeSpan;i++)
 		// time slots
 		VirtualNetwork vn = new VirtualNetwork(vnp);
-		distributeVirtualNetwork(vn);
-		
-		vnq.addElement(vn);
+		distributeVirtualNetwork(vn, vnp);
+
+		vnquest.addElement(vn);
 		// VNR1.initSample1();
 	}
 
 	/**
 	 * @param vn
+	 * @param vnp
 	 */
-	private void distributeVirtualNetwork(VirtualNetwork vn) {
-//		EnhancedVirtualNetwork EVNR1 = new EnhancedVirtualNetwork(7, 4, 4, VNR1);
-//		EVNR1.initSample1();
-//		EVNR1.computeItems();
-//		EVNR1.HeursitcAlgorithm4Survivability(4, EVNR1.FailureDependent);
-//		System.out.println("------------------" + "----------------");
-//		for(int i=0;i<)
+	private boolean distributeVirtualNetwork(VirtualNetwork vn, VirtualNetworkParameter vnp) {
+		Vector<Integer>[][] path = null;
+		for (int i = 0; i < vn.nodeSize; i++) {
+			int nodeloc = (int) Math.round(Math.random() * this.nodeSize);
+			int nodeservice = this.serviceTypeVector
+					.elementAt((int) Math.round(Math.random() * this.serviceTypeVector.size()));
+			vn.nodeServiceType[i] = nodeservice;
+			vn.vnode2snode[i] = nodeloc;
+			vn.nodeComputationDemand[i] = (int) (vnp.nodeComputationMinimum
+					+ Math.random() * (vnp.nodeComputationMaximum - vnp.nodeComputationMinimum));
+			if (vn.nodeComputationDemand[i] == 0) {
+				vn.nodeComputationDemand[i]++;
+			}
+			if (vn.nodeComputationDemand[i] > (this.nodeComputationCapacity[i]
+					- this.usedNodeCurrentComputationCapacity[i])) {
+				System.out.println("be not able to embed virtual network");
+				return false;
+			} else {
+				this.usedNodeCurrentComputationCapacity[i] += vn.nodeComputationDemand[i];
+			}
+		}
+
+		
+		for (int i = 0; i < vn.nodeSize; i++) {
+			for (int j = 0; j < i; j++) {
+				double ran = Math.random();
+				if (ran < vnp.node2nodeProbability) {
+					// exist edge's path,bandwith
+					path[i][j]=new Vector<Integer>();
+					int bandwith = 1;//
+					vn.topology[i][j] = true;
+					vn.topology[j][i] = true;
+					vn.edgeBandwithDemand[i][j] = bandwith;
+					vn.edgeBandwithDemand[j][i] = bandwith;
+				}
+			}
+		}
+		
+		//other backnode
+		BackupNode bn=new BackupNode();
+		
+		EnhancedVirtualNetwork evn = new EnhancedVirtualNetwork(vn,path,bn);
+		// EVNR1.initSample1();
+		// EVNR1.computeItems();
+		// EVNR1.HeursitcAlgorithm4Survivability(4, EVNR1.FailureDependent);
+		// System.out.println("------------------" + "----------------");
+		return true;
 
 	}
 

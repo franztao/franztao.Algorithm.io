@@ -6,8 +6,6 @@ package evsnr;
 import gurobi.GRBException;
 import substratenetwork.SubStrateNetworkParameter;
 import substratenetwork.SubstrateNetwork;
-import virtualnetwork.EnhancedVirtualNetwork;
-import virtualnetwork.VirtualNetwork;
 import virtualnetwork.VirtualNetworkParameter;
 
 /**
@@ -19,6 +17,7 @@ public class main {
 	/**
 	 * @param args
 	 */
+	
 	
 
 	public static void main(String[] args) throws GRBException {
