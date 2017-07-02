@@ -1,0 +1,143 @@
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:30:57 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 8 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:32:35 PM CST
+
+Optimize a model with 11 rows, 10 columns and 17 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 10 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:32:50 PM CST
+
+Optimize a model with 11 rows, 10 columns and 19 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 4 rows and 8 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:34:21 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 8 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:34:27 PM CST
+
+Optimize a model with 13 rows, 10 columns and 19 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 10 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:34:33 PM CST
+
+Optimize a model with 14 rows, 10 columns and 22 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 14 rows and 10 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Optimal objective 2.00000000e+07
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:34:49 PM CST
+
+Optimize a model with 14 rows, 10 columns and 22 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 14 rows and 10 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Optimal objective 2.00000000e+07
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:35:00 PM CST
+
+Optimize a model with 14 rows, 10 columns and 22 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 14 rows and 10 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Optimal objective 2.00000000e+07
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 19:36:57 2017
+
+Optimize a model with 54 rows, 44 columns and 126 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 42 rows and 12 columns
+Presolve time: 0.00s
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 19:38:06 2017
+
+Optimize a model with 56 rows, 44 columns and 130 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 20 rows and 12 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Thu Jun 29 19:13:28 2017
+
+
+Gurobi 5.6.3 (linux64) logging started Sat 01 Jul 2017 08:17:02 PM CST
+
+Optimize a model with 56 rows, 44 columns and 130 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 20 rows and 12 columns
+Presolve time: 0.01s
+
+Barrier solved model in 0 iterations and 0.01 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Sat 01 Jul 2017 08:19:36 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 8 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Sat 01 Jul 2017 08:19:53 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 8 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Sat 01 Jul 2017 08:20:02 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 8 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible

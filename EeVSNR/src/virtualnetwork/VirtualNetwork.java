@@ -10,9 +10,8 @@ import java.util.Map;
  * @author franz
  *
  */
-public class VirtualNetworkRequest {
+public class VirtualNetwork {
 	public int nodeSize;
-	public int edgeSize;
 	public boolean topology[][];
 
 	public int nodeComputationDemand[];
@@ -23,18 +22,40 @@ public class VirtualNetworkRequest {
 
 	public String nodeLabel[];
 	public Map<String, Integer> labeltoID;
-
-	public VirtualNetworkRequest(int nodeSize, int edgeSize, int serviceNumber) {
-		this.nodeSize = nodeSize;
-		this.serviceNumber = serviceNumber;
-		topology = new boolean[nodeSize][nodeSize];
-
+	
+	/**
+	 * @param vnp
+	 */
+	public VirtualNetwork(VirtualNetworkParameter vnp) {
+		this.nodeSize = (int) (vnp.nodeSizeMinimum+Math.random()*(vnp.nodeSizeMaximum-vnp.nodeSizeMinimum));
 		nodeComputationDemand = new int[nodeSize];
+		
+		topology = new boolean[nodeSize][nodeSize];
 		edgeBandwithDemand = new int[nodeSize][nodeSize];
 
+		this.serviceNumber = vnp.serviceNumber;
 		nodeServiceType = new int[nodeSize + 1];
+		
 		nodeLabel = new String[nodeSize];
 		labeltoID = new HashMap<String, Integer>();
+		
+		init();
+		if(vnp.sampleInit){
+			this.nodeSize=4;
+			initSample1();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void init() {
+		String str="VN_";
+		for(int i=0;i<this.nodeSize;i++){
+			this.nodeLabel[i] = str+(i+1);
+
+			labeltoID.put(str+(i+1), 0);
+		}
 	}
 
 	public void initSample1() {
@@ -52,8 +73,6 @@ public class VirtualNetworkRequest {
 		edgeBandwithDemand[3][0] = 3;
 		edgeBandwithDemand[2][1] = 6;
 
-		edgeSize = 4;
-
 		for (int i = 0; i < nodeSize; i++) {
 			for (int j = 0; j < nodeSize; j++) {
 				if (0 != edgeBandwithDemand[i][j]) {
@@ -66,21 +85,7 @@ public class VirtualNetworkRequest {
 		nodeServiceType[1] = 2;
 		nodeServiceType[2] = 3;
 		nodeServiceType[3] = 4;
-
-		nodeLabel[0] = "V1";
-		nodeLabel[1] = "V2";
-		nodeLabel[2] = "V3";
-		nodeLabel[3] = "V4";
-
-		labeltoID.put("V1", 0);
-		labeltoID.put("V2", 1);
-		labeltoID.put("V3", 2);
-		labeltoID.put("V4", 3);
 	}
-
-	/**
-	 * 
-	 */
 	public void initSample2() {
 		nodeComputationDemand[0] = 3;
 		nodeComputationDemand[1] = 4;
@@ -88,7 +93,6 @@ public class VirtualNetworkRequest {
 		edgeBandwithDemand[0][1] = 3;
 		edgeBandwithDemand[1][0] = 3;
 
-		edgeSize = 1;
 
 		for (int i = 0; i < nodeSize; i++) {
 			for (int j = 0; j < nodeSize; j++) {
@@ -100,25 +104,11 @@ public class VirtualNetworkRequest {
 
 		nodeServiceType[0] = 1;
 		nodeServiceType[1] = 2;
-
-		nodeLabel[0] = "V1";
-		nodeLabel[1] = "V2";
-
-		labeltoID.put("V1", 0);
-		labeltoID.put("V2", 1);
 	}
 
 	public void initSample3() {
 		nodeComputationDemand[0] = 3;
 
-		edgeSize = 0;
-
-
 		nodeServiceType[0] = 1;
-
-		nodeLabel[0] = "V1";
-
-		labeltoID.put("V1", 0);
-		
 	}
 }

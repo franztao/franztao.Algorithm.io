@@ -4,9 +4,11 @@
 package evsnr;
 
 import gurobi.GRBException;
-import substrate.network.SubstrateNetwork;
+import substratenetwork.SubStrateNetworkParameter;
+import substratenetwork.SubstrateNetwork;
 import virtualnetwork.EnhancedVirtualNetwork;
-import virtualnetwork.VirtualNetworkRequest;
+import virtualnetwork.VirtualNetwork;
+import virtualnetwork.VirtualNetworkParameter;
 
 /**
  * @author franz
@@ -17,22 +19,49 @@ public class main {
 	/**
 	 * @param args
 	 */
-	public static int substrateNodeSize = 9;
-	public static int substrateEdgeSize = 12;
-	public static int serviceNumber = 4;
+	
 
 	public static void main(String[] args) throws GRBException {
 		// TODO Auto-generated method stub
 		// read substrate network
-		// read virtual network
+
+		boolean SampleInit =true;
+		SubStrateNetworkParameter snp=new SubStrateNetworkParameter(SampleInit);
+//		//node parameter
+//		public int nodeSize=40;
+//		public int nodeComputationMaximum=100;
+//		public int nodeComputationMinimum=40;
+//		public int edgeBandwithMaximum=100;
+//		
+//		//edge parameter
+//		public double node2nodeProbability=0.4;
+//		public int edgeBandwithMinimum=50;
+//
+//		//service parameter
+//		public int serviceNumber=5;
+		SubstrateNetwork FDSubstrateNework = new SubstrateNetwork(snp);
+
+		VirtualNetworkParameter vnp=new VirtualNetworkParameter(SampleInit);
+//		// node parameter
+//		public int nodeSize = 4;
+//		public int nodeSizeMinimum = 2;
+//		public int nodeSizeMaximum = 10;
+//		public int nodeComputationMaximum = 20;
+//		public int nodeComputationMinimum = 5;
+//
+//		// edge parameter
+//		public double node2nodeProbability = 0.4;
+//		public int edgeBandwithMinimum = 10;
+//		public int edgeBandwithMaximum = 30;
+//
+//		// service parameter
+//		public int serviceNumber = 5;
+		
+		FDSubstrateNework.startExperiment(vnp);
+		
 		// embedding virtual network into substrate network
 		// enhance the virtual network
 
-		VirtualNetworkRequest VNR1 = new VirtualNetworkRequest(4, 4, 4);
-		VNR1.initSample1();
-
-		SubstrateNetwork FDSubstrateNework = new SubstrateNetwork(substrateNodeSize, substrateEdgeSize, serviceNumber);
-		FDSubstrateNework.faultInit();
 
 //		EnhancedVirtualNetwork EVNR1 = new EnhancedVirtualNetwork(7, 4, 4, VNR1);
 //		EVNR1.initSample1();
@@ -48,14 +77,14 @@ public class main {
 		
 		
 		
-		VirtualNetworkRequest VNR2 = new VirtualNetworkRequest(2, 1, 2);
-		VNR2.initSample2();
-		
-		EnhancedVirtualNetwork EVNR3 = new EnhancedVirtualNetwork(4, 2, 2, VNR2);
-		EVNR3.initSample2();
-		EVNR3.computeItems();
-		EVNR3.HeursitcAlgorithm4Survivability(2, EVNR3.FailureDependent);
-		System.out.println("------------------" + "----------------");
+//		VirtualNetwork VNR2 = new VirtualNetwork(2, 1, 2);
+//		VNR2.initSample2();
+//		
+//		EnhancedVirtualNetwork EVNR3 = new EnhancedVirtualNetwork(4, 2, 2, VNR2);
+//		EVNR3.initSample2();
+//		EVNR3.computeItems();
+//		EVNR3.HeursitcAlgorithm4Survivability(2, EVNR3.FailureDependent);
+//		System.out.println("------------------" + "----------------");
 		
 		
 		

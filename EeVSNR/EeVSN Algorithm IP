@@ -1,0 +1,446 @@
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 00:47:39 2017
+
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 01:07:16 2017
+
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 01:09:14 2017
+
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 01:09:51 2017
+
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 01:10:29 2017
+
+Optimize a model with 114 rows, 196 columns and 806 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 10 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:10:01 2017
+
+Optimize a model with 114 rows, 196 columns and 806 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 10 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:14:10 2017
+
+Optimize a model with 86 rows, 196 columns and 498 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 7 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:17:43 2017
+
+Optimize a model with 86 rows, 196 columns and 498 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 7 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:35:54 2017
+
+Optimize a model with 146 rows, 196 columns and 663 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 67 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:48:42 2017
+
+Optimize a model with 146 rows, 196 columns and 663 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 67 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:52:05 2017
+
+Optimize a model with 146 rows, 196 columns and 663 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 0 rows and 28 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:52:36 2017
+
+Optimize a model with 146 rows, 196 columns and 663 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 0 rows and 28 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 10:58:30 2017
+
+Optimize a model with 146 rows, 196 columns and 663 nonzeros
+Model has 245 quadratic constraints
+Presolve removed 0 rows and 28 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 16:50:00 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 8 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 16:56:29 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 8 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:04:21 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 8 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:04:37 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 8 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:04:40 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 8 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:05:07 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 8 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:05:39 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 8 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:06:02 2017
+
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:15:45 2017
+
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:19:12 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 10 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:19:41 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Presolve removed 0 rows and 26 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:21:55 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 10 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:29:33 2017
+
+Optimize a model with 36 rows, 44 columns and 110 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 10 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:31:42 2017
+
+Optimize a model with 56 rows, 44 columns and 130 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 10 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:50:17 2017
+
+Optimize a model with 56 rows, 44 columns and 130 nonzeros
+Presolve removed 0 rows and 26 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:51:35 2017
+
+Optimize a model with 56 rows, 44 columns and 130 nonzeros
+Model has 48 quadratic constraints
+Presolve removed 0 rows and 10 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri Jun 23 17:54:19 2017
+
+Optimize a model with 56 rows, 44 columns and 130 nonzeros
+Presolve removed 0 rows and 26 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:06:37 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:06:49 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:09:35 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:11:19 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:11:22 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:19:46 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:23:38 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:23:45 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Presolve removed 0 rows and 7 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 4 available processors)
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:29:39 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Model has 8 quadratic constraints
+Presolve removed 6 rows and 8 columns
+Presolve time: 0.01s
+
+Barrier solved model in 0 iterations and 0.01 seconds
+Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Fri 23 Jun 2017 07:29:59 PM CST
+
+Optimize a model with 15 rows, 10 columns and 23 nonzeros
+Presolve removed 6 rows and 8 columns
+Presolve time: 0.00s
+
+Solved in 0 iterations and 0.00 seconds
+Infeasible model

@@ -51,7 +51,7 @@ public class EnhancedVirtualNetwork {
 
 	public int virtualNode2EnhancedVirtualNode[];
 
-	public VirtualNetworkRequest VNR;
+	public VirtualNetwork VNR;
 
 	class StarEdgeStructure {
 		int neighborVNID;
@@ -88,7 +88,7 @@ public class EnhancedVirtualNetwork {
 	starStructure Items[];
 	Vector<starStructure> Knapsacks;
 
-	public EnhancedVirtualNetwork(int nodeSize, int edgeSize, int serviceNumber, VirtualNetworkRequest VNR) {
+	public EnhancedVirtualNetwork(int nodeSize, int edgeSize, int serviceNumber, VirtualNetwork VNR) {
 		this.nodeSize = nodeSize;
 		this.VNR = VNR;
 		topology = new boolean[nodeSize][nodeSize];
