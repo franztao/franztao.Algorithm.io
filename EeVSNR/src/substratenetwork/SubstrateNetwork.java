@@ -167,6 +167,7 @@ public class SubstrateNetwork {
 		// time slots
 		VirtualNetwork vn = new VirtualNetwork(vnp);
 		distributeVirtualNetwork(vn);
+		
 		vnq.addElement(vn);
 		// VNR1.initSample1();
 	}
