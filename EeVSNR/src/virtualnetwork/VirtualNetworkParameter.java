@@ -12,8 +12,8 @@ public class VirtualNetworkParameter {
 	public int nodeSize = 4;
 	public int nodeSizeMinimum = 2;
 	public int nodeSizeMaximum = 10;
-	public int nodeComputationMaximum = 20;
 	public int nodeComputationMinimum = 5;
+	public int nodeComputationMaximum = 20;
 
 	// edge parameter
 	public double node2nodeProbability = 0.4;

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import standardalgorithm.ShortestPath;
 import virtualnetwork.VirtualNetworkParameter;
 import virtualnetwork.EnhancedVirtualNetwork;
 import virtualnetwork.VirtualNetwork;
@@ -195,13 +196,13 @@ public class SubstrateNetwork {
 			vn.nodeServiceType[i] = nodeservice;
 			vn.vnode2snode[i] = nodeloc;
 			vn.nodeComputationDemand[i] = (int) (vnp.nodeComputationMinimum
-					+ Math.random() * (vnp.nodeComputationMaximum - vnp.nodeComputationMinimum));
+					+ Math.round(Math.random() * (vnp.nodeComputationMaximum - vnp.nodeComputationMinimum)));
 			if (vn.nodeComputationDemand[i] == 0) {
 				vn.nodeComputationDemand[i]++;
 			}
 			if (vn.nodeComputationDemand[i] > (this.nodeComputationCapacity[i]
 					- this.usedNodeCurrentComputationCapacity[i])) {
-				System.out.println("be not able to embed virtual network");
+				System.out.println("be not able to embed virtual network's node");
 				return false;
 			} else {
 				this.usedNodeCurrentComputationCapacity[i] += vn.nodeComputationDemand[i];
@@ -214,12 +215,21 @@ public class SubstrateNetwork {
 				double ran = Math.random();
 				if (ran < vnp.node2nodeProbability) {
 					// exist edge's path,bandwith
+					//source destination bandwith[][]
+					//return path
+					int [][]bandwith=new int[this.nodeSize][this.nodeSize];
+					for(int k=0;k<this.nodeSize;k++){
+						for(int l=0;l<this.nodeSize;l++){
+							bandwith[k][l]=this.edgeBandwithCapacity[k][l]-this.usedEdgeCurrentBandwithCapacity[k][l];
+						}
+					}
+//					ShortestPath.Dijkstra(i,j,bandwith);
 					path[i][j]=new Vector<Integer>();
-					int bandwith = 1;//
+					int dbandwith = 1;//
 					vn.topology[i][j] = true;
 					vn.topology[j][i] = true;
-					vn.edgeBandwithDemand[i][j] = bandwith;
-					vn.edgeBandwithDemand[j][i] = bandwith;
+					vn.edgeBandwithDemand[i][j] = dbandwith;
+					vn.edgeBandwithDemand[j][i] = dbandwith;
 				}
 			}
 		}

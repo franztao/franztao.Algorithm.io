@@ -2,6 +2,33 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/home/franz/Downloads/gurobi563/linux64/lib/gurobi.jar"/>
+	<classpathentry kind="lib" path="/home/franz/Downloads/gurobi563/linux64/lib/gurobi.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/franz/Downloads/gurobi563/linux64/docs/refman/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/franz/Downloads/jgrapht-1.0.1/lib/antlr4-runtime-4.5.3.jar"/>
+	<classpathentry kind="lib" path="/home/franz/Downloads/jgrapht-1.0.1/lib/jgraph-5.13.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/franz/Downloads/jgrapht-1.0.1/lib/jgrapht-core-1.0.1.jar" sourcepath="/home/franz/Downloads/jgrapht-1.0.1/source">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/franz/Downloads/jgrapht-1.0.1/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/franz/Downloads/jgrapht-1.0.1/lib/jgrapht-demo-1.0.1.jar" sourcepath="/home/franz/Downloads/jgrapht-1.0.1/source">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/franz/Downloads/jgrapht-1.0.1/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/franz/Downloads/jgrapht-1.0.1/lib/jgrapht-ext-1.0.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/franz/Downloads/jgrapht-1.0.1/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/franz/Downloads/jgrapht-1.0.1/lib/jgrapht-ext-1.0.1-uber.jar" sourcepath="/home/franz/Downloads/jgrapht-1.0.1/source">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/franz/Downloads/jgrapht-1.0.1/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/franz/Downloads/jgrapht-1.0.1/lib/jgraphx-2.0.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
