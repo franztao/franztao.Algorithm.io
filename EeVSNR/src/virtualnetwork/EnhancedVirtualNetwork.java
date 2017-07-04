@@ -4,6 +4,7 @@
 package virtualnetwork;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -84,7 +85,7 @@ public class EnhancedVirtualNetwork {
 	 * @param path
 	 * @param bn
 	 */
-	public EnhancedVirtualNetwork(VirtualNetwork vn, Vector<Integer>[][] path, BackupNode bn) {
+	public EnhancedVirtualNetwork(VirtualNetwork vn, List<Integer>[][] path, BackupNode bn) {
 		this.nodeSize = vn.nodeSize + bn.backupNodeSize;
 		nodeComputationCapacity = new int[this.nodeSize];
 		needNodeComputation = new int[this.nodeSize];
@@ -118,7 +119,7 @@ public class EnhancedVirtualNetwork {
 	 * @param path
 	 * @param bn
 	 */
-	private void constrcutEVN(VirtualNetwork vn2, Vector<Integer>[][] path, BackupNode bn) {
+	private void constrcutEVN(VirtualNetwork vn2, List<Integer>[][] path, BackupNode bn) {
 		// TODO Auto-generated method stub
 		
 	}
