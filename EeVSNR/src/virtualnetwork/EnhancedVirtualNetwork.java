@@ -4,6 +4,7 @@
 package virtualnetwork;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -44,7 +45,7 @@ public class EnhancedVirtualNetwork {
 
 	public VirtualNetwork VN;
 
-	public boolean sampleInit;
+//	public boolean sampleInit;
 
 	class StarEdgeStructure {
 		int neighborVNID;
@@ -87,7 +88,7 @@ public class EnhancedVirtualNetwork {
 	 * @param bn
 	 */
 	public EnhancedVirtualNetwork(SubstrateNetwork fDSubstrateNework, VirtualNetwork vn, BackupNode bn,
-			List<Integer>[][] path) {
+			Vector<Vector<LinkedList<Integer>>> path) {
 		this.VN = vn;
 		// node
 		this.nodeSize4Embeded = vn.nodeSize;
@@ -111,12 +112,12 @@ public class EnhancedVirtualNetwork {
 
 		this.consumedResource = new UsedResource();
 
-		this.sampleInit = vn.sampleInit;
-		if (this.sampleInit) {
-			initSample1();
-		} else {
+//		this.sampleInit = vn.sampleInit;
+//		if (this.sampleInit) {
+//			initSample1();
+//		} else {
 			constrcutEVN(fDSubstrateNework, vn, bn, path);
-		}
+//		}
 	}
 
 	/**
@@ -125,7 +126,7 @@ public class EnhancedVirtualNetwork {
 	 * @param bn
 	 */
 	private void constrcutEVN(SubstrateNetwork fDSubstrateNework, VirtualNetwork vn2, BackupNode bn,
-			List<Integer>[][] path) {
+			Vector<Vector<LinkedList<Integer>>> path) {
 		// node
 		for (int i = 0; i < this.nodeSize; i++) {
 			if (i < this.nodeSize4Embeded) {
@@ -190,6 +191,9 @@ public class EnhancedVirtualNetwork {
 				consumedResource.edgeBandwith4Initial += this.needEdgeBandwith[i][j];
 			}
 		}
+		consumedResource.edgeBandwith4Consumed/=2;
+		consumedResource.edgeBandwith4Initial/=2;
+		
 
 	}
 

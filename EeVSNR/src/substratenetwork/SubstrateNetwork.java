@@ -36,25 +36,25 @@ public class SubstrateNetwork {
 	public SubstrateNetwork(SubStrateNetworkParameter snp) {
 		// node
 		this.nodeSize = snp.nodeSize;
-		nodeComputationCapacity = new int[nodeSize];
-		nodeComputationCurrentConsume = new int[nodeSize];
+		this.nodeComputationCapacity = new int[nodeSize];
+		this.nodeComputationCurrentConsume = new int[nodeSize];
 
 		// edge
-		topology = new boolean[nodeSize][nodeSize];
-		edgeBandwithCapacity = new int[nodeSize][nodeSize];
-		edgeBandwithCurrentConsume = new int[nodeSize][nodeSize];
+		this.topology = new boolean[nodeSize][nodeSize];
+		this.edgeBandwithCapacity = new int[nodeSize][nodeSize];
+		this.edgeBandwithCurrentConsume = new int[nodeSize][nodeSize];
 
 		// service
 		this.serviceNumber = snp.serviceNumber;
-		serviceTypeSet = new boolean[nodeSize][serviceNumber ];
+		this.serviceTypeSet = new boolean[nodeSize][serviceNumber ];
 		// serviceTypeVector = new Vector<Integer>();
 
 		// label
-		node2Label = new String[nodeSize];
-		label2Node = new HashMap<String, Integer>();
+		this.node2Label = new String[nodeSize];
+		this.label2Node = new HashMap<String, Integer>();
 
-		vnquest = new Vector<VirtualNetwork>();
-		evn = new Vector<EnhancedVirtualNetwork>();
+		this.vnquest = new Vector<VirtualNetwork>();
+		this.evn = new Vector<EnhancedVirtualNetwork>();
 		if (snp.sampleInit) {
 			faultInit();
 		} else {
@@ -120,9 +120,9 @@ public class SubstrateNetwork {
 		nodeComputationCapacity[1] = 7;
 		nodeComputationCapacity[2] = 7;
 		nodeComputationCapacity[3] = 10;
-		nodeComputationCapacity[4] = 8;
-		nodeComputationCapacity[5] = 6;
-		nodeComputationCapacity[6] = 6;
+		nodeComputationCapacity[4] = 6;
+		nodeComputationCapacity[5] = 9;
+		nodeComputationCapacity[6] = 8;
 		nodeComputationCapacity[7] = 9;
 		nodeComputationCapacity[8] = 8;
 
@@ -132,16 +132,16 @@ public class SubstrateNetwork {
 				edgeBandwithCapacity[i][j] = 30;
 			}
 		}
-
 		serviceTypeSet[0][0] = true;
 		serviceTypeSet[1][1] = true;
 		serviceTypeSet[1][2] = true;
 		serviceTypeSet[2][2] = true;
 		serviceTypeSet[3][3] = true;
+		
+		serviceTypeSet[4][0] = true;
 		serviceTypeSet[4][1] = true;
-		serviceTypeSet[4][2] = true;
 		serviceTypeSet[5][0] = true;
-		serviceTypeSet[5][1] = true;
+		serviceTypeSet[5][3] = true;
 		serviceTypeSet[6][1] = true;
 		serviceTypeSet[6][2] = true;
 		serviceTypeSet[7][0] = true;
