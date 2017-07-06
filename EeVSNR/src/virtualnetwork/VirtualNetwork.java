@@ -12,36 +12,39 @@ import java.util.Map;
  */
 public class VirtualNetwork {
 	public int nodeSize;
-	public boolean topology[][];
-	public int vnode2snode[];
+	public int vNode2sNode[];
+	public int[] nodeComputationDemand;
+	public int[] nodeComputationCapacity4embeded;
 
-	public int nodeComputationDemand[];
+	public boolean topology[][];
 	public int edgeBandwithDemand[][];
 
 	public int serviceNumber;
 	public int nodeServiceType[];
 
-	public String nodeLabel[];
-	public Map<String, Integer> labeltoID;
+	public String node2Label[];
+	public Map<String, Integer> label2Node;
 
 	public boolean sampleInit;
+
 	/**
 	 * @param vnp
 	 */
 	public VirtualNetwork(VirtualNetworkParameter vnp) {
 		this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
-		this.vnode2snode = new int[nodeSize];
+		this.vNode2sNode = new int[nodeSize];
 		this.nodeComputationDemand = new int[nodeSize];
+		this.nodeComputationCapacity4embeded = new int[nodeSize];
 
 		this.topology = new boolean[nodeSize][nodeSize];
 		this.edgeBandwithDemand = new int[nodeSize][nodeSize];
 
 		this.serviceNumber = vnp.serviceNumber;
-		this.nodeServiceType = new int[nodeSize + 1];
+		this.nodeServiceType = new int[nodeSize ];
 
-		this.nodeLabel = new String[nodeSize];
-		this.labeltoID = new HashMap<String, Integer>();
-		this.sampleInit=vnp.sampleInit;
+		this.node2Label = new String[nodeSize];
+		this.label2Node = new HashMap<String, Integer>();
+		this.sampleInit = vnp.sampleInit;
 		init();
 		if (vnp.sampleInit) {
 			this.nodeSize = 4;
@@ -55,9 +58,9 @@ public class VirtualNetwork {
 	private void init() {
 		String str = "VN_";
 		for (int i = 0; i < this.nodeSize; i++) {
-			this.nodeLabel[i] = str + (i + 1);
+			this.node2Label[i] = str + (i + 1);
 
-			labeltoID.put(str + (i + 1), 0);
+			label2Node.put(str + (i + 1), 0);
 		}
 	}
 
@@ -84,10 +87,10 @@ public class VirtualNetwork {
 			}
 		}
 
-		nodeServiceType[0] = 1;
-		nodeServiceType[1] = 2;
-		nodeServiceType[2] = 3;
-		nodeServiceType[3] = 4;
+		nodeServiceType[0] = 0;
+		nodeServiceType[1] = 1;
+		nodeServiceType[2] = 2;
+		nodeServiceType[3] = 3;
 	}
 
 	public void initSample2() {
@@ -105,13 +108,13 @@ public class VirtualNetwork {
 			}
 		}
 
-		nodeServiceType[0] = 1;
-		nodeServiceType[1] = 2;
+		nodeServiceType[0] = 0;
+		nodeServiceType[1] = 1;
 	}
 
 	public void initSample3() {
 		nodeComputationDemand[0] = 3;
 
-		nodeServiceType[0] = 1;
+		nodeServiceType[0] = 0;
 	}
 }

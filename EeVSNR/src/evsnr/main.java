@@ -63,8 +63,9 @@ public class main {
 		//
 		// // service parameter
 		// public int serviceNumber = 5;
-
-		FDSubstrateNework.startExperiment(vnp);
+		Experiment exp=new Experiment(FDSubstrateNework,vnp);
+		exp.startExperiment();
+//		FDSubstrateNework.startExperiment(vnp);
 
 		// embedding virtual network into substrate network
 		// enhance the virtual network
