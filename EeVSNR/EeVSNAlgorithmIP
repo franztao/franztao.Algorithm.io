@@ -141,3 +141,13 @@ Presolve time: 0.00s
 
 Barrier solved model in 0 iterations and 0.00 seconds
 Model is infeasible
+
+Gurobi 5.6.3 (linux64) logging started Fri 07 Jul 2017 11:30:23 AM CST
+
+Optimize a model with 329 rows, 270 columns and 1016 nonzeros
+Model has 405 quadratic constraints
+Presolve removed 160 rows and 45 columns
+Presolve time: 0.00s
+
+Barrier solved model in 0 iterations and 0.00 seconds
+Model is infeasible
