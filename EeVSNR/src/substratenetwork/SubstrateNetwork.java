@@ -14,14 +14,14 @@ public class SubstrateNetwork {
 	public int nodeSize;
 	public int nodeComputationCapacity[];
 	public int nodeComputationCurrentConsume[];
-	
+
 	public boolean topology[][];
 	public int edgeBandwithCapacity[][];
 	public int edgeBandwithCurrentConsume[][];
 
 	public int serviceNumber;
-	public boolean serviceTypeSet[][];
-	public Vector<Integer>[] serviceTypeSetVector;
+	public boolean boolServiceTypeSet[][];
+	public Vector<Integer>[] vectorServiceTypeSet;
 
 	public String node2Label[];
 	public Map<String, Integer> label2Node;
@@ -46,7 +46,7 @@ public class SubstrateNetwork {
 
 		// service
 		this.serviceNumber = snp.serviceNumber;
-		this.serviceTypeSet = new boolean[nodeSize][serviceNumber ];
+		this.boolServiceTypeSet = new boolean[nodeSize][serviceNumber];
 		// serviceTypeVector = new Vector<Integer>();
 
 		// label
@@ -56,16 +56,16 @@ public class SubstrateNetwork {
 		this.vnquest = new Vector<VirtualNetwork>();
 		this.evn = new Vector<EnhancedVirtualNetwork>();
 		if (snp.sampleInit) {
-			faultInit();
+			faultSetResourceDistribution();
 		} else {
-			Init(snp);
+			setResourceDistribution(snp);
 		}
 	}
 
 	/**
 	 * @param snp
 	 */
-	private void Init(SubStrateNetworkParameter snp) {
+	private void setResourceDistribution(SubStrateNetworkParameter snp) {
 		// node computation
 		for (int i = 0; i < this.nodeSize; i++) {
 			this.nodeComputationCapacity[i] = (int) (snp.nodeComputationMinimum
@@ -76,8 +76,7 @@ public class SubstrateNetwork {
 		// edge bandwith
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < i; j++) {
-				double ran = Math.random();
-				if (ran < snp.node2nodeProbability) {
+				if (Math.random() < snp.node2nodeProbability) {
 					this.topology[i][j] = true;
 					this.topology[j][i] = true;
 				}
@@ -96,11 +95,11 @@ public class SubstrateNetwork {
 
 		// service
 		for (int i = 0; i < this.nodeSize; i++) {
-			this.serviceTypeSetVector[i] = new Vector<Integer>();
+			this.vectorServiceTypeSet[i] = new Vector<Integer>();
 			for (int j = 0; j < this.serviceNumber; j++) {
-				if (Math.random() > snp.serivecProbability) {
-					this.serviceTypeSet[i][j ] = true;
-					serviceTypeSetVector[i].addElement(j + 1);
+				if (Math.random() < snp.serivecProbability) {
+					this.boolServiceTypeSet[i][j] = true;
+					vectorServiceTypeSet[i].addElement(j + 1);
 				}
 			}
 		}
@@ -112,10 +111,10 @@ public class SubstrateNetwork {
 			label2Node.put((str + (1 + i)), i);
 		}
 		// timeSpan
-		this.timeSpan = snp.time;
+		this.timeSpan = snp.runningTime;
 	}
 
-	public void faultInit() {
+	public void faultSetResourceDistribution() {
 		nodeComputationCapacity[0] = 5;
 		nodeComputationCapacity[1] = 7;
 		nodeComputationCapacity[2] = 7;
@@ -132,21 +131,21 @@ public class SubstrateNetwork {
 				edgeBandwithCapacity[i][j] = 30;
 			}
 		}
-		serviceTypeSet[0][0] = true;
-		serviceTypeSet[1][1] = true;
-		serviceTypeSet[1][2] = true;
-		serviceTypeSet[2][2] = true;
-		serviceTypeSet[3][3] = true;
-		
-		serviceTypeSet[4][0] = true;
-		serviceTypeSet[4][1] = true;
-		serviceTypeSet[5][0] = true;
-		serviceTypeSet[5][3] = true;
-		serviceTypeSet[6][1] = true;
-		serviceTypeSet[6][2] = true;
-		serviceTypeSet[7][0] = true;
-		serviceTypeSet[7][3] = true;
-		serviceTypeSet[8][3] = true;
+		boolServiceTypeSet[0][0] = true;
+		boolServiceTypeSet[1][1] = true;
+		boolServiceTypeSet[1][2] = true;
+		boolServiceTypeSet[2][2] = true;
+		boolServiceTypeSet[3][3] = true;
+
+		boolServiceTypeSet[4][0] = true;
+		boolServiceTypeSet[4][1] = true;
+		boolServiceTypeSet[5][0] = true;
+		boolServiceTypeSet[5][3] = true;
+		boolServiceTypeSet[6][1] = true;
+		boolServiceTypeSet[6][2] = true;
+		boolServiceTypeSet[7][0] = true;
+		boolServiceTypeSet[7][3] = true;
+		boolServiceTypeSet[8][3] = true;
 
 		node2Label[0] = "S1";
 		node2Label[1] = "S2";
@@ -168,9 +167,5 @@ public class SubstrateNetwork {
 		label2Node.put("S8", 7);
 		label2Node.put("S9", 8);
 	}
-
-	
-
-	
 
 }

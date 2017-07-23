@@ -130,7 +130,7 @@ public class EnhancedVirtualNetwork {
 		// node
 		for (int i = 0; i < this.nodeSize; i++) {
 			if (i < this.nodeSize4Embeded) {
-				this.nodeComputationCapacity[i] = vn2.nodeComputationCapacity4embeded[i];
+				this.nodeComputationCapacity[i] = vn2.nodeComputationCurrentConsume[i];
 				this.needNodeComputation[i] = vn2.nodeComputationDemand[i];
 			} else {
 				this.nodeComputationCapacity[i] = bn.nodeComputationCapacity[i - this.nodeSize4Embeded];
@@ -150,9 +150,9 @@ public class EnhancedVirtualNetwork {
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.serviceNumber; j++) {
 				if (i < this.nodeSize4Embeded) {
-					this.serviceTypeSet[i][j] = fDSubstrateNework.serviceTypeSet[vn2.vNode2sNode[i]][j];
+					this.serviceTypeSet[i][j] = fDSubstrateNework.boolServiceTypeSet[vn2.vNode2sNode[i]][j];
 				} else {
-					this.serviceTypeSet[i][j] = fDSubstrateNework.serviceTypeSet[bn.bNode2sNode[i
+					this.serviceTypeSet[i][j] = fDSubstrateNework.boolServiceTypeSet[bn.bNode2sNode[i
 							- this.nodeSize4Embeded]][j];
 				}
 			}
