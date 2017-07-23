@@ -1,43 +1,47 @@
 package substratenetwork;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import standardalgorithm.ShortestPath;
-import virtualnetwork.VirtualNetworkParameter;
 import virtualnetwork.EnhancedVirtualNetwork;
 import virtualnetwork.VirtualNetwork;
 
-public class SubstrateNetwork {
+public class SubstrateNetwork implements Cloneable {
 	public int nodeSize;
 	public int nodeComputationCapacity[];
-	public int nodeComputationCurrentConsume[];
-	
+	public int nodeComputation4Former[];
+	public int nodeComputation4Enhance_Sum[];
+	public int nodeComputation4Temp[];
+	public Vector<Integer> vnRequestSet[];
+
 	public boolean topology[][];
 	public int edgeBandwithCapacity[][];
 	public int edgeBandwithCurrentConsume[][];
 
 	public int serviceNumber;
-	public boolean serviceTypeSet[][];
-	public Vector<Integer>[] serviceTypeSetVector;
+	public boolean boolServiceTypeSet[][];
+	public Vector<Integer>[] vectorServiceTypeSet;
 
 	public String node2Label[];
 	public Map<String, Integer> label2Node;
 
 	public Vector<VirtualNetwork> vnquest;
 	public Vector<EnhancedVirtualNetwork> evn;
-	public int timeSpan;
 
 	/**
 	 * @param snp
 	 */
 	public SubstrateNetwork(SubStrateNetworkParameter snp) {
 		// node
-		this.nodeSize = snp.nodeSize;
+		this.nodeSize = snp.getNodeSize();
 		this.nodeComputationCapacity = new int[nodeSize];
-		this.nodeComputationCurrentConsume = new int[nodeSize];
+		this.nodeComputation4Former = new int[nodeSize];
+		this.nodeComputation4Enhance_Sum = new int[nodeSize];
+		this.nodeComputation4Temp = new int[nodeSize];
+		for (int i = 0; i < nodeSize; i++) {
+			vnRequestSet[i] = new Vector<Integer>();
+		}
 
 		// edge
 		this.topology = new boolean[nodeSize][nodeSize];
@@ -45,8 +49,8 @@ public class SubstrateNetwork {
 		this.edgeBandwithCurrentConsume = new int[nodeSize][nodeSize];
 
 		// service
-		this.serviceNumber = snp.serviceNumber;
-		this.serviceTypeSet = new boolean[nodeSize][serviceNumber ];
+		this.serviceNumber = snp.getServiceNumber();
+		this.boolServiceTypeSet = new boolean[nodeSize][serviceNumber];
 		// serviceTypeVector = new Vector<Integer>();
 
 		// label
@@ -55,29 +59,57 @@ public class SubstrateNetwork {
 
 		this.vnquest = new Vector<VirtualNetwork>();
 		this.evn = new Vector<EnhancedVirtualNetwork>();
-		if (snp.sampleInit) {
-			faultInit();
+		if (snp.isSampleInit()) {
+			faultSetResourceDistribution();
 		} else {
-			Init(snp);
+			setResourceDistribution(snp);
 		}
+	}
+
+	/**
+	 * @param nodeloc
+	 * @param isShared
+	 * @return
+	 */
+	public int getRemainComputaion(int nodeloc, boolean isShared) {
+		int remain = 0;
+		if (isShared) {
+			int maxShare = 0;
+			for (int i = 0; i < this.vnRequestSet[nodeloc].size(); i++) {
+				int vni = this.vnRequestSet[nodeloc].get(i);
+				for (int j = 0; j < this.vnquest.get(vni).getNodeSize(); j++) {
+					if (nodeloc == this.vnquest.get(vni).vNode2sNode[j]) {
+						// one substrate network node map multiple virtual
+						// network request and network node
+						maxShare = Math.max(maxShare, this.evn.get(vni).enhancedNodeComputation[j]);
+					}
+				}
+			}
+			remain = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
+					- this.nodeComputation4Temp[nodeloc] - maxShare;
+
+		} else {
+			remain = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
+					- this.nodeComputation4Enhance_Sum[nodeloc] - this.nodeComputation4Temp[nodeloc];
+		}
+		return remain;
 	}
 
 	/**
 	 * @param snp
 	 */
-	private void Init(SubStrateNetworkParameter snp) {
+	private void setResourceDistribution(SubStrateNetworkParameter snp) {
 		// node computation
 		for (int i = 0; i < this.nodeSize; i++) {
-			this.nodeComputationCapacity[i] = (int) (snp.nodeComputationMinimum
-					+ Math.random() * (snp.nodeComputationMaximum - snp.nodeComputationMinimum));
+			this.nodeComputationCapacity[i] = (int) (snp.getNodeComputationMinimum()
+					+ Math.random() * (snp.getNodeComputationMaximum() - snp.getNodeComputationMinimum()));
 
 		}
 
 		// edge bandwith
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < i; j++) {
-				double ran = Math.random();
-				if (ran < snp.node2nodeProbability) {
+				if (Math.random() < snp.getNode2nodeProbability()) {
 					this.topology[i][j] = true;
 					this.topology[j][i] = true;
 				}
@@ -87,8 +119,8 @@ public class SubstrateNetwork {
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.nodeSize; j++) {
 				if (this.topology[i][j]) {
-					this.edgeBandwithCapacity[i][j] = (int) (snp.edgeBandwithMinimum
-							+ Math.random() * (snp.edgeBandwithMaximum - snp.edgeBandwithMinimum));
+					this.edgeBandwithCapacity[i][j] = (int) (snp.getEdgeBandwithMinimum()
+							+ Math.random() * (snp.getEdgeBandwithMaximum() - snp.getEdgeBandwithMinimum()));
 					this.edgeBandwithCapacity[j][i] = this.edgeBandwithCapacity[i][j];
 				}
 			}
@@ -96,11 +128,11 @@ public class SubstrateNetwork {
 
 		// service
 		for (int i = 0; i < this.nodeSize; i++) {
-			this.serviceTypeSetVector[i] = new Vector<Integer>();
+			this.vectorServiceTypeSet[i] = new Vector<Integer>();
 			for (int j = 0; j < this.serviceNumber; j++) {
-				if (Math.random() > snp.serivecProbability) {
-					this.serviceTypeSet[i][j ] = true;
-					serviceTypeSetVector[i].addElement(j + 1);
+				if (Math.random() < snp.getSerivecProbability()) {
+					this.boolServiceTypeSet[i][j] = true;
+					vectorServiceTypeSet[i].addElement(j + 1);
 				}
 			}
 		}
@@ -111,11 +143,9 @@ public class SubstrateNetwork {
 			node2Label[i] = (str + (i + 1));
 			label2Node.put((str + (1 + i)), i);
 		}
-		// timeSpan
-		this.timeSpan = snp.time;
 	}
 
-	public void faultInit() {
+	public void faultSetResourceDistribution() {
 		nodeComputationCapacity[0] = 5;
 		nodeComputationCapacity[1] = 7;
 		nodeComputationCapacity[2] = 7;
@@ -132,21 +162,21 @@ public class SubstrateNetwork {
 				edgeBandwithCapacity[i][j] = 30;
 			}
 		}
-		serviceTypeSet[0][0] = true;
-		serviceTypeSet[1][1] = true;
-		serviceTypeSet[1][2] = true;
-		serviceTypeSet[2][2] = true;
-		serviceTypeSet[3][3] = true;
-		
-		serviceTypeSet[4][0] = true;
-		serviceTypeSet[4][1] = true;
-		serviceTypeSet[5][0] = true;
-		serviceTypeSet[5][3] = true;
-		serviceTypeSet[6][1] = true;
-		serviceTypeSet[6][2] = true;
-		serviceTypeSet[7][0] = true;
-		serviceTypeSet[7][3] = true;
-		serviceTypeSet[8][3] = true;
+		boolServiceTypeSet[0][0] = true;
+		boolServiceTypeSet[1][1] = true;
+		boolServiceTypeSet[1][2] = true;
+		boolServiceTypeSet[2][2] = true;
+		boolServiceTypeSet[3][3] = true;
+
+		boolServiceTypeSet[4][0] = true;
+		boolServiceTypeSet[4][1] = true;
+		boolServiceTypeSet[5][0] = true;
+		boolServiceTypeSet[5][3] = true;
+		boolServiceTypeSet[6][1] = true;
+		boolServiceTypeSet[6][2] = true;
+		boolServiceTypeSet[7][0] = true;
+		boolServiceTypeSet[7][3] = true;
+		boolServiceTypeSet[8][3] = true;
 
 		node2Label[0] = "S1";
 		node2Label[1] = "S2";
@@ -169,8 +199,17 @@ public class SubstrateNetwork {
 		label2Node.put("S9", 8);
 	}
 
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return (SubstrateNetwork) super.clone();
+	}
 
-	
+	/**
+	 * 
+	 */
+	public void releaseResource() {
+		// TODO Auto-generated method stub
+
+	}
 
 }

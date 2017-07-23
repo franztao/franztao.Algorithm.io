@@ -21,7 +21,7 @@ import substratenetwork.SubstrateNetwork;
  */
 public class EnhancedVirtualNetwork {
 
-	public final int Method = EVSNR.MethodILP;
+	public final int Method = EVSNR.MatchMethodILP;
 
 	// nodeSize=enhacnedNodeSize+backupNodeSize
 	public int nodeSize;
@@ -29,14 +29,15 @@ public class EnhancedVirtualNetwork {
 	public int nodeSize4Backup;
 	// nodeComputationCapacity-usedNodeCurrentComputationCapacity
 	public int nodeComputationCapacity[];
-	public int needNodeComputation[];
+	public int consumeNodeComputation[];
+	public int enhancedNodeComputation[];
 
 	public boolean topology[][];
 	// edgeBandwithCapacity-usedEdgeCurrentBandwithCapacity
-	public int needEdgeBandwith[][];
+	public int consumeEdgeBandwith[][];
 
 	public int serviceNumber;
-	public boolean serviceTypeSet[][];
+	public boolean boolServiceTypeSet[][];
 
 	public String node2Label[];
 	public Map<String, Integer> label2Node;
@@ -57,7 +58,7 @@ public class EnhancedVirtualNetwork {
 	}
 
 	class starStructure {
-		int starNodeType;
+		int starNodeServiceType;
 		int starNodeComputation;
 		int starNodeEnhancedVNID;
 		int starNodeVNID;
@@ -67,17 +68,17 @@ public class EnhancedVirtualNetwork {
 		// Vector<Integer> neighborEdgeBandwith;
 	}
 
-	class UsedResource {
+	class ConsumeResource {
 		int initNodeNumber;
 		int initNodeComputation;
-		int edgeBandwith4Initial;
+		int initEdgeBandwith;
 
 		int consumedNodeNumber;
 		int consumedNodeComputation;
-		int edgeBandwith4Consumed;
+		int consumeEdgeBandwith;
 	}
 
-	UsedResource consumedResource;
+	ConsumeResource consumedResource;
 
 	starStructure Items[];
 	Vector<starStructure> Knapsacks;
@@ -95,13 +96,14 @@ public class EnhancedVirtualNetwork {
 		this.nodeSize4Backup = bn.backupNodeSize;
 		this.nodeSize = this.nodeSize4Embeded + this.nodeSize4Backup;
 		this.nodeComputationCapacity = new int[this.nodeSize];
-		this.needNodeComputation = new int[this.nodeSize];
+		this.consumeNodeComputation = new int[this.nodeSize];
+		this.enhancedNodeComputation=new  int[this.nodeSize];
 		// edge
 		this.topology = new boolean[this.nodeSize][this.nodeSize];
-		this.needEdgeBandwith = new int[this.nodeSize][this.nodeSize];
+		this.consumeEdgeBandwith = new int[this.nodeSize][this.nodeSize];
 		// service
 		this.serviceNumber = vn.serviceNumber;
-		this.serviceTypeSet = new boolean[nodeSize][serviceNumber];
+		this.boolServiceTypeSet = new boolean[nodeSize][serviceNumber];
 		// label
 		this.node2Label = new String[nodeSize];
 		this.label2Node = new HashMap<String, Integer>();
@@ -110,7 +112,7 @@ public class EnhancedVirtualNetwork {
 		// knapsack problem
 		this.Items = new starStructure[this.VN.nodeSize];
 
-		this.consumedResource = new UsedResource();
+		this.consumedResource = new ConsumeResource();
 
 //		this.sampleInit = vn.sampleInit;
 //		if (this.sampleInit) {
@@ -130,11 +132,11 @@ public class EnhancedVirtualNetwork {
 		// node
 		for (int i = 0; i < this.nodeSize; i++) {
 			if (i < this.nodeSize4Embeded) {
-				this.nodeComputationCapacity[i] = vn2.nodeComputationCapacity4embeded[i];
-				this.needNodeComputation[i] = vn2.nodeComputationDemand[i];
+				this.nodeComputationCapacity[i] = vn2.nodeComputationCurrentConsume[i];
+				this.consumeNodeComputation[i] = vn2.nodeComputationDemand[i];
 			} else {
 				this.nodeComputationCapacity[i] = bn.nodeComputationCapacity[i - this.nodeSize4Embeded];
-				this.needNodeComputation[i] = 0;
+				this.consumeNodeComputation[i] = 0;
 			}
 		}
 
@@ -142,7 +144,7 @@ public class EnhancedVirtualNetwork {
 		for (int i = 0; i < this.nodeSize4Embeded; i++) {
 			for (int j = 0; j < this.nodeSize4Embeded; j++) {
 				this.topology[i][j] = vn2.topology[i][j];
-				this.needEdgeBandwith[i][j] = vn2.edgeBandwithDemand[i][j];
+				this.consumeEdgeBandwith[i][j] = vn2.edgeBandwithDemand[i][j];
 			}
 		}
 
@@ -150,9 +152,9 @@ public class EnhancedVirtualNetwork {
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.serviceNumber; j++) {
 				if (i < this.nodeSize4Embeded) {
-					this.serviceTypeSet[i][j] = fDSubstrateNework.serviceTypeSet[vn2.vNode2sNode[i]][j];
+					this.boolServiceTypeSet[i][j] = fDSubstrateNework.boolServiceTypeSet[vn2.vNode2sNode[i]][j];
 				} else {
-					this.serviceTypeSet[i][j] = fDSubstrateNework.serviceTypeSet[bn.bNode2sNode[i
+					this.boolServiceTypeSet[i][j] = fDSubstrateNework.boolServiceTypeSet[bn.bNode2sNode[i
 							- this.nodeSize4Embeded]][j];
 				}
 			}
@@ -176,23 +178,23 @@ public class EnhancedVirtualNetwork {
 		}
 
 		for (int i = 0; i < this.nodeSize; i++) {
-			if (this.needNodeComputation[i] > 0) {
+			if (this.consumeNodeComputation[i] > 0) {
 				consumedResource.initNodeNumber++;
 				consumedResource.consumedNodeNumber++;
 
-				consumedResource.initNodeComputation += this.needNodeComputation[i];
-				consumedResource.consumedNodeComputation += this.needNodeComputation[i];
+				consumedResource.initNodeComputation += this.consumeNodeComputation[i];
+				consumedResource.consumedNodeComputation += this.consumeNodeComputation[i];
 			}
 		}
 
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.nodeSize; j++) {
-				consumedResource.edgeBandwith4Consumed += this.needEdgeBandwith[i][j];
-				consumedResource.edgeBandwith4Initial += this.needEdgeBandwith[i][j];
+				consumedResource.consumeEdgeBandwith += this.consumeEdgeBandwith[i][j];
+				consumedResource.initEdgeBandwith += this.consumeEdgeBandwith[i][j];
 			}
 		}
-		consumedResource.edgeBandwith4Consumed/=2;
-		consumedResource.edgeBandwith4Initial/=2;
+		consumedResource.consumeEdgeBandwith/=2;
+		consumedResource.initEdgeBandwith/=2;
 		
 
 	}
@@ -206,39 +208,39 @@ public class EnhancedVirtualNetwork {
 		nodeComputationCapacity[5] = 9;
 		nodeComputationCapacity[6] = 8;
 
-		needNodeComputation[0] = 2;
-		needNodeComputation[1] = 3;
-		needNodeComputation[2] = 5;
-		needNodeComputation[3] = 6;
+		consumeNodeComputation[0] = 2;
+		consumeNodeComputation[1] = 3;
+		consumeNodeComputation[2] = 5;
+		consumeNodeComputation[3] = 6;
 
-		needEdgeBandwith[0][1] = 4;
-		needEdgeBandwith[0][2] = 5;
-		needEdgeBandwith[0][3] = 3;
-		needEdgeBandwith[1][2] = 6;
-		needEdgeBandwith[1][0] = 4;
-		needEdgeBandwith[2][0] = 5;
-		needEdgeBandwith[3][0] = 3;
-		needEdgeBandwith[2][1] = 6;
+		consumeEdgeBandwith[0][1] = 4;
+		consumeEdgeBandwith[0][2] = 5;
+		consumeEdgeBandwith[0][3] = 3;
+		consumeEdgeBandwith[1][2] = 6;
+		consumeEdgeBandwith[1][0] = 4;
+		consumeEdgeBandwith[2][0] = 5;
+		consumeEdgeBandwith[3][0] = 3;
+		consumeEdgeBandwith[2][1] = 6;
 
 		for (int i = 0; i < nodeSize; i++) {
 			for (int j = 0; j < nodeSize; j++) {
-				if (0 != needEdgeBandwith[i][j]) {
+				if (0 != consumeEdgeBandwith[i][j]) {
 					topology[i][j] = true;
 				}
 			}
 		}
 
-		serviceTypeSet[0][0] = true;
-		serviceTypeSet[1][1] = true;
-		serviceTypeSet[1][2] = true;
-		serviceTypeSet[2][2] = true;
-		serviceTypeSet[3][3] = true;
-		serviceTypeSet[4][0] = true;
-		serviceTypeSet[4][1] = true;
-		serviceTypeSet[5][0] = true;
-		serviceTypeSet[5][3] = true;
-		serviceTypeSet[6][1] = true;
-		serviceTypeSet[6][2] = true;
+		boolServiceTypeSet[0][0] = true;
+		boolServiceTypeSet[1][1] = true;
+		boolServiceTypeSet[1][2] = true;
+		boolServiceTypeSet[2][2] = true;
+		boolServiceTypeSet[3][3] = true;
+		boolServiceTypeSet[4][0] = true;
+		boolServiceTypeSet[4][1] = true;
+		boolServiceTypeSet[5][0] = true;
+		boolServiceTypeSet[5][3] = true;
+		boolServiceTypeSet[6][1] = true;
+		boolServiceTypeSet[6][2] = true;
 
 		node2Label[0] = "E1";
 		node2Label[1] = "E2";
@@ -265,11 +267,11 @@ public class EnhancedVirtualNetwork {
 		nodeSize4Backup = 3;
 		nodeSize4Embeded = 4;
 
-		consumedResource.edgeBandwith4Initial = 18;
+		consumedResource.initEdgeBandwith = 18;
 		consumedResource.initNodeComputation = 16;
 		consumedResource.initNodeNumber = 4;
 
-		consumedResource.edgeBandwith4Consumed = 18;
+		consumedResource.consumeEdgeBandwith = 18;
 		consumedResource.consumedNodeComputation = 16;
 		consumedResource.consumedNodeNumber = 4;
 
@@ -284,26 +286,26 @@ public class EnhancedVirtualNetwork {
 		nodeComputationCapacity[2] = 3;
 		nodeComputationCapacity[3] = 7;
 
-		needEdgeBandwith[0][1] = 3;
-		needEdgeBandwith[1][0] = 3;
+		consumeEdgeBandwith[0][1] = 3;
+		consumeEdgeBandwith[1][0] = 3;
 
 		for (int i = 0; i < nodeSize; i++) {
 			for (int j = 0; j < nodeSize; j++) {
-				if (0 != needEdgeBandwith[i][j]) {
+				if (0 != consumeEdgeBandwith[i][j]) {
 					topology[i][j] = true;
 				}
 			}
 		}
 
-		needNodeComputation[0] = 3;
-		needNodeComputation[1] = 4;
+		consumeNodeComputation[0] = 3;
+		consumeNodeComputation[1] = 4;
 
-		serviceTypeSet[0][0] = true;
-		serviceTypeSet[0][1] = true;
-		serviceTypeSet[1][1] = true;
-		serviceTypeSet[2][0] = true;
-		serviceTypeSet[3][0] = true;
-		serviceTypeSet[3][1] = true;
+		boolServiceTypeSet[0][0] = true;
+		boolServiceTypeSet[0][1] = true;
+		boolServiceTypeSet[1][1] = true;
+		boolServiceTypeSet[2][0] = true;
+		boolServiceTypeSet[3][0] = true;
+		boolServiceTypeSet[3][1] = true;
 
 		node2Label[0] = "E1";
 		node2Label[1] = "E2";
@@ -322,11 +324,11 @@ public class EnhancedVirtualNetwork {
 		nodeSize4Backup = 2;
 		nodeSize4Embeded = 2;
 
-		consumedResource.edgeBandwith4Initial = 3;
+		consumedResource.initEdgeBandwith = 3;
 		consumedResource.initNodeComputation = 7;
 		consumedResource.initNodeNumber = 2;
 
-		consumedResource.edgeBandwith4Consumed = 3;
+		consumedResource.consumeEdgeBandwith = 3;
 		consumedResource.consumedNodeComputation = 7;
 		consumedResource.consumedNodeNumber = 2;
 	}
@@ -339,11 +341,11 @@ public class EnhancedVirtualNetwork {
 		nodeComputationCapacity[0] = 5;
 		nodeComputationCapacity[1] = 5;
 
-		needNodeComputation[0] = 3;
+		consumeNodeComputation[0] = 3;
 
-		serviceTypeSet[0][0] = true;
-		serviceTypeSet[1][0] = true;
-		serviceTypeSet[1][1] = true;
+		boolServiceTypeSet[0][0] = true;
+		boolServiceTypeSet[1][0] = true;
+		boolServiceTypeSet[1][1] = true;
 
 		node2Label[0] = "E1";
 		node2Label[1] = "E2";
@@ -357,11 +359,11 @@ public class EnhancedVirtualNetwork {
 		nodeSize4Backup = 1;
 		nodeSize4Embeded = 1;
 
-		consumedResource.edgeBandwith4Initial = 0;
+		consumedResource.initEdgeBandwith = 0;
 		consumedResource.initNodeComputation = 3;
 		consumedResource.initNodeNumber = 1;
 
-		consumedResource.edgeBandwith4Consumed = 0;
+		consumedResource.consumeEdgeBandwith = 0;
 		consumedResource.consumedNodeComputation = 3;
 		consumedResource.consumedNodeNumber = 1;
 	}
@@ -372,7 +374,7 @@ public class EnhancedVirtualNetwork {
 			Items[i].starNodeVNID = i;
 			Items[i].starNodeEnhancedVNID = this.vNode2eNode[i];
 			Items[i].starNodeComputation = this.VN.nodeComputationDemand[i];
-			Items[i].starNodeType = this.VN.nodeServiceType[i];
+			Items[i].starNodeServiceType = this.VN.nodeServiceType[i];
 			Items[i].neighborEdge = new Vector<StarEdgeStructure>();
 			for (int j = 0; j < this.VN.nodeSize; j++) {
 				if (this.VN.topology[i][j]) {
@@ -392,11 +394,11 @@ public class EnhancedVirtualNetwork {
 		for (int i = 0; i < this.nodeSize; i++) {
 			if (i != failurenodeID) {
 				for (int j = 0; j < this.serviceNumber; j++) {
-					if (this.serviceTypeSet[i][j]) {
+					if (this.boolServiceTypeSet[i][j]) {
 						starStructure bag = new starStructure();
-						bag.starNodeType = j;
+						bag.starNodeServiceType = j;
 						bag.starNodeEnhancedVNID = i;
-						bag.starNodeComputation = this.needNodeComputation[i];
+						bag.starNodeComputation = this.consumeNodeComputation[i];
 						// ineffective value
 						bag.starNodeVNID = -1;
 						bag.neighborEdge = new Vector<StarEdgeStructure>();
@@ -408,7 +410,7 @@ public class EnhancedVirtualNetwork {
 								if (i == this.vNode2eNode[k])
 									edge.neighborEdgeBandwithCapacity = Integer.MAX_VALUE;
 								else
-									edge.neighborEdgeBandwithCapacity = this.needEdgeBandwith[i][this.vNode2eNode[k]];
+									edge.neighborEdgeBandwithCapacity = this.consumeEdgeBandwith[i][this.vNode2eNode[k]];
 								// if (i ==
 								// this.virtualNode2EnhancedVirtualNode[k])
 								// edge.neighborUsedEdgeBandwithCapacity =
@@ -429,7 +431,7 @@ public class EnhancedVirtualNetwork {
 		}
 	}
 
-	public boolean ithNode(int failurenodeID, boolean failurtype) throws GRBException {
+	public boolean failIthNode(int failurenodeID, boolean failurtype) throws GRBException {
 		constructKnapsacks(failurenodeID);
 		MulitpleKnapsack MKP = new MulitpleKnapsack(this.VN.nodeSize, Knapsacks.size(), this.nodeSize);
 		constructMultipleKnapsackProbem(MKP, failurtype);
@@ -438,14 +440,14 @@ public class EnhancedVirtualNetwork {
 		}
 		int solution[] = new int[this.VN.nodeSize];
 
-		if (this.Method == EVSNR.MethodDP) {
+		if (this.Method == EVSNR.MatchMethodDP) {
 			if (!MKP.optimalSoutionDP(solution)) {
 				System.out.println("Failure node: " + failurenodeID + ", there is not solution");
 				return false;
 			}
 		}
 
-		if (this.Method == EVSNR.MethodILP) {
+		if (this.Method == EVSNR.MatchMethodILP) {
 			if (!MKP.optimalSoutionILP(solution)) {
 				System.out.println("Failure node: " + failurenodeID + ", there is not solution");
 				return false;
@@ -463,14 +465,14 @@ public class EnhancedVirtualNetwork {
 		// TODO Auto-generated method stub
 
 		int virutialNode2NewVirtualNode[] = new int[this.VN.nodeSize];
-		if (Method == EVSNR.MethodILP) {
+		if (Method == EVSNR.MatchMethodILP) {
 			for (int i = 0; i < this.VN.nodeSize; i++) {
 				virutialNode2NewVirtualNode[i] = Knapsacks.elementAt(solution[i]).starNodeEnhancedVNID;
 				// System.out.println("00000 "+virutialNode2NewVirtualNode[i] +
 				// 1);
 			}
 		}
-		if (Method == EVSNR.MethodDP) {
+		if (Method == EVSNR.MatchMethodDP) {
 			for (int i = 0; i < this.VN.nodeSize; i++) {
 				virutialNode2NewVirtualNode[i] = solution[i];
 				// System.out.println(virutialNode2NewVirtualNode[i] + 1);
@@ -479,18 +481,18 @@ public class EnhancedVirtualNetwork {
 
 		for (int i = 0; i < this.VN.nodeSize; i++) {
 			// add node computation
-			if (this.needNodeComputation[virutialNode2NewVirtualNode[i]] < Items[i].starNodeComputation)
-				this.needNodeComputation[virutialNode2NewVirtualNode[i]] = Items[i].starNodeComputation;
+			if (this.consumeNodeComputation[virutialNode2NewVirtualNode[i]] < Items[i].starNodeComputation)
+				this.consumeNodeComputation[virutialNode2NewVirtualNode[i]] = Items[i].starNodeComputation;
 			for (int j = 0; j < Items[i].neighborEdge.size(); j++) {
 				int neighborVNNode = Items[i].neighborEdge.elementAt(j).neighborVNID;
 				// if (failurenodeID !=
 				// virutialNode2NewVirtualNode[neighborVNNode]) {
 				if (virutialNode2NewVirtualNode[i] != virutialNode2NewVirtualNode[neighborVNNode])
-					if (this.needEdgeBandwith[virutialNode2NewVirtualNode[i]][virutialNode2NewVirtualNode[neighborVNNode]] < Items[i].neighborEdge
+					if (this.consumeEdgeBandwith[virutialNode2NewVirtualNode[i]][virutialNode2NewVirtualNode[neighborVNNode]] < Items[i].neighborEdge
 							.elementAt(j).neighborEdgeBandwithCapacity) {
-						this.needEdgeBandwith[virutialNode2NewVirtualNode[i]][virutialNode2NewVirtualNode[neighborVNNode]] = Items[i].neighborEdge
+						this.consumeEdgeBandwith[virutialNode2NewVirtualNode[i]][virutialNode2NewVirtualNode[neighborVNNode]] = Items[i].neighborEdge
 								.elementAt(j).neighborEdgeBandwithCapacity;
-						this.needEdgeBandwith[virutialNode2NewVirtualNode[neighborVNNode]][virutialNode2NewVirtualNode[i]] = Items[i].neighborEdge
+						this.consumeEdgeBandwith[virutialNode2NewVirtualNode[neighborVNNode]][virutialNode2NewVirtualNode[i]] = Items[i].neighborEdge
 								.elementAt(j).neighborEdgeBandwithCapacity;
 						this.topology[virutialNode2NewVirtualNode[i]][virutialNode2NewVirtualNode[neighborVNNode]] = this.topology[virutialNode2NewVirtualNode[neighborVNNode]][virutialNode2NewVirtualNode[i]] = true;
 						// }
@@ -509,20 +511,20 @@ public class EnhancedVirtualNetwork {
 						&& (Knapsacks.elementAt(j).starNodeEnhancedVNID != Items[i].starNodeEnhancedVNID)) {
 					continue;
 				}
-				if (Items[i].starNodeType == Knapsacks.elementAt(j).starNodeType) {
+				if (Items[i].starNodeServiceType == Knapsacks.elementAt(j).starNodeServiceType) {
 					if (Items[i].starNodeComputation <= this.nodeComputationCapacity[Knapsacks
 							.elementAt(j).starNodeEnhancedVNID]) {
 						mKP.matchingMatrix[i][j] = 0;
-						if (0 == this.needNodeComputation[Knapsacks.elementAt(j).starNodeEnhancedVNID]) {
+						if (0 == this.consumeNodeComputation[Knapsacks.elementAt(j).starNodeEnhancedVNID]) {
 							mKP.matchingMatrix[i][j] += EVSNR.addNewNodeCost;
 						}
 						if (Items[i].starNodeEnhancedVNID != Knapsacks.elementAt(j).starNodeEnhancedVNID) {
 							mKP.matchingMatrix[i][j] += EVSNR.transformExistedNodeCost;
 						}
-						if (Items[i].starNodeComputation > this.needNodeComputation[Knapsacks
+						if (Items[i].starNodeComputation > this.consumeNodeComputation[Knapsacks
 								.elementAt(j).starNodeEnhancedVNID]) {
 							mKP.matchingMatrix[i][j] += (EVSNR.addNodeComputaionCost * (Items[i].starNodeComputation
-									- this.needNodeComputation[Knapsacks.elementAt(j).starNodeEnhancedVNID]));
+									- this.consumeNodeComputation[Knapsacks.elementAt(j).starNodeEnhancedVNID]));
 						}
 						for (int k = 0; k < Items[i].neighborEdge.size(); k++) {
 							boolean existedEdge = true;
@@ -601,8 +603,8 @@ public class EnhancedVirtualNetwork {
 		int number = 0;
 		int resource = 0;
 		for (int i = 0; i < this.nodeSize; i++) {
-			if (this.needNodeComputation[i] > 0) {
-				resource += this.needNodeComputation[i];
+			if (this.consumeNodeComputation[i] > 0) {
+				resource += this.consumeNodeComputation[i];
 				number++;
 			}
 		}
@@ -614,18 +616,19 @@ public class EnhancedVirtualNetwork {
 		number = 0;
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.nodeSize; j++) {
-				number += this.needEdgeBandwith[i][j];
+				number += this.consumeEdgeBandwith[i][j];
 			}
 		}
 		number = number / 2;
-		System.out.println((number - this.consumedResource.edgeBandwith4Consumed) + " Bandwith \n");
-		this.consumedResource.edgeBandwith4Consumed = number;
+		System.out.println((number - this.consumedResource.consumeEdgeBandwith) + " Bandwith \n");
+		this.consumedResource.consumeEdgeBandwith = number;
 	}
 
 	public boolean HeursitcAlgorithm4Survivability(int failurenodenumber, boolean failurtype) throws GRBException {
-		System.out.println("------------------" + failurtype + "----------------");
+		
 		for (int i = 0; i < failurenodenumber; i++) {
-			if (!ithNode(i, failurtype)) {
+			System.out.println("Begin "+i+" node failure");
+			if (!failIthNode(i, failurtype)) {
 				return false;
 			}
 			computeUsedResource();
@@ -734,7 +737,7 @@ public class EnhancedVirtualNetwork {
 					for (int l = 0; l < this.serviceNumber; l++) {
 						GRBLinExpr conexpr = new GRBLinExpr();
 						for (int k = 0; k < this.nodeSize; k++) {
-							if (this.serviceTypeSet[k][l])
+							if (this.boolServiceTypeSet[k][l])
 								conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
 						}
 						if (this.VN.nodeServiceType[j] == (l)) {

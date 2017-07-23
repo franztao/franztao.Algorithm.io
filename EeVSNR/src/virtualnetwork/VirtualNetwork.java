@@ -14,7 +14,7 @@ public class VirtualNetwork {
 	public int nodeSize;
 	public int vNode2sNode[];
 	public int[] nodeComputationDemand;
-	public int[] nodeComputationCapacity4embeded;
+	public int[] nodeComputationCurrentConsume;
 
 	public boolean topology[][];
 	public int edgeBandwithDemand[][];
@@ -25,7 +25,7 @@ public class VirtualNetwork {
 	public String node2Label[];
 	public Map<String, Integer> label2Node;
 
-	public boolean sampleInit;
+	public boolean isTestSample;
 
 	/**
 	 * @param vnp
@@ -37,7 +37,7 @@ public class VirtualNetwork {
 			this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
 		this.vNode2sNode = new int[nodeSize];
 		this.nodeComputationDemand = new int[nodeSize];
-		this.nodeComputationCapacity4embeded = new int[nodeSize];
+		this.nodeComputationCurrentConsume = new int[nodeSize];
 
 		this.topology = new boolean[nodeSize][nodeSize];
 		this.edgeBandwithDemand = new int[nodeSize][nodeSize];
@@ -47,8 +47,8 @@ public class VirtualNetwork {
 
 		this.node2Label = new String[nodeSize];
 		this.label2Node = new HashMap<String, Integer>();
-		this.sampleInit = vnp.sampleInit;
-		init();
+		this.isTestSample = vnp.sampleInit;
+		setNodeLabel();
 		if (vnp.sampleInit) {
 			// this.nodeSize = 4;
 			initSample1();
@@ -56,9 +56,163 @@ public class VirtualNetwork {
 	}
 
 	/**
+	 * @return the nodeSize
+	 */
+	public int getNodeSize() {
+		return nodeSize;
+	}
+
+	/**
+	 * @param nodeSize the nodeSize to set
+	 */
+	public void setNodeSize(int nodeSize) {
+		this.nodeSize = nodeSize;
+	}
+
+	/**
+	 * @return the vNode2sNode
+	 */
+	public int[] getvNode2sNode() {
+		return vNode2sNode;
+	}
+
+	/**
+	 * @param vNode2sNode the vNode2sNode to set
+	 */
+	public void setvNode2sNode(int[] vNode2sNode) {
+		this.vNode2sNode = vNode2sNode;
+	}
+
+	/**
+	 * @return the nodeComputationDemand
+	 */
+	public int[] getNodeComputationDemand() {
+		return nodeComputationDemand;
+	}
+
+	/**
+	 * @param nodeComputationDemand the nodeComputationDemand to set
+	 */
+	public void setNodeComputationDemand(int[] nodeComputationDemand) {
+		this.nodeComputationDemand = nodeComputationDemand;
+	}
+
+	/**
+	 * @return the nodeComputationCapacity4embeded
+	 */
+	public int[] getNodeComputationCapacity4embeded() {
+		return nodeComputationCurrentConsume;
+	}
+
+	/**
+	 * @param nodeComputationCapacity4embeded the nodeComputationCapacity4embeded to set
+	 */
+	public void setNodeComputationCapacity4embeded(int[] nodeComputationCapacity4embeded) {
+		this.nodeComputationCurrentConsume = nodeComputationCapacity4embeded;
+	}
+
+	/**
+	 * @return the topology
+	 */
+	public boolean[][] getTopology() {
+		return topology;
+	}
+
+	/**
+	 * @param topology the topology to set
+	 */
+	public void setTopology(boolean[][] topology) {
+		this.topology = topology;
+	}
+
+	/**
+	 * @return the edgeBandwithDemand
+	 */
+	public int[][] getEdgeBandwithDemand() {
+		return edgeBandwithDemand;
+	}
+
+	/**
+	 * @param edgeBandwithDemand the edgeBandwithDemand to set
+	 */
+	public void setEdgeBandwithDemand(int[][] edgeBandwithDemand) {
+		this.edgeBandwithDemand = edgeBandwithDemand;
+	}
+
+	/**
+	 * @return the serviceNumber
+	 */
+	public int getServiceNumber() {
+		return serviceNumber;
+	}
+
+	/**
+	 * @param serviceNumber the serviceNumber to set
+	 */
+	public void setServiceNumber(int serviceNumber) {
+		this.serviceNumber = serviceNumber;
+	}
+
+	/**
+	 * @return the nodeServiceType
+	 */
+	public int[] getNodeServiceType() {
+		return nodeServiceType;
+	}
+
+	/**
+	 * @param nodeServiceType the nodeServiceType to set
+	 */
+	public void setNodeServiceType(int[] nodeServiceType) {
+		this.nodeServiceType = nodeServiceType;
+	}
+
+	/**
+	 * @return the node2Label
+	 */
+	public String[] getNode2Label() {
+		return node2Label;
+	}
+
+	/**
+	 * @param node2Label the node2Label to set
+	 */
+	public void setNode2Label(String[] node2Label) {
+		this.node2Label = node2Label;
+	}
+
+	/**
+	 * @return the label2Node
+	 */
+	public Map<String, Integer> getLabel2Node() {
+		return label2Node;
+	}
+
+	/**
+	 * @param label2Node the label2Node to set
+	 */
+	public void setLabel2Node(Map<String, Integer> label2Node) {
+		this.label2Node = label2Node;
+	}
+
+	/**
+	 * @return the sampleInit
+	 */
+	public boolean isSampleInit() {
+		return isTestSample;
+	}
+
+	/**
+	 * @param sampleInit the sampleInit to set
+	 */
+	public void setSampleInit(boolean sampleInit) {
+		this.isTestSample = sampleInit;
+	}
+
+	/**
 	 * 
 	 */
-	private void init() {
+	private void setNodeLabel() {
 		String str = "VN_";
 		for (int i = 0; i < this.nodeSize; i++) {
 			this.node2Label[i] = str + (i + 1);
@@ -72,10 +226,10 @@ public class VirtualNetwork {
 		nodeComputationDemand[1] = 3;
 		nodeComputationDemand[2] = 5;
 		nodeComputationDemand[3] = 6;
-		nodeComputationCapacity4embeded[0]=5;
-		nodeComputationCapacity4embeded[1]=7;
-		nodeComputationCapacity4embeded[2]=7;
-		nodeComputationCapacity4embeded[3]=10;
+		nodeComputationCurrentConsume[0]=5;
+		nodeComputationCurrentConsume[1]=7;
+		nodeComputationCurrentConsume[2]=7;
+		nodeComputationCurrentConsume[3]=10;
 		vNode2sNode[0] = 0;
 		vNode2sNode[1] = 1;
 		vNode2sNode[2] = 2;
