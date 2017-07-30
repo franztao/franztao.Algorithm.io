@@ -35,6 +35,7 @@ public class EnhancedVirtualNetwork {
 	public boolean topology[][];
 	// edgeBandwithCapacity-usedEdgeCurrentBandwithCapacity
 	public int consumeEdgeBandwith[][];
+	public int enhancedEdgeBandwith[][];
 
 	public int serviceNumber;
 	public boolean boolServiceTypeSet[][];
@@ -46,7 +47,7 @@ public class EnhancedVirtualNetwork {
 
 	public VirtualNetwork VN;
 
-//	public boolean sampleInit;
+	// public boolean sampleInit;
 
 	class StarEdgeStructure {
 		int neighborVNID;
@@ -97,10 +98,11 @@ public class EnhancedVirtualNetwork {
 		this.nodeSize = this.nodeSize4Embeded + this.nodeSize4Backup;
 		this.nodeComputationCapacity = new int[this.nodeSize];
 		this.consumeNodeComputation = new int[this.nodeSize];
-		this.enhancedNodeComputation=new  int[this.nodeSize];
+		this.enhancedNodeComputation = new int[this.nodeSize];
 		// edge
 		this.topology = new boolean[this.nodeSize][this.nodeSize];
 		this.consumeEdgeBandwith = new int[this.nodeSize][this.nodeSize];
+		this.enhancedEdgeBandwith = new int[this.nodeSize][this.nodeSize];
 		// service
 		this.serviceNumber = vn.serviceNumber;
 		this.boolServiceTypeSet = new boolean[nodeSize][serviceNumber];
@@ -114,12 +116,12 @@ public class EnhancedVirtualNetwork {
 
 		this.consumedResource = new ConsumeResource();
 
-//		this.sampleInit = vn.sampleInit;
-//		if (this.sampleInit) {
-//			initSample1();
-//		} else {
-			constrcutEVN(fDSubstrateNework, vn, bn, path);
-//		}
+		// this.sampleInit = vn.sampleInit;
+		// if (this.sampleInit) {
+		// initSample1();
+		// } else {
+		constrcutEVN(fDSubstrateNework, vn, bn, path);
+		// }
 	}
 
 	/**
@@ -193,9 +195,8 @@ public class EnhancedVirtualNetwork {
 				consumedResource.initEdgeBandwith += this.consumeEdgeBandwith[i][j];
 			}
 		}
-		consumedResource.consumeEdgeBandwith/=2;
-		consumedResource.initEdgeBandwith/=2;
-		
+		consumedResource.consumeEdgeBandwith /= 2;
+		consumedResource.initEdgeBandwith /= 2;
 
 	}
 
@@ -625,9 +626,9 @@ public class EnhancedVirtualNetwork {
 	}
 
 	public boolean HeursitcAlgorithm4Survivability(int failurenodenumber, boolean failurtype) throws GRBException {
-		
+
 		for (int i = 0; i < failurenodenumber; i++) {
-			System.out.println("Begin "+i+" node failure");
+			System.out.println("Begin " + i + " node failure");
 			if (!failIthNode(i, failurtype)) {
 				return false;
 			}

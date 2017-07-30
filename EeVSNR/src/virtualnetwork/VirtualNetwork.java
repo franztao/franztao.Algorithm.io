@@ -5,6 +5,7 @@ package virtualnetwork;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author franz
@@ -18,6 +19,8 @@ public class VirtualNetwork {
 
 	public boolean topology[][];
 	public int edgeBandwithDemand[][];
+	public Vector<Integer>vEdge2sEdgeSetFrom[][];
+	public Vector<Integer>vEdge2sEdgeSetTo[][];
 
 	public int serviceNumber;
 	public int nodeServiceType[];
@@ -41,7 +44,13 @@ public class VirtualNetwork {
 
 		this.topology = new boolean[nodeSize][nodeSize];
 		this.edgeBandwithDemand = new int[nodeSize][nodeSize];
-
+		for(int i=0;i<this.nodeSize;i++){
+			for(int j=0;j<this.nodeSize;j++){
+				vEdge2sEdgeSetFrom[i][j]=new Vector<Integer>();
+				vEdge2sEdgeSetTo[i][j]=new Vector<Integer>();
+			}
+		}
+		
 		this.serviceNumber = vnp.serviceNumber;
 		this.nodeServiceType = new int[nodeSize];
 

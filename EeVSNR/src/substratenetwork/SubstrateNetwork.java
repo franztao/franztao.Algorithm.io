@@ -13,11 +13,14 @@ public class SubstrateNetwork implements Cloneable {
 	public int nodeComputation4Former[];
 	public int nodeComputation4Enhance_Sum[];
 	public int nodeComputation4Temp[];
-	public Vector<Integer> vnRequestSet[];
+	public Vector<Integer> vnRequestSet4Node[];
 
 	public boolean topology[][];
 	public int edgeBandwithCapacity[][];
-	public int edgeBandwithCurrentConsume[][];
+	public int edgeBandwith4Former[][];
+	public int edgeBandwith4Enhance_Sum[][];
+	public int edgeBandwith4Temp[][];
+	public Vector<Integer> vnRequestSet4Edge[][];
 
 	public int serviceNumber;
 	public boolean boolServiceTypeSet[][];
@@ -40,13 +43,20 @@ public class SubstrateNetwork implements Cloneable {
 		this.nodeComputation4Enhance_Sum = new int[nodeSize];
 		this.nodeComputation4Temp = new int[nodeSize];
 		for (int i = 0; i < nodeSize; i++) {
-			vnRequestSet[i] = new Vector<Integer>();
+			vnRequestSet4Node[i] = new Vector<Integer>();
 		}
 
 		// edge
 		this.topology = new boolean[nodeSize][nodeSize];
 		this.edgeBandwithCapacity = new int[nodeSize][nodeSize];
-		this.edgeBandwithCurrentConsume = new int[nodeSize][nodeSize];
+		edgeBandwith4Former = new int[nodeSize][nodeSize];
+		edgeBandwith4Enhance_Sum = new int[nodeSize][nodeSize];
+		edgeBandwith4Temp = new int[nodeSize][nodeSize];
+		for (int i = 0; i < nodeSize; i++) {
+			for (int j = 0; j < nodeSize; j++) {
+				vnRequestSet4Edge[i][j] = new Vector<Integer>();
+			}
+		}
 
 		// service
 		this.serviceNumber = snp.getServiceNumber();
@@ -75,15 +85,18 @@ public class SubstrateNetwork implements Cloneable {
 		int remain = 0;
 		if (isShared) {
 			int maxShare = 0;
-			for (int i = 0; i < this.vnRequestSet[nodeloc].size(); i++) {
-				int vni = this.vnRequestSet[nodeloc].get(i);
+			for (int i = 0; i < this.vnRequestSet4Node[nodeloc].size(); i++) {
+				int vni = this.vnRequestSet4Node[nodeloc].get(i);
+				int temp = 0;
 				for (int j = 0; j < this.vnquest.get(vni).getNodeSize(); j++) {
 					if (nodeloc == this.vnquest.get(vni).vNode2sNode[j]) {
 						// one substrate network node map multiple virtual
 						// network request and network node
-						maxShare = Math.max(maxShare, this.evn.get(vni).enhancedNodeComputation[j]);
+						temp += this.evn.get(vni).enhancedNodeComputation[j];
 					}
 				}
+				maxShare = Math.max(maxShare, temp);
+
 			}
 			remain = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
 					- this.nodeComputation4Temp[nodeloc] - maxShare;
@@ -91,6 +104,41 @@ public class SubstrateNetwork implements Cloneable {
 		} else {
 			remain = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
 					- this.nodeComputation4Enhance_Sum[nodeloc] - this.nodeComputation4Temp[nodeloc];
+		}
+		return remain;
+	}
+
+	/**
+	 * @param k
+	 * @param l
+	 * @param isShared
+	 * @return
+	 */
+	public int getRemainBandwith(int k, int l, boolean isShared) {
+		int remain = 0;
+		if (isShared) {
+			int maxShare = 0;
+			for (int i = 0; i < this.vnRequestSet4Edge[k][l].size(); i++) {
+				int vnq = this.vnRequestSet4Edge[k][l].get(i);
+				int temp = 0;
+				for (int p = 0; p < this.vnquest.get(vnq).getNodeSize(); p++) {
+					for (int q = 0; q < this.vnquest.get(vnq).getNodeSize(); q++) {
+						
+						for (int t = 0; t < this.vnquest.get(vnq).vEdge2sEdgeSetTo[p][q].size(); t++) {
+							if ((k == this.vnquest.get(vnq).vEdge2sEdgeSetFrom[p][q].get(t))
+									&& (l == this.vnquest.get(vnq).vEdge2sEdgeSetTo[p][q].get(t))) {
+								temp += this.evn.get(vnq).enhancedEdgeBandwith[p][q];
+							}
+						}
+					}
+				}
+				maxShare = Math.max(maxShare, temp);
+			}
+			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l] - this.edgeBandwith4Temp[k][l]
+					- maxShare;
+		} else {
+			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l]
+					- this.edgeBandwith4Enhance_Sum[k][l] - this.edgeBandwith4Temp[k][l];
 		}
 		return remain;
 	}
