@@ -26,7 +26,6 @@ public class SubStrateNetworkParameter {
 
 	private boolean sampleInit;
 	
-
 	/**
 	 * @param sampleInit
 	 */
