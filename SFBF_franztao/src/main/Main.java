@@ -13,7 +13,7 @@ public class Main {
 	public static void main(String args[]) throws IOException {
 		String rootstr="C:\\Users\\Taoheng\\Desktop\\New folder\\";
 		int datasize=1000000;
-		
+		int testtao;
 //		int testunitnum = 5;
 //		// public int testunitnum = 6;
 //		int lamdalenght = 1000;
