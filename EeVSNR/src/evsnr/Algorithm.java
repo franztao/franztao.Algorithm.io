@@ -17,30 +17,27 @@ import virtualnetwork.VirtualNetworkParameter;
  *
  */
 public class Algorithm {
-	
+
 	private SubstrateNetwork sn;
 	private VirtualNetworkParameter vnp;
 
-	
-	
+	// algorithm
+	// NoShared Shared
+	// FD FI
+	// FD: ILP EVSNR
+	// EVSNR: Min Ran
+	private boolean isShared;
+	private boolean isFD;
+	private boolean isExact;
+	// 0 Ran 1 Min
+	private int sequence;
 
-		// algorithm
-		// NoShared Shared
-		// FD FI
-		// FD: ILP EVSNR
-		// EVSNR: Min Ran
-		private boolean isShared;
-		private boolean isFD;
-		private boolean isExact;
-		//0 Ran 1 Min 
-		private int sequence;
-	
 	/**
 	 * 
 	 */
 	public void releaseResource() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/**
@@ -51,7 +48,8 @@ public class Algorithm {
 	}
 
 	/**
-	 * @param sn the sn to set
+	 * @param sn
+	 *            the sn to set
 	 */
 	public void setSn(SubstrateNetwork sn) {
 		this.sn = sn;
@@ -65,7 +63,8 @@ public class Algorithm {
 	}
 
 	/**
-	 * @param isShared the isShared to set
+	 * @param isShared
+	 *            the isShared to set
 	 */
 	public void setShared(boolean isShared) {
 		this.isShared = isShared;
@@ -79,7 +78,8 @@ public class Algorithm {
 	}
 
 	/**
-	 * @param isFD the isFD to set
+	 * @param isFD
+	 *            the isFD to set
 	 */
 	public void setFD(boolean isFD) {
 		this.isFD = isFD;
@@ -93,7 +93,8 @@ public class Algorithm {
 	}
 
 	/**
-	 * @param isExact the isExact to set
+	 * @param isExact
+	 *            the isExact to set
 	 */
 	public void setExact(boolean isExact) {
 		this.isExact = isExact;
@@ -107,13 +108,13 @@ public class Algorithm {
 	}
 
 	/**
-	 * @param sequence the sequence to set
+	 * @param sequence
+	 *            the sequence to set
 	 */
 	public void setSequence(int sequence) {
 		this.sequence = sequence;
 	}
 
-	
 	/**
 	 * @return the vnp
 	 */
@@ -122,12 +123,13 @@ public class Algorithm {
 	}
 
 	/**
-	 * @param vnp the vnp to set
+	 * @param vnp
+	 *            the vnp to set
 	 */
 	public void setVnp(VirtualNetworkParameter vnp) {
 		this.vnp = vnp;
 	}
-	
+
 	/**
 	 * @param vn
 	 * @param vnp
@@ -141,19 +143,19 @@ public class Algorithm {
 				int nodeloc = (int) Math.round(Math.random() * this.sn.nodeSize);
 				vn.vNode2sNode[i] = nodeloc;
 				// service
-				int nodeservice = this.sn.vectorServiceTypeSet[nodeloc].elementAt(
-						(int) Math.round(Math.random() * this.sn.vectorServiceTypeSet[nodeloc].size()));
+				int nodeservice = this.sn.vectorServiceTypeSet[nodeloc]
+						.elementAt((int) Math.round(Math.random() * this.sn.vectorServiceTypeSet[nodeloc].size()));
 				vn.nodeServiceType[i] = nodeservice;
 				// node demand
-				vn.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum
-						+ Math.round(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
+				vn.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum + Math
+						.round(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
 				if (vn.nodeComputationDemand[i] > (this.sn.nodeComputationCapacity[nodeloc]
-						- this.sn.getRemainComputaion(nodeloc,this.isShared))) {
+						- this.sn.getRemainComputaion(nodeloc, this.isShared))) {
 					System.out.println("be not able to generate embedded virtual network's node");
 					return false;
 				} else {
 					vn.nodeComputationCurrentConsume[i] = this.sn.nodeComputationCapacity[nodeloc]
-							- this.sn.getRemainComputaion(nodeloc,this.isShared);
+							- this.sn.getRemainComputaion(nodeloc, this.isShared);
 					this.sn.nodeComputation4Temp[nodeloc] += vn.nodeComputationDemand[i];
 				}
 			}
@@ -163,7 +165,7 @@ public class Algorithm {
 			for (int j = 0; j < i; j++) {
 				if ((vn.isTestSample && vn.topology[i][j])
 						|| ((!vn.isTestSample) && (Math.random() < vnp.node2nodeProbability))) {
-					int leavebandwith;
+					int distributeBandwith;
 					if (vn.vNode2sNode[i] != vn.vNode2sNode[j]) {
 
 						// exist edge's path,bandwith
@@ -171,8 +173,10 @@ public class Algorithm {
 						int[][] bandwith = new int[this.sn.nodeSize][this.sn.nodeSize];
 						for (int k = 0; k < this.sn.nodeSize; k++) {
 							for (int l = 0; l < this.sn.nodeSize; l++) {
-//								bandwith[k][l] = this.sn.edgeBandwithCapacity[k][l]- this.sn.edgeBandwithCurrentConsume[k][l];
-								bandwith[k][l]=this.sn.getRemainBandwith(k,l,this.isShared);
+								// bandwith[k][l] =
+								// this.sn.edgeBandwithCapacity[k][l]-
+								// this.sn.edgeBandwithCurrentConsume[k][l];
+								bandwith[k][l] = this.sn.getRemainBandwith(k, l, this.isShared);
 							}
 						}
 						ShortestPath sp = new ShortestPath(this.sn.nodeSize);
@@ -182,57 +186,87 @@ public class Algorithm {
 							System.out.println("be not able to generate embedded virtual network's edge");
 							return false;
 						}
-						
-						
+
 						// set virtual network's edge bandwith
 						// notice
-						leavebandwith = Integer.MAX_VALUE;
-						for (int s = pathlist.get(0), k = 1; k <pathlist.size(); k++) {
+						int minimumPathBandwith = 0;
+						for (int s = pathlist.get(0), k = 1; k < pathlist.size(); k++) {
 							int e = pathlist.get(k);
-							leavebandwith = Math.min(leavebandwith, bandwith[s][e]);
+							minimumPathBandwith = Math.max(minimumPathBandwith, bandwith[s][e]);
 							vn.vEdge2sEdgeSetFrom[i][j].addElement(s);
 							vn.vEdge2sEdgeSetTo[i][j].addElement(s);
 							s = e;
 						}
+
 						if (vn.isTestSample) {
-							leavebandwith = vn.edgeBandwithDemand[i][j];
+							distributeBandwith = vn.edgeBandwithDemand[i][j];
+						} else {
+							distributeBandwith = (int) (vnp.edgeBandwithMinimum
+									+ Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
 						}
-						for (int s = pathlist.get(0), k = 1; k <pathlist.size(); k++) {
+
+						if (distributeBandwith > minimumPathBandwith) {
+							System.out.println("be not able to generate embedded virtual network's edge");
+							return false;
+						}
+						for (int s = pathlist.get(0), k = 1; k < pathlist.size(); k++) {
 							int e = pathlist.get(k);
-							this.sn.edgeBandwith4Temp[s][e] += leavebandwith;
-							this.sn.edgeBandwith4Temp[e][s] += leavebandwith;
+							this.sn.edgeBandwith4Temp[s][e] += distributeBandwith;
+							this.sn.edgeBandwith4Temp[e][s] += distributeBandwith;
 							s = e;
 						}
 					} else {
 
 						// two adjacent node of the edge is in the same node,
 						// the edge need not any more bandwith.
-						leavebandwith = (int) (vnp.edgeBandwithMinimum
+						distributeBandwith = (int) (vnp.edgeBandwithMinimum
 								+ Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
 						if (vn.isTestSample) {
-							leavebandwith = vn.edgeBandwithDemand[i][j];
+							distributeBandwith = vn.edgeBandwithDemand[i][j];
 						}
 					}
 					vn.topology[i][j] = true;
 					vn.topology[j][i] = true;
-					vn.edgeBandwithDemand[i][j] = leavebandwith;
-					vn.edgeBandwithDemand[j][i] = leavebandwith;
+					vn.edgeBandwithDemand[i][j] = distributeBandwith;
+					vn.edgeBandwithDemand[j][i] = distributeBandwith;
 				}
 			}
 		}
-		//set node and edge new value
-		
-		return false;
+		// set node and edge new value
+		for (int i = 0; i < vn.nodeSize; i++) {
+			// this.nodeComputationCapacity[nodeloc] -
+			// this.nodeComputation4Former[nodeloc]
+			// - this.nodeComputation4Enhance_Sum[nodeloc] -
+			// this.nodeComputation4Temp[nodeloc];
+			this.sn.nodeComputation4Former[i] += this.sn.nodeComputation4Temp[i];
+			this.sn.nodeComputation4Temp[i] = 0;
+			for (int j = 0; j < vn.nodeSize; j++) {
+				if (i != j) {
+					// this.edgeBandwithCapacity[k][l] -
+					// this.edgeBandwith4Former[k][l]
+					// - this.edgeBandwith4Enhance_Sum[k][l] -
+					// this.edgeBandwith4Temp[k][l];
+					this.sn.edgeBandwith4Former[i][j] += this.sn.edgeBandwith4Temp[i][j];
+					this.sn.edgeBandwith4Former[j][i] += this.sn.edgeBandwith4Temp[j][i];
+					this.sn.edgeBandwith4Temp[i][j] = 0;
+					this.sn.edgeBandwith4Temp[j][i] = 0;
+				}
+			}
+		}
+		return true;
 	}
-	
+
 	/**
 	 * @param vnp
 	 */
 	public void generateVNrequest() {
 		VirtualNetwork vn = new VirtualNetwork(this.vnp);
 		// construct a virtual network
-		constructVirtualNetwork(vn);
-		
+		if(constructVirtualNetwork(vn)){
+			System.out.println("Fail to generate virtual network");
+			return ;
+		}
+
 	}
 
 }

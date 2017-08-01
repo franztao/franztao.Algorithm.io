@@ -123,7 +123,7 @@ public class SubstrateNetwork implements Cloneable {
 				int temp = 0;
 				for (int p = 0; p < this.vnquest.get(vnq).getNodeSize(); p++) {
 					for (int q = 0; q < this.vnquest.get(vnq).getNodeSize(); q++) {
-						
+
 						for (int t = 0; t < this.vnquest.get(vnq).vEdge2sEdgeSetTo[p][q].size(); t++) {
 							if ((k == this.vnquest.get(vnq).vEdge2sEdgeSetFrom[p][q].get(t))
 									&& (l == this.vnquest.get(vnq).vEdge2sEdgeSetTo[p][q].get(t))) {

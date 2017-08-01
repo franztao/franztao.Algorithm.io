@@ -3,8 +3,6 @@
  */
 package multipleknapsack;
 
-import java.lang.reflect.Array;
-
 import gurobi.*;
 
 /**
