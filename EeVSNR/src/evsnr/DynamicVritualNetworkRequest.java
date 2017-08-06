@@ -50,7 +50,6 @@ public class DynamicVritualNetworkRequest implements Runnable {
 		try {
 			Thread.sleep(EVSNR.VNRequestsDuration);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		releaseResource();
@@ -89,31 +88,21 @@ public class DynamicVritualNetworkRequest implements Runnable {
 			this.synchronizeLock.lock();
 			try {
 				// construct backup node
-				BackupNode bn = new BackupNode(this.FDSubstrateNework, vn);
+//				BackupNode bn = new BackupNode(this.FDSubstrateNework, vn);
 				// construct EnhancedVirtualNetwork
-				EnhancedVirtualNetwork evn = new EnhancedVirtualNetwork(FDSubstrateNework, vn, bn, path);
+				EnhancedVirtualNetwork evn = null ;//= new EnhancedVirtualNetwork(FDSubstrateNework, vn, bn, path);
 
 				if (this.algorithmType == EVSNR.IPAlgorithm) {
 					evn.OptimalAlgorithmIP4Survivability();
 				}
 				if (this.algorithmType == EVSNR.FailureDependentHeuriticAlgorithm) {
-					try {
-						evn.computeItems();
-						boolean result;
-						result = evn.HeursitcAlgorithm4Survivability(evn.nodeSize4Embeded, EVSNR.FailureDependent);
-					} catch (GRBException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					evn.computeItems();
+					boolean result;
+//						result = evn.HeursitcAlgorithm4Survivability(evn.nodeSize4Embeded, EVSNR.FailureDependent);
 				}
 				if (this.algorithmType == EVSNR.FailureIndependentHeuriticAlgorithm) {
-					try {
-						evn.computeItems();
-						evn.HeursitcAlgorithm4Survivability(evn.nodeSize4Embeded, EVSNR.FailureIndependent);
-					} catch (GRBException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					evn.computeItems();
+//						evn.HeursitcAlgorithm4Survivability(evn.nodeSize4Embeded, EVSNR.FailureIndependent);
 				}
 				// distribute enhanced network
 			} finally {
@@ -121,7 +110,7 @@ public class DynamicVritualNetworkRequest implements Runnable {
 			}
 		}
 		System.out.println("------------------" + "----------------");
-		this.FDSubstrateNework.vnquest.addElement(vn);
+//		this.FDSubstrateNework.vnquest.addElement(vn);
 
 	}
 

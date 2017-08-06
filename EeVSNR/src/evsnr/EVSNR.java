@@ -28,6 +28,8 @@ public class EVSNR {
 	public final static long unitTimeInterval=1;
 	public final static double requestAppearProbability=1;
 	public final static long VNRequestsDuration=3000;
+	public final static long VNRequestsContinueTimeMinimum=1500;
+	public final static long VNRequestsContinueTimeMaximum=1500;
 	
 	public final static int FailureDependentHeuriticAlgorithm=0;
 	public final static int FailureIndependentHeuriticAlgorithm=1;

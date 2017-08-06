@@ -12,15 +12,18 @@ import java.util.Vector;
  *
  */
 public class VirtualNetwork {
+	private boolean isRunning;
+	private int index;
+	private int leaveTime;
+
 	public int nodeSize;
 	public int vNode2sNode[];
 	public int[] nodeComputationDemand;
-	public int[] nodeComputationCurrentConsume;
+	public int[] nodeComputationCapacity;
 
 	public boolean topology[][];
 	public int edgeBandwithDemand[][];
-	public Vector<Integer>vEdge2sEdgeSetFrom[][];
-	public Vector<Integer>vEdge2sEdgeSetTo[][];
+	public Vector<Vector<Vector<Integer>>> vEdge2sPath;
 
 	public int serviceNumber;
 	public int nodeServiceType[];
@@ -34,23 +37,27 @@ public class VirtualNetwork {
 	 * @param vnp
 	 */
 	public VirtualNetwork(VirtualNetworkParameter vnp) {
+		this.isRunning = true;
+
 		if (vnp.sampleInit) {
 			this.nodeSize = 4;
 		} else
 			this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
 		this.vNode2sNode = new int[nodeSize];
 		this.nodeComputationDemand = new int[nodeSize];
-		this.nodeComputationCurrentConsume = new int[nodeSize];
+		this.nodeComputationCapacity = new int[nodeSize];
 
 		this.topology = new boolean[nodeSize][nodeSize];
 		this.edgeBandwithDemand = new int[nodeSize][nodeSize];
-		for(int i=0;i<this.nodeSize;i++){
-			for(int j=0;j<this.nodeSize;j++){
-				vEdge2sEdgeSetFrom[i][j]=new Vector<Integer>();
-				vEdge2sEdgeSetTo[i][j]=new Vector<Integer>();
+
+		this.vEdge2sPath = new Vector<Vector<Vector<Integer>>>();
+		for (int i = 0; i < this.nodeSize; i++) {
+			vEdge2sPath.addElement(new Vector<Vector<Integer>>());
+			for (int j = 0; j < this.nodeSize; j++) {
+				vEdge2sPath.get(i).addElement(new Vector<Integer>());
 			}
 		}
-		
+
 		this.serviceNumber = vnp.serviceNumber;
 		this.nodeServiceType = new int[nodeSize];
 
@@ -72,7 +79,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param nodeSize the nodeSize to set
+	 * @param nodeSize
+	 *            the nodeSize to set
 	 */
 	public void setNodeSize(int nodeSize) {
 		this.nodeSize = nodeSize;
@@ -86,7 +94,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param vNode2sNode the vNode2sNode to set
+	 * @param vNode2sNode
+	 *            the vNode2sNode to set
 	 */
 	public void setvNode2sNode(int[] vNode2sNode) {
 		this.vNode2sNode = vNode2sNode;
@@ -100,7 +109,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param nodeComputationDemand the nodeComputationDemand to set
+	 * @param nodeComputationDemand
+	 *            the nodeComputationDemand to set
 	 */
 	public void setNodeComputationDemand(int[] nodeComputationDemand) {
 		this.nodeComputationDemand = nodeComputationDemand;
@@ -110,14 +120,15 @@ public class VirtualNetwork {
 	 * @return the nodeComputationCapacity4embeded
 	 */
 	public int[] getNodeComputationCapacity4embeded() {
-		return nodeComputationCurrentConsume;
+		return nodeComputationCapacity;
 	}
 
 	/**
-	 * @param nodeComputationCapacity4embeded the nodeComputationCapacity4embeded to set
+	 * @param nodeComputationCapacity4embeded
+	 *            the nodeComputationCapacity4embeded to set
 	 */
 	public void setNodeComputationCapacity4embeded(int[] nodeComputationCapacity4embeded) {
-		this.nodeComputationCurrentConsume = nodeComputationCapacity4embeded;
+		this.nodeComputationCapacity = nodeComputationCapacity4embeded;
 	}
 
 	/**
@@ -128,7 +139,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param topology the topology to set
+	 * @param topology
+	 *            the topology to set
 	 */
 	public void setTopology(boolean[][] topology) {
 		this.topology = topology;
@@ -142,7 +154,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param edgeBandwithDemand the edgeBandwithDemand to set
+	 * @param edgeBandwithDemand
+	 *            the edgeBandwithDemand to set
 	 */
 	public void setEdgeBandwithDemand(int[][] edgeBandwithDemand) {
 		this.edgeBandwithDemand = edgeBandwithDemand;
@@ -156,7 +169,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param serviceNumber the serviceNumber to set
+	 * @param serviceNumber
+	 *            the serviceNumber to set
 	 */
 	public void setServiceNumber(int serviceNumber) {
 		this.serviceNumber = serviceNumber;
@@ -170,7 +184,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param nodeServiceType the nodeServiceType to set
+	 * @param nodeServiceType
+	 *            the nodeServiceType to set
 	 */
 	public void setNodeServiceType(int[] nodeServiceType) {
 		this.nodeServiceType = nodeServiceType;
@@ -184,7 +199,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param node2Label the node2Label to set
+	 * @param node2Label
+	 *            the node2Label to set
 	 */
 	public void setNode2Label(String[] node2Label) {
 		this.node2Label = node2Label;
@@ -198,7 +214,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param label2Node the label2Node to set
+	 * @param label2Node
+	 *            the label2Node to set
 	 */
 	public void setLabel2Node(Map<String, Integer> label2Node) {
 		this.label2Node = label2Node;
@@ -212,7 +229,8 @@ public class VirtualNetwork {
 	}
 
 	/**
-	 * @param sampleInit the sampleInit to set
+	 * @param sampleInit
+	 *            the sampleInit to set
 	 */
 	public void setSampleInit(boolean sampleInit) {
 		this.isTestSample = sampleInit;
@@ -225,9 +243,23 @@ public class VirtualNetwork {
 		String str = "VN_";
 		for (int i = 0; i < this.nodeSize; i++) {
 			this.node2Label[i] = str + (i + 1);
-
 			label2Node.put(str + (i + 1), 0);
 		}
+	}
+
+	/**
+	 * @return the index
+	 */
+	public int getIndex() {
+		return index;
+	}
+
+	/**
+	 * @param index
+	 *            the index to set
+	 */
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public void initSample1() {
@@ -235,10 +267,10 @@ public class VirtualNetwork {
 		nodeComputationDemand[1] = 3;
 		nodeComputationDemand[2] = 5;
 		nodeComputationDemand[3] = 6;
-		nodeComputationCurrentConsume[0]=5;
-		nodeComputationCurrentConsume[1]=7;
-		nodeComputationCurrentConsume[2]=7;
-		nodeComputationCurrentConsume[3]=10;
+		nodeComputationCapacity[0] = 5;
+		nodeComputationCapacity[1] = 7;
+		nodeComputationCapacity[2] = 7;
+		nodeComputationCapacity[3] = 10;
 		vNode2sNode[0] = 0;
 		vNode2sNode[1] = 1;
 		vNode2sNode[2] = 2;
@@ -290,5 +322,28 @@ public class VirtualNetwork {
 		nodeComputationDemand[0] = 3;
 
 		nodeServiceType[0] = 0;
+	}
+
+	/**
+	 * @return the leaveTime
+	 */
+	public int getLeaveTime() {
+		return leaveTime;
+	}
+
+	/**
+	 * @param leaveTime
+	 *            the leaveTime to set
+	 */
+	public void setLeaveTime(int leaveTime) {
+		this.leaveTime = leaveTime;
+	}
+
+	public boolean getIsRunning() {
+		return isRunning;
+	}
+
+	public void setIsRunning(boolean isRunning) {
+		this.isRunning = isRunning;
 	}
 }

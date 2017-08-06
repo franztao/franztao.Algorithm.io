@@ -13,14 +13,14 @@ public class SubstrateNetwork implements Cloneable {
 	public int nodeComputation4Former[];
 	public int nodeComputation4Enhance_Sum[];
 	public int nodeComputation4Temp[];
-	public Vector<Integer> vnRequestSet4Node[];
+	public Vector<Vector<Integer>> VNReqSet4Node;
 
 	public boolean topology[][];
 	public int edgeBandwithCapacity[][];
 	public int edgeBandwith4Former[][];
 	public int edgeBandwith4Enhance_Sum[][];
 	public int edgeBandwith4Temp[][];
-	public Vector<Integer> vnRequestSet4Edge[][];
+	public Vector<Vector<Vector<Integer>>> VNReqSet4Edge;
 
 	public int serviceNumber;
 	public boolean boolServiceTypeSet[][];
@@ -29,8 +29,8 @@ public class SubstrateNetwork implements Cloneable {
 	public String node2Label[];
 	public Map<String, Integer> label2Node;
 
-	public Vector<VirtualNetwork> vnquest;
-	public Vector<EnhancedVirtualNetwork> evn;
+	public Vector<VirtualNetwork> VNQ;
+	public Vector<EnhancedVirtualNetwork> ENV;
 
 	/**
 	 * @param snp
@@ -42,8 +42,9 @@ public class SubstrateNetwork implements Cloneable {
 		this.nodeComputation4Former = new int[nodeSize];
 		this.nodeComputation4Enhance_Sum = new int[nodeSize];
 		this.nodeComputation4Temp = new int[nodeSize];
+		this.VNReqSet4Node = new Vector<Vector<Integer>>();
 		for (int i = 0; i < nodeSize; i++) {
-			vnRequestSet4Node[i] = new Vector<Integer>();
+			VNReqSet4Node.addElement(new Vector<Integer>());
 		}
 
 		// edge
@@ -52,9 +53,11 @@ public class SubstrateNetwork implements Cloneable {
 		edgeBandwith4Former = new int[nodeSize][nodeSize];
 		edgeBandwith4Enhance_Sum = new int[nodeSize][nodeSize];
 		edgeBandwith4Temp = new int[nodeSize][nodeSize];
+		this.VNReqSet4Edge = new Vector<Vector<Vector<Integer>>>();
 		for (int i = 0; i < nodeSize; i++) {
+			this.VNReqSet4Edge.addElement(new Vector<Vector<Integer>>());
 			for (int j = 0; j < nodeSize; j++) {
-				vnRequestSet4Edge[i][j] = new Vector<Integer>();
+				VNReqSet4Edge.get(i).add(new Vector<Integer>());
 			}
 		}
 
@@ -67,8 +70,8 @@ public class SubstrateNetwork implements Cloneable {
 		this.node2Label = new String[nodeSize];
 		this.label2Node = new HashMap<String, Integer>();
 
-		this.vnquest = new Vector<VirtualNetwork>();
-		this.evn = new Vector<EnhancedVirtualNetwork>();
+		this.VNQ = new Vector<VirtualNetwork>();
+		this.ENV = new Vector<EnhancedVirtualNetwork>();
 		if (snp.isSampleInit()) {
 			faultSetResourceDistribution();
 		} else {
@@ -85,14 +88,14 @@ public class SubstrateNetwork implements Cloneable {
 		int remain = 0;
 		if (isShared) {
 			int maxShare = 0;
-			for (int i = 0; i < this.vnRequestSet4Node[nodeloc].size(); i++) {
-				int vni = this.vnRequestSet4Node[nodeloc].get(i);
+			for (int i = 0; i < this.VNReqSet4Node.get(nodeloc).size(); i++) {
+				int vnq = this.VNReqSet4Node.get(nodeloc).get(i);
 				int temp = 0;
-				for (int j = 0; j < this.vnquest.get(vni).getNodeSize(); j++) {
-					if (nodeloc == this.vnquest.get(vni).vNode2sNode[j]) {
+				for (int j = 0; j < this.VNQ.get(vnq).getNodeSize(); j++) {
+					if (nodeloc == this.VNQ.get(vnq).vNode2sNode[j]) {
 						// one substrate network node map multiple virtual
 						// network request and network node
-						temp += this.evn.get(vni).enhancedNodeComputation[j];
+						temp += this.ENV.get(vnq).nodeComputationEnhanced[j];
 					}
 				}
 				maxShare = Math.max(maxShare, temp);
@@ -103,7 +106,7 @@ public class SubstrateNetwork implements Cloneable {
 
 		} else {
 			remain = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
-					- this.nodeComputation4Enhance_Sum[nodeloc] - this.nodeComputation4Temp[nodeloc];
+					- this.nodeComputation4Temp[nodeloc] - this.nodeComputation4Enhance_Sum[nodeloc];
 		}
 		return remain;
 	}
@@ -118,16 +121,16 @@ public class SubstrateNetwork implements Cloneable {
 		int remain = 0;
 		if (isShared) {
 			int maxShare = 0;
-			for (int i = 0; i < this.vnRequestSet4Edge[k][l].size(); i++) {
-				int vnq = this.vnRequestSet4Edge[k][l].get(i);
+			for (int i = 0; i < this.VNReqSet4Edge.get(k).get(l).size(); i++) {
+				int vnq = this.VNReqSet4Edge.get(k).get(l).get(i);
 				int temp = 0;
-				for (int p = 0; p < this.vnquest.get(vnq).getNodeSize(); p++) {
-					for (int q = 0; q < this.vnquest.get(vnq).getNodeSize(); q++) {
+				for (int p = 0; p < this.VNQ.get(vnq).getNodeSize(); p++) {
+					for (int q = 0; q < this.VNQ.get(vnq).getNodeSize(); q++) {
 
-						for (int t = 0; t < this.vnquest.get(vnq).vEdge2sEdgeSetTo[p][q].size(); t++) {
-							if ((k == this.vnquest.get(vnq).vEdge2sEdgeSetFrom[p][q].get(t))
-									&& (l == this.vnquest.get(vnq).vEdge2sEdgeSetTo[p][q].get(t))) {
-								temp += this.evn.get(vnq).enhancedEdgeBandwith[p][q];
+						for (int t = 0; t < this.VNQ.get(vnq).vEdge2sPath.size() - 1; t++) {
+							if (k == this.VNQ.get(vnq).vEdge2sPath.get(p).get(q).get(t)
+									&& (l == this.VNQ.get(vnq).vEdge2sPath.get(p).get(q).get(t + 1))) {
+								temp += this.ENV.get(vnq).edgeBandwithEnhanced[p][q];
 							}
 						}
 					}
@@ -165,7 +168,7 @@ public class SubstrateNetwork implements Cloneable {
 			}
 		}
 		for (int i = 0; i < this.nodeSize; i++) {
-			for (int j = 0; j < this.nodeSize; j++) {
+			for (int j = 0; j < i; j++) {
 				if (this.topology[i][j]) {
 					this.edgeBandwithCapacity[i][j] = (int) (snp.getEdgeBandwithMinimum()
 							+ Math.random() * (snp.getEdgeBandwithMaximum() - snp.getEdgeBandwithMinimum()));
@@ -180,7 +183,7 @@ public class SubstrateNetwork implements Cloneable {
 			for (int j = 0; j < this.serviceNumber; j++) {
 				if (Math.random() < snp.getSerivecProbability()) {
 					this.boolServiceTypeSet[i][j] = true;
-					vectorServiceTypeSet[i].addElement(j + 1);
+					vectorServiceTypeSet[i].addElement(j);
 				}
 			}
 		}
@@ -258,6 +261,34 @@ public class SubstrateNetwork implements Cloneable {
 	public void releaseResource() {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * @param i
+	 * @param isShared
+	 * @return
+	 */
+	public int getIsSharedRemainComputaion(int i, boolean isShared) {
+		int remain = 0;
+		if (isShared) {
+			remain = this.nodeComputationCapacity[i] - this.nodeComputation4Former[i] - this.nodeComputation4Temp[i];
+		} else {
+			remain = this.nodeComputationCapacity[i] - this.nodeComputation4Former[i] - this.nodeComputation4Temp[i]
+					- this.nodeComputation4Enhance_Sum[i];
+		}
+		return remain;
+	}
+
+	/**
+	 * 
+	 */
+	public void clearTemp() {
+		for (int i = 0; i < this.nodeSize; i++) {
+			this.nodeComputation4Temp[i] = 0;
+			for (int j = 0; j < this.nodeSize; j++) {
+				this.edgeBandwith4Temp[i][j] = 0;
+			}
+		}
 	}
 
 }

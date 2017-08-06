@@ -31,7 +31,6 @@ public class Experiment {
 	 * 
 	 */
 	public void startExperiment() {
-
 		generateComparableAlgorithm(this.vnp);
 		runComparableAlgorithm();
 
@@ -45,17 +44,16 @@ public class Experiment {
 			for (int alg = 0; alg < algorithms.size(); alg++) {
 				algorithms.get(alg).releaseResource();
 			}
-			if ((0 == (time % EVSNR.VNRequestsDuration))
-					&& (new Random().nextDouble() < EVSNR.requestAppearProbability)) {
+			if ((0 == (time % EVSNR.VNRequestsDuration)) && (Math.random() < EVSNR.requestAppearProbability)) {
 				for (int alg = 0; alg < algorithms.size(); alg++) {
-					 algorithms.get(alg).generateVNrequest();
+					algorithms.get(alg).generateAndEnhanceVNrequest();
 				}
 			}
 		}
 	}
 
 	/**
-	 * @param vnp2 
+	 * @param vnp2
 	 * 
 	 */
 	private void generateComparableAlgorithm(VirtualNetworkParameter vnp2) {
@@ -63,38 +61,47 @@ public class Experiment {
 		// FD FI
 		// FD ILP EVSNR Min Ran
 		// VNE can not able to compare with VNE algorithm
+		Algorithm alg;
 		try {
-			SubstrateNetwork sn_FI_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			Algorithm alg = new Algorithm();
-			alg.setFD(EVSNR.FailureIndependent);
-			alg.setShared(true);
-			alg.setExact(false);
-			alg.setSn(sn_FI_Shared);
-			this.algorithms.addElement(alg);
+			// SubstrateNetwork sn_FI_Shared = (SubstrateNetwork)
+			// this.basicSubstrateNework.clone();
+			// alg = new Algorithm();
+			// alg.setFD(EVSNR.FailureIndependent);
+			// alg.setShared(true);
+			// alg.setExact(false);
+			// alg.setSn(sn_FI_Shared);
+			// alg.algorithmName="sn_FI_Shared";
+			// this.algorithms.addElement(alg);
+			//
+			// SubstrateNetwork sn_FI_NoShared = (SubstrateNetwork)
+			// this.basicSubstrateNework.clone();
+			// alg = new Algorithm();
+			// alg.setFD(EVSNR.FailureIndependent);
+			// alg.setShared(false);
+			// alg.setExact(false);
+			// alg.setSn(sn_FI_NoShared);
+			// alg.algorithmName="sn_FI_NoShared";
+			// this.algorithms.addElement(alg);
 
-			SubstrateNetwork sn_FI_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setFD(EVSNR.FailureIndependent);
-			alg.setShared(false);
-			alg.setExact(false);
-			alg.setSn(sn_FI_NoShared);
-			this.algorithms.addElement(alg);
-
-			SubstrateNetwork sn_FD_ILP_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setFD(EVSNR.FailureDependent);
-			alg.setShared(true);
-			alg.setExact(true);
-			alg.setSn(sn_FD_ILP_Shared);
-			this.algorithms.addElement(alg);
-
-			SubstrateNetwork sn_FD_ILP_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setFD(EVSNR.FailureDependent);
-			alg.setShared(false);
-			alg.setExact(true);
-			alg.setSn(sn_FD_ILP_NoShared);
-			this.algorithms.addElement(alg);
+			// SubstrateNetwork sn_FD_ILP_Shared = (SubstrateNetwork)
+			// this.basicSubstrateNework.clone();
+			// alg = new Algorithm();
+			// alg.setFD(EVSNR.FailureDependent);
+			// alg.setShared(true);
+			// alg.setExact(true);
+			// alg.setSn(sn_FD_ILP_Shared);
+			// alg.algorithmName="sn_FD_ILP_Shared";
+			// this.algorithms.addElement(alg);
+			//
+			// SubstrateNetwork sn_FD_ILP_NoShared = (SubstrateNetwork)
+			// this.basicSubstrateNework.clone();
+			// alg = new Algorithm();
+			// alg.setFD(EVSNR.FailureDependent);
+			// alg.setShared(false);
+			// alg.setExact(true);
+			// alg.setSn(sn_FD_ILP_NoShared);
+			// alg.algorithmName="sn_FD_ILP_NoShared";
+			// this.algorithms.addElement(alg);
 
 			SubstrateNetwork sn_FD_EVSNR_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
 			alg = new Algorithm();
@@ -103,43 +110,47 @@ public class Experiment {
 			alg.setExact(false);
 			alg.setSequence(EVSNR.Ran);
 			alg.setSn(sn_FD_EVSNR_Ran_Shared);
+			alg.algorithmName = "sn_FD_EVSNR_Ran_Shared";
 			this.algorithms.addElement(alg);
 
-			SubstrateNetwork sn_FD_EVSNR_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setFD(EVSNR.FailureDependent);
-			alg.setShared(false);
-			alg.setExact(false);
-			alg.setSequence(EVSNR.Ran);
-			alg.setSn(sn_FD_EVSNR_Ran_NoShared);
-			this.algorithms.addElement(alg);
+//			SubstrateNetwork sn_FD_EVSNR_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+//			alg = new Algorithm();
+//			alg.setFD(EVSNR.FailureDependent);
+//			alg.setShared(false);
+//			alg.setExact(false);
+//			alg.setSequence(EVSNR.Ran);
+//			alg.setSn(sn_FD_EVSNR_Ran_NoShared);
+//			alg.algorithmName = "sn_FD_EVSNR_Ran_NoShared";
+//			this.algorithms.addElement(alg);
 
-			SubstrateNetwork sn_FD_EVSNR_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setFD(EVSNR.FailureDependent);
-			alg.setShared(true);
-			alg.setExact(false);
-			alg.setSequence(EVSNR.Min);
-			alg.setSn(sn_FD_EVSNR_Min_Shared);
-			this.algorithms.addElement(alg);
-
-			SubstrateNetwork sn_FD_EVSNR_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setFD(EVSNR.FailureDependent);
-			alg.setShared(false);
-			alg.setExact(false);
-			alg.setSequence(EVSNR.Min);
-			alg.setSn(sn_FD_EVSNR_Min_NoShared);
-			this.algorithms.addElement(alg);
+			// SubstrateNetwork sn_FD_EVSNR_Min_Shared = (SubstrateNetwork)
+			// this.basicSubstrateNework.clone();
+			// alg = new Algorithm();
+			// alg.setFD(EVSNR.FailureDependent);
+			// alg.setShared(true);
+			// alg.setExact(false);
+			// alg.setSequence(EVSNR.Min);
+			// alg.setSn(sn_FD_EVSNR_Min_Shared);
+			// this.algorithms.addElement(alg);
+			//
+			// SubstrateNetwork sn_FD_EVSNR_Min_NoShared = (SubstrateNetwork)
+			// this.basicSubstrateNework.clone();
+			// alg = new Algorithm();
+			// alg.setFD(EVSNR.FailureDependent);
+			// alg.setShared(false);
+			// alg.setExact(false);
+			// alg.setSequence(EVSNR.Min);
+			// alg.setSn(sn_FD_EVSNR_Min_NoShared);
+			// this.algorithms.addElement(alg);
 		} catch (CloneNotSupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		for (int alg = 0; alg < algorithms.size(); alg++) {
-			algorithms.get(alg).setVnp(vnp2);
+
+		for (int i = 0; i < algorithms.size(); i++) {
+			algorithms.get(i).setVnp(vnp2);
 		}
-		
+
 	}
 
 }

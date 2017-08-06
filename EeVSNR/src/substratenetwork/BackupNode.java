@@ -17,8 +17,9 @@ public class BackupNode {
 	/**
 	 * @param fdSubstrateNework
 	 * @param vn
+	 * @param isShared 
 	 */
-	public BackupNode(SubstrateNetwork fdSubstrateNework, VirtualNetwork vn) {
+	public BackupNode(SubstrateNetwork fdSubstrateNework, VirtualNetwork vn, boolean isShared) {
 		boolean usedVnode[] = new boolean[fdSubstrateNework.nodeSize];
 		for (int i = 0; i < vn.nodeSize; i++) {
 			usedVnode[vn.vNode2sNode[i]] = true;
@@ -40,8 +41,7 @@ public class BackupNode {
 				for (int l = 0; l < fdSubstrateNework.serviceNumber; l++) {
 					boolServiceTypeSet[j][l] = fdSubstrateNework.boolServiceTypeSet[i][l];
 				}
-//				this.nodeComputationCapacity[j] = fdSubstrateNework.nodeComputationCapacity[i]
-//						- fdSubstrateNework.nodeComputationCurrentConsume[i];
+				this.nodeComputationCapacity[j] = fdSubstrateNework.getIsSharedRemainComputaion(i, isShared);
 				j++;
 			}
 		}
