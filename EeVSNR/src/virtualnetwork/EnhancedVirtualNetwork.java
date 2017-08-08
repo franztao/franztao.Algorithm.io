@@ -44,6 +44,7 @@ public class EnhancedVirtualNetwork {
 	public Map<String, Integer> label2Node;
 
 	public int vNode2eNode[];
+	public int eNode2sNode[];
 
 	public VirtualNetwork VN;
 
@@ -84,13 +85,16 @@ public class EnhancedVirtualNetwork {
 	starStructure Items[];
 	Vector<starStructure> Knapsacks;
 
+	public boolean isSucceed;
+
 	/**
 	 * @param vn
 	 * @param path
 	 * @param bn
 	 */
-	public EnhancedVirtualNetwork(SubstrateNetwork fDSubstrateNework, VirtualNetwork vn, BackupNode bn) {
+	public EnhancedVirtualNetwork(SubstrateNetwork sn, VirtualNetwork vn, BackupNode bn) {
 		this.VN = vn;
+		this.isSucceed = false;
 		// node
 		this.nodeSize4Embeded = vn.nodeSize;
 		this.nodeSize4Backup = bn.backupNodeSize;
@@ -110,6 +114,7 @@ public class EnhancedVirtualNetwork {
 		this.label2Node = new HashMap<String, Integer>();
 		// embed function
 		this.vNode2eNode = new int[this.VN.nodeSize];
+		this.eNode2sNode=new int [this.nodeSize];
 		// knapsack problem
 		this.Items = new starStructure[this.VN.nodeSize];
 
@@ -118,32 +123,34 @@ public class EnhancedVirtualNetwork {
 		// if (this.sampleInit) {
 		// initSample1();
 		// } else {
-		constrcutEVN(fDSubstrateNework, vn, bn);
+		constrcutEVN(sn, vn, bn);
 		// }
 	}
 
 	/**
-	 * @param vn2
+	 * @param vn
 	 * @param path
 	 * @param bn
 	 */
-	private void constrcutEVN(SubstrateNetwork fDSubstrateNework, VirtualNetwork vn2, BackupNode bn) {
+	private void constrcutEVN(SubstrateNetwork sn, VirtualNetwork vn, BackupNode bn) {
 		// node
 		for (int i = 0; i < this.nodeSize; i++) {
 			if (i < this.nodeSize4Embeded) {
-				this.nodeComputationCapacity[i] = vn2.nodeComputationCapacity[i];
-				this.nodeComputationUsed[i] = vn2.nodeComputationDemand[i];
+				this.nodeComputationCapacity[i] = vn.nodeComputationCapacity[i];
+				this.nodeComputationUsed[i] = vn.nodeComputationDemand[i];
+				this.eNode2sNode[i]=vn.vNode2sNode[i];
 			} else {
 				this.nodeComputationCapacity[i] = bn.nodeComputationCapacity[i - this.nodeSize4Embeded];
+				this.eNode2sNode[i]=bn.bNode2sNode[i - this.nodeSize4Embeded];
 				this.nodeComputationUsed[i] = 0;
 			}
 		}
 
 		// edge
 		for (int i = 0; i < this.nodeSize4Embeded; i++) {
-			for (int j = 0; j < this.nodeSize4Embeded; j++) {
-				this.topology[i][j] = vn2.topology[i][j];
-				this.edgeBandwithUsed[i][j] = vn2.edgeBandwithDemand[i][j];
+			for (int j = 0; j <i; j++) {
+				this.topology[i][j] = this.topology[j][i] =vn.topology[i][j];
+				this.edgeBandwithUsed[i][j] = this.edgeBandwithUsed[j][i] =vn.edgeBandwithDemand[i][j];
 			}
 		}
 
@@ -151,9 +158,9 @@ public class EnhancedVirtualNetwork {
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.serviceNumber; j++) {
 				if (i < this.nodeSize4Embeded) {
-					this.boolServiceTypeSet[i][j] = fDSubstrateNework.boolServiceTypeSet[vn2.vNode2sNode[i]][j];
+					this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[vn.vNode2sNode[i]][j];
 				} else {
-					this.boolServiceTypeSet[i][j] = fDSubstrateNework.boolServiceTypeSet[bn.bNode2sNode[i
+					this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[bn.bNode2sNode[i
 							- this.nodeSize4Embeded]][j];
 				}
 			}
@@ -432,9 +439,9 @@ public class EnhancedVirtualNetwork {
 		constructKnapsacks(failurenodeID);
 		MulitpleKnapsack MKP = new MulitpleKnapsack(this.VN.nodeSize, Knapsacks.size(), this.nodeSize);
 		constructMultipleKnapsackProbem(MKP, failurtype);
-//		if (failurenodeID == 3) {
-//			MKP.matchingMatrix[1][5] = Integer.MAX_VALUE;
-//		}
+		// if (failurenodeID == 3) {
+		// MKP.matchingMatrix[1][5] = Integer.MAX_VALUE;
+		// }
 		int solution[] = new int[this.VN.nodeSize];
 
 		if (this.Method == EVSNR.MatchMethodDP) {
@@ -621,14 +628,15 @@ public class EnhancedVirtualNetwork {
 	}
 
 	public boolean HeursitcAlgorithm4Survivability(boolean failurtype, int sequence) throws GRBException {
-//		1 node+2 node computaion+12 bandwidth
-//		0 node+1 node computaion+5 bandwidth
-//		0 node+2 node computaion+3 bandwidth
-//		1 node+6 node computaion+3 bandwidth
-//		=2 node+11 node computaion+23 bandwidth
+		// 1 node+2 node computaion+12 bandwidth
+		// 0 node+1 node computaion+5 bandwidth
+		// 0 node+2 node computaion+3 bandwidth
+		// 1 node+6 node computaion+3 bandwidth
+		// =2 node+11 node computaion+23 bandwidth
 		if (sequence == EVSNR.Ran) {
 			for (int i = 0; i < this.nodeSize4Embeded; i++) {
-				System.out.println("--------------------------Begin " + i + " node failure--------------------------------------");
+				System.out.println(
+						"--------------------------Begin " + i + " node failure--------------------------------------");
 				if (!failIthNode(i, failurtype)) {
 					return false;
 				}
@@ -813,7 +821,7 @@ public class EnhancedVirtualNetwork {
 	 * @param isFD2
 	 * @param isFD
 	 * @param isExact
-	 * @return 
+	 * @return
 	 * 
 	 */
 	public boolean startEnhanceVirtualNetwork(boolean isExact, boolean isFD, boolean isShared, int sequence) {
@@ -830,8 +838,7 @@ public class EnhancedVirtualNetwork {
 			if (!enhanceResult) {
 				System.out.println("Fail to construct Enhanced Virtual Network");
 				return false;
-			}
-			else{
+			} else {
 				return true;
 			}
 		}

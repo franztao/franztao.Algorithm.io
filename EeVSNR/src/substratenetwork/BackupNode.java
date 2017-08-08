@@ -14,41 +14,44 @@ import virtualnetwork.VirtualNetworkParameter;
  * notice testsample 
  */
 public class BackupNode {
+	
+	public int backupNodeSize;
+	public int[] bNode2sNode;
+	public boolean[][] boolServiceTypeSet;
+	public int[] nodeComputationCapacity;
+	
 	/**
-	 * @param fdSubstrateNework
+	 * @param sn
 	 * @param vn
 	 * @param isShared 
 	 */
-	public BackupNode(SubstrateNetwork fdSubstrateNework, VirtualNetwork vn, boolean isShared) {
-		boolean usedVnode[] = new boolean[fdSubstrateNework.nodeSize];
+	public BackupNode(SubstrateNetwork sn, VirtualNetwork vn, boolean isShared) {
+		boolean usedsNode[] = new boolean[sn.nodeSize];
 		for (int i = 0; i < vn.nodeSize; i++) {
-			usedVnode[vn.vNode2sNode[i]] = true;
+			usedsNode[vn.vNode2sNode[i]] = true;
 		}
 		// backup node number;
 		this.backupNodeSize = 0;
-		for (int i = 0; i < fdSubstrateNework.nodeSize; i++) {
-			if (!usedVnode[i]) {
+		for (int i = 0; i < sn.nodeSize; i++) {
+			if (!usedsNode[i]) {
 				this.backupNodeSize++;
 			}
 		}
 
 		this.bNode2sNode = new int[this.backupNodeSize];
-		this.boolServiceTypeSet = new boolean[this.backupNodeSize][fdSubstrateNework.serviceNumber];
+		this.boolServiceTypeSet = new boolean[this.backupNodeSize][sn.serviceNumber];
 		this.nodeComputationCapacity = new int[this.backupNodeSize];
-		for (int i = 0, j = 0; i < fdSubstrateNework.nodeSize; i++) {
-			if (!usedVnode[i]) {
+		for (int i = 0, j = 0; i < sn.nodeSize; i++) {
+			if (!usedsNode[i]) {
 				this.bNode2sNode[j] = i;
-				for (int l = 0; l < fdSubstrateNework.serviceNumber; l++) {
-					boolServiceTypeSet[j][l] = fdSubstrateNework.boolServiceTypeSet[i][l];
+				for (int l = 0; l < sn.serviceNumber; l++) {
+					boolServiceTypeSet[j][l] = sn.boolServiceTypeSet[i][l];
 				}
-				this.nodeComputationCapacity[j] = fdSubstrateNework.getIsSharedRemainComputaion(i, isShared);
+				this.nodeComputationCapacity[j] = sn.getIsSharedRemainComputaion(i, isShared);
 				j++;
 			}
 		}
 	}
 
-	public int backupNodeSize;
-	public int[] bNode2sNode;
-	public boolean[][] boolServiceTypeSet;
-	public int[] nodeComputationCapacity;
+	
 }

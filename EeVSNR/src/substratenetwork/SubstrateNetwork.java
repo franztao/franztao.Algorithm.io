@@ -13,14 +13,14 @@ public class SubstrateNetwork implements Cloneable {
 	public int nodeComputation4Former[];
 	public int nodeComputation4Enhance_Sum[];
 	public int nodeComputation4Temp[];
-	public Vector<Vector<Integer>> VNReqSet4Node;
+	public Vector<Vector<Integer>> VNQIndexSet4sNode;
 
 	public boolean topology[][];
 	public int edgeBandwithCapacity[][];
 	public int edgeBandwith4Former[][];
 	public int edgeBandwith4Enhance_Sum[][];
 	public int edgeBandwith4Temp[][];
-	public Vector<Vector<Vector<Integer>>> VNReqSet4Edge;
+	public Vector<Vector<Vector<Integer>>> VNQIndexSet4Edge;
 
 	public int serviceNumber;
 	public boolean boolServiceTypeSet[][];
@@ -42,9 +42,9 @@ public class SubstrateNetwork implements Cloneable {
 		this.nodeComputation4Former = new int[nodeSize];
 		this.nodeComputation4Enhance_Sum = new int[nodeSize];
 		this.nodeComputation4Temp = new int[nodeSize];
-		this.VNReqSet4Node = new Vector<Vector<Integer>>();
+		this.VNQIndexSet4sNode = new Vector<Vector<Integer>>();
 		for (int i = 0; i < nodeSize; i++) {
-			VNReqSet4Node.addElement(new Vector<Integer>());
+			VNQIndexSet4sNode.addElement(new Vector<Integer>());
 		}
 
 		// edge
@@ -53,11 +53,11 @@ public class SubstrateNetwork implements Cloneable {
 		edgeBandwith4Former = new int[nodeSize][nodeSize];
 		edgeBandwith4Enhance_Sum = new int[nodeSize][nodeSize];
 		edgeBandwith4Temp = new int[nodeSize][nodeSize];
-		this.VNReqSet4Edge = new Vector<Vector<Vector<Integer>>>();
+		this.VNQIndexSet4Edge = new Vector<Vector<Vector<Integer>>>();
 		for (int i = 0; i < nodeSize; i++) {
-			this.VNReqSet4Edge.addElement(new Vector<Vector<Integer>>());
+			this.VNQIndexSet4Edge.addElement(new Vector<Vector<Integer>>());
 			for (int j = 0; j < nodeSize; j++) {
-				VNReqSet4Edge.get(i).add(new Vector<Integer>());
+				VNQIndexSet4Edge.get(i).add(new Vector<Integer>());
 			}
 		}
 
@@ -88,18 +88,17 @@ public class SubstrateNetwork implements Cloneable {
 		int remain = 0;
 		if (isShared) {
 			int maxShare = 0;
-			for (int i = 0; i < this.VNReqSet4Node.get(nodeloc).size(); i++) {
-				int vnq = this.VNReqSet4Node.get(nodeloc).get(i);
+			for (int i = 0; i < this.VNQIndexSet4sNode.get(nodeloc).size(); i++) {
+				int ithVNQ = this.VNQIndexSet4sNode.get(nodeloc).get(i);
 				int temp = 0;
-				for (int j = 0; j < this.VNQ.get(vnq).getNodeSize(); j++) {
-					if (nodeloc == this.VNQ.get(vnq).vNode2sNode[j]) {
+				for (int j = 0; j < this.VNQ.get(ithVNQ).getNodeSize(); j++) {
+					if (nodeloc == this.VNQ.get(ithVNQ).vNode2sNode[j]) {
 						// one substrate network node map multiple virtual
 						// network request and network node
-						temp += this.ENV.get(vnq).nodeComputationEnhanced[j];
+						temp += this.ENV.get(ithVNQ).nodeComputationEnhanced[j];
 					}
 				}
 				maxShare = Math.max(maxShare, temp);
-
 			}
 			remain = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
 					- this.nodeComputation4Temp[nodeloc] - maxShare;
@@ -121,27 +120,27 @@ public class SubstrateNetwork implements Cloneable {
 		int remain = 0;
 		if (isShared) {
 			int maxShare = 0;
-			for (int i = 0; i < this.VNReqSet4Edge.get(k).get(l).size(); i++) {
-				int vnq = this.VNReqSet4Edge.get(k).get(l).get(i);
-				int temp = 0;
-				for (int p = 0; p < this.VNQ.get(vnq).getNodeSize(); p++) {
-					for (int q = 0; q < this.VNQ.get(vnq).getNodeSize(); q++) {
+			for (int i = 0; i < this.VNQIndexSet4Edge.get(k).get(l).size(); i++) {
+				int ithVNQ = this.VNQIndexSet4Edge.get(k).get(l).get(i);
+				int tempBandwith = 0;
+				for (int p = 0; p < this.VNQ.get(ithVNQ).getNodeSize(); p++) {
+					for (int q = 0; q < this.VNQ.get(ithVNQ).getNodeSize(); q++) {
 
-						for (int t = 0; t < this.VNQ.get(vnq).vEdge2sPath.size() - 1; t++) {
-							if (k == this.VNQ.get(vnq).vEdge2sPath.get(p).get(q).get(t)
-									&& (l == this.VNQ.get(vnq).vEdge2sPath.get(p).get(q).get(t + 1))) {
-								temp += this.ENV.get(vnq).edgeBandwithEnhanced[p][q];
+						for (int t = 0; t < this.VNQ.get(ithVNQ).vEdge2sPath.size() - 1; t++) {
+							if (k == this.VNQ.get(ithVNQ).vEdge2sPath.get(p).get(q).get(t)
+									&& (l == this.VNQ.get(ithVNQ).vEdge2sPath.get(p).get(q).get(t + 1))) {
+								tempBandwith += this.ENV.get(ithVNQ).edgeBandwithEnhanced[p][q];
 							}
 						}
 					}
 				}
-				maxShare = Math.max(maxShare, temp);
+				maxShare = Math.max(maxShare, tempBandwith);
 			}
 			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l] - this.edgeBandwith4Temp[k][l]
 					- maxShare;
 		} else {
-			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l]
-					- this.edgeBandwith4Enhance_Sum[k][l] - this.edgeBandwith4Temp[k][l];
+			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l] - this.edgeBandwith4Temp[k][l]
+					- this.edgeBandwith4Enhance_Sum[k][l];
 		}
 		return remain;
 	}

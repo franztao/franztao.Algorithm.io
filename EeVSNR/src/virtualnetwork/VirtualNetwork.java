@@ -32,6 +32,8 @@ public class VirtualNetwork {
 	public Map<String, Integer> label2Node;
 
 	public boolean isTestSample;
+	
+	public EnhancedVirtualNetwork evn;
 
 	/**
 	 * @param vnp
@@ -346,4 +348,5 @@ public class VirtualNetwork {
 	public void setIsRunning(boolean isRunning) {
 		this.isRunning = isRunning;
 	}
+
 }
