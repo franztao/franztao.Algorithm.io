@@ -14,6 +14,7 @@ public class SubstrateNetwork implements Cloneable {
 	public int nodeComputation4Enhance_Sum[];
 	public int nodeComputation4Temp[];
 	public Vector<Vector<Integer>> VNQIndexSet4sNode;
+	public Vector<Vector<Integer>> EVNIndexSet4sNode;
 
 	public boolean topology[][];
 	public int edgeBandwithCapacity[][];
@@ -21,7 +22,8 @@ public class SubstrateNetwork implements Cloneable {
 	public int edgeBandwith4Enhance_Sum[][];
 	public int edgeBandwith4Temp[][];
 	public Vector<Vector<Vector<Integer>>> VNQIndexSet4Edge;
-
+	public Vector<Vector<Vector<Integer>>> EVNIndexSet4Edge;
+	
 	public int serviceNumber;
 	public boolean boolServiceTypeSet[][];
 	public Vector<Integer>[] vectorServiceTypeSet;
@@ -43,8 +45,10 @@ public class SubstrateNetwork implements Cloneable {
 		this.nodeComputation4Enhance_Sum = new int[nodeSize];
 		this.nodeComputation4Temp = new int[nodeSize];
 		this.VNQIndexSet4sNode = new Vector<Vector<Integer>>();
+		this.EVNIndexSet4sNode = new Vector<Vector<Integer>>();
 		for (int i = 0; i < nodeSize; i++) {
 			VNQIndexSet4sNode.addElement(new Vector<Integer>());
+			EVNIndexSet4sNode.addElement(new Vector<Integer>());
 		}
 
 		// edge
@@ -54,10 +58,13 @@ public class SubstrateNetwork implements Cloneable {
 		edgeBandwith4Enhance_Sum = new int[nodeSize][nodeSize];
 		edgeBandwith4Temp = new int[nodeSize][nodeSize];
 		this.VNQIndexSet4Edge = new Vector<Vector<Vector<Integer>>>();
+		this.EVNIndexSet4Edge = new Vector<Vector<Vector<Integer>>>();
 		for (int i = 0; i < nodeSize; i++) {
 			this.VNQIndexSet4Edge.addElement(new Vector<Vector<Integer>>());
+			this.EVNIndexSet4Edge.addElement(new Vector<Vector<Integer>>());
 			for (int j = 0; j < nodeSize; j++) {
-				VNQIndexSet4Edge.get(i).add(new Vector<Integer>());
+				this.VNQIndexSet4Edge.get(i).add(new Vector<Integer>());
+				this.EVNIndexSet4Edge.get(i).add(new Vector<Integer>());
 			}
 		}
 

@@ -236,6 +236,7 @@ public class Algorithm {
 			return;
 		}
 		if (constructEnhanceVirtualNetwork(vn)) {
+
 			System.out.println("Succeed to enhance virtual network");
 		} else {
 			this.sn.clearTemp();
@@ -265,7 +266,10 @@ public class Algorithm {
 		// private int sequence;
 		if (evn.startEnhanceVirtualNetwork(this.isExact, this.isFD, this.isShared, this.sequence)) {
 			if (distributeResource4EVN(evn)) {
+				evn.isSucceed = true;
 				return true;
+			} else {
+				return false;
 			}
 		}
 		return false;
@@ -276,7 +280,7 @@ public class Algorithm {
 	 * @return
 	 */
 	private boolean distributeResource4EVN(EnhancedVirtualNetwork evn) {
-		
+		this.sn.ENV.add(evn);
 		for (int i = 0; i < this.sn.nodeSize; i++) {
 			int nodeResource = 0;
 			for (int j = 0; j < evn.nodeSize; j++) {
@@ -302,79 +306,66 @@ public class Algorithm {
 			}
 		}
 
-		for(int i=0;i<evn.nodeSize;i++){
-			for(int j=0;j<evn.nodeSize;j++){
-				evn.edgeBandwithEnhanced[i][j]=evn.edgeBandwithUsed[i][j];
-				if(i<evn.nodeSize4Embeded&&j<evn.nodeSize4Embeded){
-					evn.edgeBandwithEnhanced[i][j]=evn.edgeBandwithUsed[i][j]-evn.VN.edgeBandwithDemand[i][j];
+		for (int i = 0; i < evn.nodeSize; i++) {
+			for (int j = 0; j < evn.nodeSize; j++) {
+				evn.edgeBandwithEnhanced[i][j] = evn.edgeBandwithUsed[i][j];
+				if (i < evn.nodeSize4Embeded && j < evn.nodeSize4Embeded) {
+					evn.edgeBandwithEnhanced[i][j] = evn.edgeBandwithUsed[i][j] - evn.VN.edgeBandwithDemand[i][j];
 				}
 			}
 		}
-		//edge
-		for(int i=0;i<evn.nodeSize;i++){
-			for(int j=0;j<i;j++){
-				if(evn.edgeBandwithEnhanced[i][j]>0){
-					int tempBandwith[][];
-					tempBandwith=new int[this.sn.nodeSize][this.sn.nodeSize];
-					for(int k=0;k<this.sn.nodeSize;k++){
-						for(int l=0;l<this.sn.nodeSize;l++){
-							tempBandwith[k][l] = this.sn.getRemainBandwith(k, l, this.isShared);
-							tempBandwith[l][k] = tempBandwith[k][l];
+		// edge
+		for (int i = 0; i < evn.nodeSize; i++) {
+			for (int j = 0; j < i; j++) {
+				if (evn.edgeBandwithEnhanced[i][j] > 0) {
+					int tempTopology[][];
+					tempTopology = new int[this.sn.nodeSize][this.sn.nodeSize];
+					for (int k = 0; k < this.sn.nodeSize; k++) {
+						for (int l = 0; l < this.sn.nodeSize; l++) {
+							int bandwith = this.sn.getRemainBandwith(k, l, this.isShared);
+							if (bandwith > evn.edgeBandwithEnhanced[i][j]) {
+								tempTopology[k][l] = tempTopology[l][k] = 1;
+							}
 						}
 					}
 					ShortestPath shortestPath = new ShortestPath(this.sn.nodeSize);
 					List<Integer> pathList = new LinkedList<Integer>();
-					pathList = shortestPath.Dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempBandwith);
+
+					// do not split shortest path
+					pathList = shortestPath.Dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempTopology);
 					if (pathList.isEmpty()) {
-						System.out
-								.println("Fail to embedd virtual network's edge into substrate network: lack path");
+						System.out.println("Fail to embedd enhanced network's edge into substrate network: lack path");
 						return false;
 					}
 
 					// set virtual network's edge bandwith
-					int minimumPathBandwith = 0;
-					vn.vEdge2sPath.get(i).get(j).addElement(pathList.get(0));
-					for (int s = pathList.get(0), k = 1; k < pathList.size(); k++) {
-						int e = pathList.get(k);
-						minimumPathBandwith = Math.max(minimumPathBandwith, bandwith[s][e]);
-						vn.vEdge2sPath.get(i).get(j).addElement(e);
-						s = e;
+					for (int k = 0; k < pathList.size(); k++) {
+						evn.eEdge2sPath.get(i).get(j).addElement(pathList.get(k));
 					}
 					for (int k = pathList.size() - 1; k >= 0; k--) {
-						vn.vEdge2sPath.get(j).get(i).addElement(pathList.get(k));
-					}
-
-					if (vn.isTestSample) {
-						distributeBandwith = vn.edgeBandwithDemand[i][j];
-					} else {
-						distributeBandwith = (int) (vnp.edgeBandwithMinimum
-								+ Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
-					}
-
-					if (distributeBandwith > minimumPathBandwith) {
-						System.out.println(
-								"Fail to embedd virtual network's edge into substrate network: substrate resource lack");
-						return false;
+						evn.eEdge2sPath.get(j).get(i).addElement(pathList.get(k));
 					}
 
 					for (int s = pathList.get(0), k = 1; k < pathList.size(); k++) {
 						int e = pathList.get(k);
-						this.sn.edgeBandwith4Temp[s][e] += distributeBandwith;
+						this.sn.edgeBandwith4Temp[s][e] += evn.edgeBandwithEnhanced[i][j];
 						this.sn.edgeBandwith4Temp[e][s] = this.sn.edgeBandwith4Temp[s][e];
 						s = e;
 					}
-						}
-					}
-				}else{
-					System.out.println("Error : enhance resource");
 				}
-			
 			}
-			
 		}
-		
-		evn.isSucceed = true;
-		this.sn.ENV.addElement(evn);
+
+		for (int i = 0; i < evn.nodeSize; i++) {
+			this.sn.EVNIndexSet4sNode.get(evn.eNode2sNode[i]).addElement(this.sn.ENV.size());
+			for (int j = 0; j < evn.nodeSize; j++) {
+				for (int k = 0; k < evn.eEdge2sPath.get(i).get(j).size() - 1; k++) {
+					this.sn.EVNIndexSet4Edge.get(evn.eEdge2sPath.get(i).get(j).get(k))
+							.get(evn.eEdge2sPath.get(i).get(j).get(k + 1)).addElement(this.sn.ENV.size());
+				}
+			}
+		}
+
 		// set node and edge new value
 		for (int i = 0; i < evn.nodeSize; i++) {
 			if (i < evn.VN.nodeSize) {
@@ -383,16 +374,16 @@ public class Algorithm {
 				evn.nodeComputationEnhanced[i] = evn.nodeComputationUsed[i];
 			}
 		}
-		
+
 		for (int i = 0; i < sn.nodeSize; i++) {
 			if (!this.isShared) {
 				this.sn.nodeComputation4Enhance_Sum[i] += this.sn.nodeComputation4Temp[i];
 			}
 			this.sn.nodeComputation4Temp[i] = 0;
 			for (int j = 0; j < i; j++) {
-					this.sn.edgeBandwith4Enhance_Sum[i][j] += this.sn.edgeBandwith4Temp[i][j];
-					this.sn.edgeBandwith4Enhance_Sum[j][i] =this.sn.edgeBandwith4Former[i][j];
-					this.sn.edgeBandwith4Temp[i][j] = this.sn.edgeBandwith4Temp[j][i] = 0;
+				this.sn.edgeBandwith4Enhance_Sum[i][j] += this.sn.edgeBandwith4Temp[i][j];
+				this.sn.edgeBandwith4Enhance_Sum[j][i] = this.sn.edgeBandwith4Former[i][j];
+				this.sn.edgeBandwith4Temp[i][j] = this.sn.edgeBandwith4Temp[j][i] = 0;
 			}
 		}
 		return false;

@@ -36,6 +36,7 @@ public class EnhancedVirtualNetwork {
 	// edgeBandwithCapacity-usedEdgeCurrentBandwithCapacity
 	public int edgeBandwithUsed[][];
 	public int edgeBandwithEnhanced[][];
+	public Vector<Vector<Vector<Integer>>> eEdge2sPath;
 
 	public int serviceNumber;
 	public boolean boolServiceTypeSet[][];
@@ -106,6 +107,13 @@ public class EnhancedVirtualNetwork {
 		this.topology = new boolean[this.nodeSize][this.nodeSize];
 		this.edgeBandwithUsed = new int[this.nodeSize][this.nodeSize];
 		this.edgeBandwithEnhanced = new int[this.nodeSize][this.nodeSize];
+		eEdge2sPath=new Vector<Vector<Vector<Integer>>>();
+		for (int i = 0; i < this.nodeSize; i++) {
+			eEdge2sPath.addElement(new Vector<Vector<Integer>>());
+			for (int j = 0; j < this.nodeSize; j++) {
+				eEdge2sPath.get(i).addElement(new Vector<Integer>());
+			}
+		}
 		// service
 		this.serviceNumber = vn.serviceNumber;
 		this.boolServiceTypeSet = new boolean[nodeSize][serviceNumber];

@@ -7,6 +7,9 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import substratenetwork.SubstrateNetwork;
 import virtualnetwork.VirtualNetworkParameter;
 
@@ -15,6 +18,8 @@ import virtualnetwork.VirtualNetworkParameter;
  *
  */
 public class Experiment {
+	private  Logger logger = Logger.getLogger(Experiment.class.getName());
+	
 	private SubstrateNetwork basicSubstrateNework;
 	private VirtualNetworkParameter vnp;
 
@@ -24,8 +29,9 @@ public class Experiment {
 		this.basicSubstrateNework = FDSubstrateNework;
 		this.vnp = vnp;
 		this.algorithms = new Vector<Algorithm>();
+		PropertyConfigurator.configure("log4j.properties");
+	
 	}
-
 	/**
 	 * @param vnp
 	 * 
@@ -143,10 +149,10 @@ public class Experiment {
 			// alg.setSn(sn_FD_EVSNR_Min_NoShared);
 			// this.algorithms.addElement(alg);
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
+			logger.info("Fail to construct various algorithms");
 			e.printStackTrace();
 		}
-
+		logger.error("Fail to construct various algorithms");
 		for (int i = 0; i < algorithms.size(); i++) {
 			algorithms.get(i).setVnp(vnp2);
 		}
