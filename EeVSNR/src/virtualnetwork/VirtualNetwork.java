@@ -29,18 +29,20 @@ public class VirtualNetwork {
 	public int nodeServiceType[];
 
 	public String node2Label[];
+
 	public Map<String, Integer> label2Node;
 
 	public boolean isTestSample;
-	
-	public EnhancedVirtualNetwork evn;
+
+	public EnhancedVirtualNetwork EVN;
 
 	/**
 	 * @param vnp
 	 */
 	public VirtualNetwork(VirtualNetworkParameter vnp) {
-		this.isRunning = true;
 
+//		this.leaveTime=
+		
 		if (vnp.sampleInit) {
 			this.nodeSize = 4;
 		} else
@@ -66,13 +68,28 @@ public class VirtualNetwork {
 		this.node2Label = new String[nodeSize];
 		this.label2Node = new HashMap<String, Integer>();
 		this.isTestSample = vnp.sampleInit;
+		
+		
 		setNodeLabel();
 		if (vnp.sampleInit) {
 			// this.nodeSize = 4;
 			initSample1();
 		}
 	}
+	/**
+	 * 
+	 */
+	public void destructerResource() {
+		for (int i = 0; i < this.nodeSize; i++) {
+			for (int j = 0; j < this.nodeSize; j++) {
+				vEdge2sPath.get(i).get(j).clear();
 
+			}
+			vEdge2sPath.get(i).clear();
+		}
+		vEdge2sPath.clear();
+		label2Node.clear();
+	}
 	/**
 	 * @return the nodeSize
 	 */
@@ -348,5 +365,7 @@ public class VirtualNetwork {
 	public void setIsRunning(boolean isRunning) {
 		this.isRunning = isRunning;
 	}
+
+	
 
 }

@@ -33,14 +33,14 @@ public class ShortestPath {
 		this.nodeSize = nodeSize2;
 	}
 
-	public List<Integer> Dijkstra(int source, int end, int[][] bandwith) {
+	public List<Integer> Dijkstra(int source, int end, int[][] topo) {
 		SimpleWeightedGraph<Integer, DefaultEdge> graph = new SimpleWeightedGraph<>(DefaultEdge.class);
 		for (int i = 0; i < this.nodeSize; i++) {
 			graph.addVertex(i);
 		}
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.nodeSize; j++) {
-				if ((bandwith[i][j] != 0) && (i != j)) {
+				if ((topo[i][j] != 0) && (i != j)) {
 					graph.addEdge(i, j);
 				}
 			}

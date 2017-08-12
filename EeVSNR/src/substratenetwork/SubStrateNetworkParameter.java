@@ -11,14 +11,14 @@ public class SubStrateNetworkParameter {
 
 	// node parameter
 	private int nodeSize = 40;
-	private int nodeComputationMinimum = 50;
-	private int nodeComputationMaximum = 100;
+	private int nodeComputationMinimum = 500;
+	private int nodeComputationMaximum = 1000;
 	
 
 	// edge parameter
 	private double node2nodeProbability = 0.4;
-	private int edgeBandwithMinimum = 50;
-	private int edgeBandwithMaximum = 100;
+	private int edgeBandwithMinimum = 500;
+	private int edgeBandwithMaximum = 1000;
 
 	// service parameter
 	private int serviceNumber = 5;

@@ -19,15 +19,16 @@ public class main {
 	 */
 
 	public static void main(String[] args) {
-		// read substrate network
-
-		boolean SampleInit = true;
+		boolean SampleInit = false;
 		SubStrateNetworkParameter snp = new SubStrateNetworkParameter(SampleInit);
+		
 		SubstrateNetwork sn = new SubstrateNetwork(snp);
+		
 		VirtualNetworkParameter vnp = new VirtualNetworkParameter(SampleInit);
 		
 		Experiment exp = new Experiment(sn, vnp);
 		exp.startExperiment();
+		
 		return ;
 	}
 

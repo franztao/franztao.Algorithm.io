@@ -9,7 +9,6 @@ package evsnr;
  */
 public class EVSNR {
 	
-	public  int tap;
 	public final static int MatchMethodILP = 1;
 	public final static int MatchMethodDP = 2;
 	
@@ -26,7 +25,7 @@ public class EVSNR {
 	
 	public final static long SubstrateNewtorkRunTimeInterval=3000;
 	public final static long unitTimeInterval=1;
-	public final static double requestAppearProbability=1;
+	public final static double requestAppearProbability=1;//0.1
 	public final static long VNRequestsDuration=3000;
 	public final static long VNRequestsContinueTimeMinimum=1500;
 	public final static long VNRequestsContinueTimeMaximum=1500;
