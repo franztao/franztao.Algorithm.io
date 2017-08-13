@@ -21,14 +21,15 @@ public class Experiment {
 
 	private SubstrateNetwork basicSubstrateNework;
 	private VirtualNetworkParameter vnp;
+	private Result result;
 
 	Vector<Algorithm> algorithms;
 
-	public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp) {
+	public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp, Result result) {
 		this.basicSubstrateNework = sn;
 		this.vnp = vnp;
 		this.algorithms = new Vector<Algorithm>();
-
+		this.result = result;
 		PropertyConfigurator.configure("log4j.properties");
 		// BasicConfigurator.configure();
 
@@ -52,6 +53,9 @@ public class Experiment {
 			logger.info("------------------------" + algorithms.get(alg).algorithmName
 					+ " Begin --------------------------------------------------------------------------------------");
 			for (int time = 0; time < EVSNR.SubstrateNewtorkRunTimeInterval; time++) {
+				if((time%(EVSNR.SubstrateNewtorkRunTimeInterval/EVSNR.ExperimentPicturePlotNumber))==0){
+					this.result.recordExperimentData(algorithms.get(alg),time);
+				}
 				algorithms.get(alg).releaseResource(false);
 				if ((0 == (time % EVSNR.VNRequestsDuration)) && (Math.random() < EVSNR.requestAppearProbability)) {
 					algorithms.get(alg).generateAndEnhanceVNrequest();
@@ -96,11 +100,10 @@ public class Experiment {
 			// alg.algorithmName="sn_FD_ILP_NoShared";
 			// this.algorithms.addElement(alg);
 
-			 SubstrateNetwork sn_FI_Shared = (SubstrateNetwork)
-			 this.basicSubstrateNework.clone();
-			 alg = new Algorithm();
-			 alg.setParameter("sn_FI_Shared", sn_FI_Shared, false, EVSNR.FailureIndependent, true);
-			 this.algorithms.addElement(alg);
+			SubstrateNetwork sn_FI_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			alg = new Algorithm();
+			alg.setParameter("sn_FI_Shared", sn_FI_Shared, false, EVSNR.FailureIndependent, true);
+			this.algorithms.addElement(alg);
 
 			SubstrateNetwork sn_FI_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
 			alg = new Algorithm();

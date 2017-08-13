@@ -47,7 +47,7 @@ public class BackupNode {
 				for (int l = 0; l < sn.serviceNumber; l++) {
 					boolServiceTypeSet[j][l] = sn.boolServiceTypeSet[i][l];
 				}
-				this.nodeComputationCapacity[j] = sn.getIsSharedRemainComputaion(i, isShared);
+				this.nodeComputationCapacity[j] = sn.getSubstrateRemainComputaion4EVN(i, isShared);
 				j++;
 			}
 		}

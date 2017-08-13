@@ -35,6 +35,13 @@ public class SubstrateNetwork implements Cloneable {
 	public Vector<VirtualNetwork> VNCollection;
 	public Vector<EnhancedVirtualNetwork> EVNCollection;
 
+	
+	//acceptionRatio
+	public int vnSuceedMap;
+	public int evnSuceedMap;
+	//EmbeddingCost
+	public int vnqNumber;
+	
 	/**
 	 * @param snp
 	 */
@@ -88,6 +95,11 @@ public class SubstrateNetwork implements Cloneable {
 		} else {
 			setResourceDistribution(snp);
 		}
+		
+		
+		this.vnSuceedMap=0;
+		this.evnSuceedMap=0;
+		this.vnqNumber=0;
 	}
 
 	/**
@@ -95,7 +107,7 @@ public class SubstrateNetwork implements Cloneable {
 	 * @param isShared
 	 * @return
 	 */
-	public int getSubstrateIsSharedRemainComputaion(int nodeloc, boolean isShared) {
+	public int getSubstrateRemainComputaion4EVN(int nodeloc, boolean isShared) {
 		int remain;
 		if (isShared) {
 			remain = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
@@ -106,13 +118,14 @@ public class SubstrateNetwork implements Cloneable {
 		}
 		return remain;
 	}
+	
 
 	/**
 	 * @param nodeloc
 	 * @param isShared
 	 * @return
 	 */
-	public int getSubstrateRemainComputaion(int nodeloc, boolean isShared) {
+	public int getSubstrateRemainComputaion4VN(int nodeloc, boolean isShared) {
 		int remain = 0;
 		if (isShared) {
 			int maxShare = 0;
@@ -141,34 +154,35 @@ public class SubstrateNetwork implements Cloneable {
 	}
 
 	/**
-	 * @param k
-	 * @param l
+	 * @param from
+	 * @param to
 	 * @param isShared
 	 * @return
 	 */
-	public int getSubStrateIsSharedRemainBandwith(int k, int l, boolean isShared) {
+	public int getSubStrateRemainBandwith4EVN(int from, int to, boolean isShared) {
 		int remain = 0;
 		if (isShared) {
-			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l] - this.edgeBandwith4Temp[k][l];
+			remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to] - this.edgeBandwith4Temp[from][to];
 		} else {
-			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l] - this.edgeBandwith4Temp[k][l]
-					- this.edgeBandwith4EnhanceNoSharedSum[k][l];
+			remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to] - this.edgeBandwith4Temp[from][to]
+					- this.edgeBandwith4EnhanceNoSharedSum[from][to];
 		}
 		return remain;
 	}
+	
 
 	/**
-	 * @param k
-	 * @param l
+	 * @param from
+	 * @param to
 	 * @param isShared
 	 * @return
 	 */
-	public int getSubStrateRemainBandwith(int k, int l, boolean isShared) {
+	public int getSubStrateRemainBandwith4VN(int from, int to, boolean isShared) {
 		int remain = 0;
 		if (isShared) {
 			int maxShare = 0;
-			for (int i = 0; i < this.EVNIndexSet4Edge.get(k).get(l).size(); i++) {
-				int ithEVN = this.EVNIndexSet4Edge.get(k).get(l).get(i);
+			for (int i = 0; i < this.EVNIndexSet4Edge.get(from).get(to).size(); i++) {
+				int ithEVN = this.EVNIndexSet4Edge.get(from).get(to).get(i);
 				
 				int tempBandwith = 0;
 				if (this.VNCollection.get(ithEVN).getIsRunning()&&this.EVNCollection.get(ithEVN).isSucceed) {
@@ -176,8 +190,8 @@ public class SubstrateNetwork implements Cloneable {
 						for (int q = 0; q < this.EVNCollection.get(ithEVN).getNodeSize(); q++) {
 							for (int t = 0; t < (this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).size()
 									- 1); t++) {
-								if (k == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t)
-										&& (l == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t + 1))) {
+								if (from == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t)
+										&& (to == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t + 1))) {
 
 									tempBandwith += this.EVNCollection.get(ithEVN).edgeBandwithEnhanced[p][q];
 								}
@@ -187,11 +201,11 @@ public class SubstrateNetwork implements Cloneable {
 				}
 				maxShare = Math.max(maxShare, tempBandwith);
 			}
-			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l] - this.edgeBandwith4Temp[k][l]
+			remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to] - this.edgeBandwith4Temp[from][to]
 					- maxShare;
 		} else {
-			remain = this.edgeBandwithCapacity[k][l] - this.edgeBandwith4Former[k][l] - this.edgeBandwith4Temp[k][l]
-					- this.edgeBandwith4EnhanceNoSharedSum[k][l];
+			remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to] - this.edgeBandwith4Temp[from][to]
+					- this.edgeBandwith4EnhanceNoSharedSum[from][to];
 		}
 		return remain;
 	}
@@ -313,21 +327,7 @@ public class SubstrateNetwork implements Cloneable {
 
 	}
 
-	/**
-	 * @param i
-	 * @param isShared
-	 * @return
-	 */
-	public int getIsSharedRemainComputaion(int i, boolean isShared) {
-		int remain = 0;
-		if (isShared) {
-			remain = this.nodeComputationCapacity[i] - this.nodeComputation4Former[i] - this.nodeComputation4Temp[i];
-		} else {
-			remain = this.nodeComputationCapacity[i] - this.nodeComputation4Former[i] - this.nodeComputation4Temp[i]
-					- this.nodeComputation4EnhanceNoSharedSum[i];
-		}
-		return remain;
-	}
+	
 
 	/**
 	 * 

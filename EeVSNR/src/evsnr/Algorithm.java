@@ -152,12 +152,12 @@ public class Algorithm {
 				vn.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum + Math
 						.round(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
 
-				if (vn.nodeComputationDemand[i] > this.sn.getSubstrateRemainComputaion(snodeloc, this.isShared)) {
-					logger.error("Fail to embed virtual network (" + i + ")-th node into substrate network");
+				if (vn.nodeComputationDemand[i] > this.sn.getSubstrateRemainComputaion4VN(snodeloc, this.isShared)) {
+					logger.warn("Fail to embed virtual network (" + i + ")-th node into substrate network");
 					return false;
 				} else {
 					vn.nodeComputationCapacity[i] = this.sn.nodeComputationCapacity[snodeloc]
-							- this.sn.getSubstrateRemainComputaion(snodeloc, this.isShared);
+							- this.sn.getSubstrateRemainComputaion4VN(snodeloc, this.isShared);
 					this.sn.nodeComputation4Temp[snodeloc] += vn.nodeComputationDemand[i];
 				}
 
@@ -178,7 +178,7 @@ public class Algorithm {
 						int[][] topo = new int[this.sn.nodeSize][this.sn.nodeSize];
 						for (int k = 0; k < this.sn.nodeSize; k++) {
 							for (int l = 0; l < k; l++) {
-								int bw = this.sn.getSubStrateRemainBandwith(k, l, this.isShared);
+								int bw = this.sn.getSubStrateRemainBandwith4VN(k, l, this.isShared);
 								if (bw > 0) {
 									bandwith[k][l] = bandwith[l][k] = bw;
 									topo[l][k] = topo[k][l] = 1;
@@ -190,7 +190,7 @@ public class Algorithm {
 						List<Integer> pathList = new LinkedList<Integer>();
 						pathList = shortestPath.Dijkstra(vn.vNode2sNode[i], vn.vNode2sNode[j], topo);
 						if (pathList.isEmpty()) {
-							logger.error("Fail to embed virtual network (" + i + " to " + j
+							logger.warn("Fail to embed virtual network (" + i + " to " + j
 									+ ")-edge into substrate network :  substrate network lack feasible path");
 							return false;
 						}
@@ -216,7 +216,7 @@ public class Algorithm {
 						}
 
 						if (distributeBandwith > maxPathBandwith) {
-							logger.error("Fail to embed virtual network (" + i + " to " + j
+							logger.warn("Fail to embed virtual network (" + i + " to " + j
 									+ ") edge into substrate network :  substrate network edge resource not more than PathBandwith Demand");
 
 							return false;
@@ -274,16 +274,18 @@ public class Algorithm {
 	 * @param vnp
 	 */
 	public void generateAndEnhanceVNrequest() {
+		this.sn.vnqNumber++;
 		VirtualNetwork vn = new VirtualNetwork(this.vnp);
 		// construct a virtual network
 		if (constructVirtualNetwork(vn)) {
 			vn.setIndex(this.sn.VNCollection.size());
 			vn.setIsRunning(true);
+			this.sn.vnSuceedMap++;
 			this.sn.VNCollection.addElement(vn);
 			logger.info("Succeed to generate (" + (this.sn.VNCollection.size() - 1) + ")-th  virtual network");
 		} else {
 			this.sn.clearTemp();
-			logger.error("Fail to generate (" + this.sn.VNCollection.size() + ")-th virtual network");
+			logger.warn("Fail to generate (" + this.sn.VNCollection.size() + ")-th virtual network");
 			return;
 		}
 
@@ -294,10 +296,11 @@ public class Algorithm {
 		vn.EVN = evn;
 
 		if (constructEnhanceVirtualNetwork(evn)) {
-			logger.info("Succeed to generate enhance virtual network and Algorithm Succeed");
+			this.sn.evnSuceedMap++;
+			logger.info("Succeed to construct enhance network and Algorithm Succeed");
 		} else {
 			this.sn.clearTemp();
-			logger.error("Fail to generate virtual network");
+			logger.warn("Fail to construct enhanced network");
 		}
 		this.sn.EVNCollection.addElement(evn);
 		return;
@@ -341,10 +344,10 @@ public class Algorithm {
 				}
 			}
 			if (nodeResource > 0) {
-				if (nodeResource < this.sn.getSubstrateIsSharedRemainComputaion(i, this.isShared)) {
+				if (nodeResource < this.sn.getSubstrateRemainComputaion4EVN(i, this.isShared)) {
 					this.sn.nodeComputation4Temp[i] += nodeResource;
 				} else {
-					logger.error("Fail to distribute enhacned network (" + i + ") th node into substrate network");
+					logger.warn("Fail to distribute enhacned network (" + i + ") node into substrate network");
 
 					return false;
 				}
@@ -368,7 +371,7 @@ public class Algorithm {
 					tempTopology = new int[this.sn.nodeSize][this.sn.nodeSize];
 					for (int k = 0; k < this.sn.nodeSize; k++) {
 						for (int l = 0; l < this.sn.nodeSize; l++) {
-							int bandwith = this.sn.getSubStrateIsSharedRemainBandwith(k, l, this.isShared);
+							int bandwith = this.sn.getSubStrateRemainBandwith4EVN(k, l, this.isShared);
 							if (bandwith > evn.edgeBandwithEnhanced[i][j]) {
 								tempTopology[k][l] = tempTopology[l][k] = 1;
 							}
@@ -380,7 +383,7 @@ public class Algorithm {
 					// do not split shortest path
 					pathList = shortestPath.Dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempTopology);
 					if (pathList.isEmpty()) {
-						logger.error("Fail to embedd enhanced network's edge into substrate network: lack path");
+						logger.warn("Fail to embedd enhanced network ("+i+"--"+j+") edge into substrate network: lack path");
 						return false;
 					}
 

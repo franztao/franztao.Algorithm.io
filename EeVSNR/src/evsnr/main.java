@@ -20,13 +20,16 @@ public class main {
 
 	public static void main(String[] args) {
 		boolean SampleInit = true;
+		Result result=new Result();
+		result.recordParameter();
+		
 		SubStrateNetworkParameter snp = new SubStrateNetworkParameter(SampleInit);
 		
 		SubstrateNetwork sn = new SubstrateNetwork(snp);
 		
 		VirtualNetworkParameter vnp = new VirtualNetworkParameter(SampleInit);
 		
-		Experiment exp = new Experiment(sn, vnp);
+		Experiment exp = new Experiment(sn, vnp,result);
 		exp.startExperiment();
 		
 		return ;

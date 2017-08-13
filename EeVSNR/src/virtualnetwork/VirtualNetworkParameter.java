@@ -11,14 +11,14 @@ import evsnr.EVSNR;
  */
 public class VirtualNetworkParameter {
 	// node parameter
-	public int nodeSize = EVSNR.VirtualNodeSize;
+	public int nodeSize;// = EVSNR.VirtualNodeSize;
 	public int nodeSizeMinimum = EVSNR.VirtualNodeSizeMinimum;
 	public int nodeSizeMaximum = EVSNR.VirtualNodeSizeMaximum;
 	public int nodeComputationMinimum = EVSNR.VirtualNodeComputationMinimum;
 	public int nodeComputationMaximum = EVSNR.VirtualNodeComputationMaximum;
 
 	// edge parameter
-	public double node2nodeProbability = EVSNR.VirtualNode2nodeProbability;
+	public double node2nodeProbability = EVSNR.VirtualNodenodeProbability;
 	public int edgeBandwithMinimum = EVSNR.VirtualEdgeBandwithMinimum;
 	public int edgeBandwithMaximum = EVSNR.VirtualEdgeBandwithMaximum;
 

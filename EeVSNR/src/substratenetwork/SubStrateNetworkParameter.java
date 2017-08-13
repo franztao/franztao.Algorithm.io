@@ -18,7 +18,7 @@ public class SubStrateNetworkParameter {
 	
 
 	// edge parameter
-	private double node2nodeProbability = EVSNR.SubStrateNode2nodeProbability;
+	private double node2nodeProbability = EVSNR.SubStrateNodenodeProbability;
 	private int edgeBandwithMinimum = EVSNR.SubStrateEdgeBandwithMinimum;
 	private int edgeBandwithMaximum = EVSNR.SubStrateEdgeBandwithMaximum;
 
