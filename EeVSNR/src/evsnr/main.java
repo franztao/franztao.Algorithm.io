@@ -19,7 +19,7 @@ public class main {
 	 */
 
 	public static void main(String[] args) {
-		boolean SampleInit = false;
+		boolean SampleInit = true;
 		SubStrateNetworkParameter snp = new SubStrateNetworkParameter(SampleInit);
 		
 		SubstrateNetwork sn = new SubstrateNetwork(snp);

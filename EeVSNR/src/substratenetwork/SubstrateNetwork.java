@@ -1,5 +1,6 @@
 package substratenetwork;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -118,7 +119,7 @@ public class SubstrateNetwork implements Cloneable {
 			for (int i = 0; i < this.EVNIndexSet4sNode.get(nodeloc).size(); i++) {
 				int ithEVN = this.EVNIndexSet4sNode.get(nodeloc).get(i);
 				int temp = 0;
-				if (this.EVNCollection.get(ithEVN).isSucceed) {
+				if (this.VNCollection.get(ithEVN).getIsRunning()&&this.EVNCollection.get(ithEVN).isSucceed) {
 					for (int j = 0; j < this.EVNCollection.get(ithEVN).getNodeSize(); j++) {
 						if (nodeloc == this.EVNCollection.get(ithEVN).eNode2sNode[j]) {
 							// one substrate network node map multiple virtual
@@ -168,13 +169,13 @@ public class SubstrateNetwork implements Cloneable {
 			int maxShare = 0;
 			for (int i = 0; i < this.EVNIndexSet4Edge.get(k).get(l).size(); i++) {
 				int ithEVN = this.EVNIndexSet4Edge.get(k).get(l).get(i);
+				
 				int tempBandwith = 0;
-				if (this.EVNCollection.get(ithEVN).isSucceed) {
+				if (this.VNCollection.get(ithEVN).getIsRunning()&&this.EVNCollection.get(ithEVN).isSucceed) {
 					for (int p = 0; p < this.EVNCollection.get(ithEVN).getNodeSize(); p++) {
 						for (int q = 0; q < this.EVNCollection.get(ithEVN).getNodeSize(); q++) {
-
-							for (int t = 0; t < this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).size()
-									- 2; t++) {
+							for (int t = 0; t < (this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).size()
+									- 1); t++) {
 								if (k == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t)
 										&& (l == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t + 1))) {
 
@@ -233,8 +234,8 @@ public class SubstrateNetwork implements Cloneable {
 					vectorServiceTypeSet.get(i).addElement(j);
 				}
 			}
-			if(vectorServiceTypeSet.get(i).size()==0){
-				vectorServiceTypeSet.get(i).addElement((int) ((this.serviceNumber-1)*Math.random()));
+			if (vectorServiceTypeSet.get(i).size() == 0) {
+				vectorServiceTypeSet.get(i).addElement((int) ((this.serviceNumber - 1) * Math.random()));
 			}
 		}
 
@@ -249,11 +250,11 @@ public class SubstrateNetwork implements Cloneable {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		SubstrateNetwork sn = (SubstrateNetwork) super.clone();
-		sn.nodeComputationCapacity = ((SubstrateNetwork) super.clone()).nodeComputationCapacity.clone();
-		sn.nodeComputation4Former = ((SubstrateNetwork) super.clone()).nodeComputation4Former.clone();
-		sn.nodeComputation4EnhanceNoSharedSum = ((SubstrateNetwork) super.clone()).nodeComputation4EnhanceNoSharedSum
-				.clone();
-		sn.nodeComputation4Temp = ((SubstrateNetwork) super.clone()).nodeComputation4Temp.clone();
+		sn.nodeComputationCapacity = new int[sn.nodeSize];
+		sn.nodeComputationCapacity=Arrays.copyOf(this.nodeComputationCapacity, this.nodeSize);
+		sn.nodeComputation4Former = new int[sn.nodeSize];
+		sn.nodeComputation4EnhanceNoSharedSum = new int[sn.nodeSize];
+		sn.nodeComputation4Temp = new int[sn.nodeSize];
 
 		// sn.VNQIndexSet4sNode = (Vector<Vector<Integer>>) ((SubstrateNetwork)
 		// super.clone()).VNQIndexSet4sNode.clone();
@@ -262,15 +263,19 @@ public class SubstrateNetwork implements Cloneable {
 		sn.VNQIndexSet4sNode = new Vector<Vector<Integer>>();
 		sn.EVNIndexSet4sNode = new Vector<Vector<Integer>>();
 		for (int i = 0; i < sn.nodeSize; i++) {
-			sn.VNQIndexSet4sNode.addElement( new Vector<Integer>());
-			sn.EVNIndexSet4sNode.addElement( new Vector<Integer>());
+			sn.VNQIndexSet4sNode.addElement(new Vector<Integer>());
+			sn.EVNIndexSet4sNode.addElement(new Vector<Integer>());
 		}
 
-		sn.topology = ((SubstrateNetwork) super.clone()).topology.clone();
-		sn.edgeBandwithCapacity = ((SubstrateNetwork) super.clone()).edgeBandwithCapacity.clone();
-		sn.edgeBandwith4Former = ((SubstrateNetwork) super.clone()).edgeBandwith4Former.clone();
-		sn.edgeBandwith4EnhanceNoSharedSum = ((SubstrateNetwork) super.clone()).edgeBandwith4EnhanceNoSharedSum.clone();
-		sn.edgeBandwith4Temp = ((SubstrateNetwork) super.clone()).edgeBandwith4Temp.clone();
+		sn.topology = new boolean[sn.nodeSize][sn.nodeSize];
+		sn.edgeBandwithCapacity = new int[sn.nodeSize][sn.nodeSize];
+		for(int i=0;i<this.nodeSize;i++){
+			sn.topology[i]=Arrays.copyOf(this.topology[i], this.nodeSize);
+			sn.edgeBandwithCapacity[i]=Arrays.copyOf(this.edgeBandwithCapacity[i], this.nodeSize);
+		}
+		sn.edgeBandwith4Former = new int[sn.nodeSize][sn.nodeSize];
+		sn.edgeBandwith4EnhanceNoSharedSum = new int[sn.nodeSize][sn.nodeSize];
+		sn.edgeBandwith4Temp = new int[sn.nodeSize][sn.nodeSize];
 
 		// sn.VNCollection = (Vector<VirtualNetwork>) ((SubstrateNetwork)
 		// super.clone()).VNCollection.clone();

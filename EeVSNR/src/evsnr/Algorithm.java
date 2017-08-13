@@ -46,13 +46,14 @@ public class Algorithm {
 	}
 
 	/**
+	 * @param isForceRelease
 	 * 
 	 */
-	public void releaseResource() {
+	public void releaseResource(boolean isForceRelease) {
 		for (int i = 0; i < this.sn.VNCollection.size(); i++) {
 			if (this.sn.VNCollection.get(i).getIsRunning()) {
 				this.sn.VNCollection.get(i).setLeaveTime(this.sn.VNCollection.get(i).getLeaveTime() - 1);
-				if (0 == this.sn.VNCollection.get(i).getLeaveTime()) {
+				if (isForceRelease || (0 == this.sn.VNCollection.get(i).getLeaveTime())) {
 					releaseVNResource(i);
 					this.sn.VNCollection.get(i).setIsRunning(false);
 					if (this.sn.VNCollection.get(i).EVN.isSucceed) {
@@ -77,7 +78,7 @@ public class Algorithm {
 			}
 		}
 		if (!this.isShared) {
-			for (int i = 0; i < this.sn.VNCollection.get(index).nodeSize; i++) {
+			for (int i = 0; i < this.sn.EVNCollection.get(index).nodeSize; i++) {
 				for (int j = 0; j < i; j++) {
 					if (this.sn.EVNCollection.get(index).edgeBandwithEnhanced[i][j] > 0) {
 						for (int p = 0; p < this.sn.EVNCollection.get(index).eEdge2sPath.get(i).get(j).size()
@@ -141,11 +142,11 @@ public class Algorithm {
 		if (!vn.isTestSample) {
 			for (int i = 0; i < vn.nodeSize; i++) {
 				// the virtual node map whose phisical node
-				int snodeloc = (int) Math.round(Math.random() * (this.sn.nodeSize-1));
+				int snodeloc = (int) Math.round(Math.random() * (this.sn.nodeSize - 1));
 				vn.vNode2sNode[i] = snodeloc;
 				// service
 				int nodeservice = this.sn.vectorServiceTypeSet.get(snodeloc)
-						.elementAt((int) Math.random() * (this.sn.vectorServiceTypeSet.get(snodeloc).size()-1));
+						.elementAt((int) Math.random() * (this.sn.vectorServiceTypeSet.get(snodeloc).size() - 1));
 				vn.nodeServiceType[i] = nodeservice;
 				// node demand
 				vn.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum + Math
@@ -168,7 +169,7 @@ public class Algorithm {
 			for (int j = 0; j < i; j++) {
 				if ((vn.isTestSample && vn.topology[i][j])
 						|| ((!vn.isTestSample) && (Math.random() < vnp.node2nodeProbability))) {
-					int distributeBandwith;
+					int distributeBandwith = 0;
 					if (vn.vNode2sNode[i] != vn.vNode2sNode[j]) {
 
 						// exist edge's path,bandwith
@@ -227,16 +228,18 @@ public class Algorithm {
 							this.sn.edgeBandwith4Temp[e][s] = this.sn.edgeBandwith4Temp[s][e];
 							s = e;
 						}
-					} else {
-
-						// two adjacent node of the edge is in the same node,
-						// the edge need not any more bandwith.
-						distributeBandwith = (int) (vnp.edgeBandwithMinimum
-								+ Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
-						if (vn.isTestSample) {
-							distributeBandwith = vn.edgeBandwithDemand[i][j];
-						}
 					}
+					// else {
+					//
+					// // two adjacent node of the edge is in the same node,
+					// // the edge need not any more bandwith.
+					// distributeBandwith = (int) (vnp.edgeBandwithMinimum
+					// + Math.round(Math.random() * (vnp.edgeBandwithMaximum -
+					// vnp.edgeBandwithMinimum)));
+					// if (vn.isTestSample) {
+					// distributeBandwith = vn.edgeBandwithDemand[i][j];
+					// }
+					// }
 					vn.topology[i][j] = vn.topology[j][i] = true;
 					vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeBandwith;
 				}
@@ -248,10 +251,6 @@ public class Algorithm {
 			this.sn.nodeComputation4Temp[i] = 0;
 			for (int j = 0; j < i; j++) {
 				if (i != j) {
-					// this.edgeBandwithCapacity[k][l] -
-					// this.edgeBandwith4Former[k][l]
-					// - this.edgeBandwith4Enhance_Sum[k][l] -
-					// this.edgeBandwith4Temp[k][l];
 					this.sn.edgeBandwith4Former[i][j] += this.sn.edgeBandwith4Temp[i][j];
 					this.sn.edgeBandwith4Former[j][i] = this.sn.edgeBandwith4Former[i][j];
 					this.sn.edgeBandwith4Temp[i][j] = this.sn.edgeBandwith4Temp[j][i] = 0;
@@ -423,14 +422,16 @@ public class Algorithm {
 		}
 
 		for (int i = 0; i < sn.nodeSize; i++) {
+			this.sn.nodeComputation4Temp[i] = 0;
 			if (!this.isShared) {
 				this.sn.nodeComputation4EnhanceNoSharedSum[i] += this.sn.nodeComputation4Temp[i];
-				this.sn.nodeComputation4Temp[i] = 0;
-				for (int j = 0; j < i; j++) {
+			}
+			for (int j = 0; j < i; j++) {
+				if (!this.isShared) {
 					this.sn.edgeBandwith4EnhanceNoSharedSum[i][j] += this.sn.edgeBandwith4Temp[i][j];
 					this.sn.edgeBandwith4EnhanceNoSharedSum[j][i] = this.sn.edgeBandwith4EnhanceNoSharedSum[i][j];
-					this.sn.edgeBandwith4Temp[i][j] = this.sn.edgeBandwith4Temp[j][i] = 0;
 				}
+				this.sn.edgeBandwith4Temp[i][j] = this.sn.edgeBandwith4Temp[j][i] = 0;
 			}
 
 		}
@@ -575,17 +576,17 @@ public class Algorithm {
 	/**
 	 * @param string
 	 * @param sn_FI_NoShared
-	 * @param b
+	 * @param isExact
 	 * @param failureindependent
-	 * @param c
+	 * @param isShared
 	 */
-	public void setParameter(String algName, SubstrateNetwork sn, boolean Exact, boolean failureindependent,
-			boolean Shared) {
+	public void setParameter(String algName, SubstrateNetwork sn, boolean isExact, boolean failureindependent,
+			boolean isShared) {
 		this.algorithmName = algName;
 		this.sn = sn;
-		this.isExact = Exact;
+		this.isExact = isExact;
 		this.isFD = failureindependent;
-		this.isShared = Shared;
+		this.isShared = isShared;
 	}
 
 }

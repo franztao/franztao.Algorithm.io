@@ -21,7 +21,7 @@ import substratenetwork.SubstrateNetwork;
  */
 public class EnhancedVirtualNetwork {
 
-	public final int Method = EVSNR.MatchMethodILP;
+	public final int Method = EVSNR.MatchMethod;
 
 	// nodeSize=enhacnedNodeSize+backupNodeSize
 	public int nodeSize;

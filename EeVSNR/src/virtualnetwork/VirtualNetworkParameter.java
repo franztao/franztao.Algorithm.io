@@ -3,25 +3,27 @@
  */
 package virtualnetwork;
 
+import evsnr.EVSNR;
+
 /**
  * @author franz
  *
  */
 public class VirtualNetworkParameter {
 	// node parameter
-	public int nodeSize = 4;
-	public int nodeSizeMinimum = 2;
-	public int nodeSizeMaximum = 10;
-	public int nodeComputationMinimum = 2;
-	public int nodeComputationMaximum = 10;
+	public int nodeSize = EVSNR.VirtualNodeSize;
+	public int nodeSizeMinimum = EVSNR.VirtualNodeSizeMinimum;
+	public int nodeSizeMaximum = EVSNR.VirtualNodeSizeMaximum;
+	public int nodeComputationMinimum = EVSNR.VirtualNodeComputationMinimum;
+	public int nodeComputationMaximum = EVSNR.VirtualNodeComputationMaximum;
 
 	// edge parameter
-	public double node2nodeProbability = 0.4;
-	public int edgeBandwithMinimum = 2;
-	public int edgeBandwithMaximum = 10;
+	public double node2nodeProbability = EVSNR.VirtualNode2nodeProbability;
+	public int edgeBandwithMinimum = EVSNR.VirtualEdgeBandwithMinimum;
+	public int edgeBandwithMaximum = EVSNR.VirtualEdgeBandwithMaximum;
 
 	// service parameter
-	public int serviceNumber = 5;
+	public int serviceNumber = EVSNR.ServiceNumber;
 
 	public boolean sampleInit;
 
@@ -44,7 +46,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param nodeSize the nodeSize to set
+	 * @param nodeSize
+	 *            the nodeSize to set
 	 */
 	public void setNodeSize(int nodeSize) {
 		this.nodeSize = nodeSize;
@@ -58,7 +61,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param nodeSizeMinimum the nodeSizeMinimum to set
+	 * @param nodeSizeMinimum
+	 *            the nodeSizeMinimum to set
 	 */
 	public void setNodeSizeMinimum(int nodeSizeMinimum) {
 		this.nodeSizeMinimum = nodeSizeMinimum;
@@ -72,7 +76,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param nodeSizeMaximum the nodeSizeMaximum to set
+	 * @param nodeSizeMaximum
+	 *            the nodeSizeMaximum to set
 	 */
 	public void setNodeSizeMaximum(int nodeSizeMaximum) {
 		this.nodeSizeMaximum = nodeSizeMaximum;
@@ -86,7 +91,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param nodeComputationMinimum the nodeComputationMinimum to set
+	 * @param nodeComputationMinimum
+	 *            the nodeComputationMinimum to set
 	 */
 	public void setNodeComputationMinimum(int nodeComputationMinimum) {
 		this.nodeComputationMinimum = nodeComputationMinimum;
@@ -100,7 +106,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param nodeComputationMaximum the nodeComputationMaximum to set
+	 * @param nodeComputationMaximum
+	 *            the nodeComputationMaximum to set
 	 */
 	public void setNodeComputationMaximum(int nodeComputationMaximum) {
 		this.nodeComputationMaximum = nodeComputationMaximum;
@@ -114,7 +121,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param node2nodeProbability the node2nodeProbability to set
+	 * @param node2nodeProbability
+	 *            the node2nodeProbability to set
 	 */
 	public void setNode2nodeProbability(double node2nodeProbability) {
 		this.node2nodeProbability = node2nodeProbability;
@@ -128,7 +136,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param edgeBandwithMinimum the edgeBandwithMinimum to set
+	 * @param edgeBandwithMinimum
+	 *            the edgeBandwithMinimum to set
 	 */
 	public void setEdgeBandwithMinimum(int edgeBandwithMinimum) {
 		this.edgeBandwithMinimum = edgeBandwithMinimum;
@@ -142,7 +151,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param edgeBandwithMaximum the edgeBandwithMaximum to set
+	 * @param edgeBandwithMaximum
+	 *            the edgeBandwithMaximum to set
 	 */
 	public void setEdgeBandwithMaximum(int edgeBandwithMaximum) {
 		this.edgeBandwithMaximum = edgeBandwithMaximum;
@@ -156,7 +166,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param serviceNumber the serviceNumber to set
+	 * @param serviceNumber
+	 *            the serviceNumber to set
 	 */
 	public void setServiceNumber(int serviceNumber) {
 		this.serviceNumber = serviceNumber;
@@ -170,7 +181,8 @@ public class VirtualNetworkParameter {
 	}
 
 	/**
-	 * @param sampleInit the sampleInit to set
+	 * @param sampleInit
+	 *            the sampleInit to set
 	 */
 	public void setSampleInit(boolean sampleInit) {
 		this.sampleInit = sampleInit;

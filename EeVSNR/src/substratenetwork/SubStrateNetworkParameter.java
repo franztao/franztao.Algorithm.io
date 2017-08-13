@@ -3,6 +3,8 @@
  */
 package substratenetwork;
 
+import evsnr.EVSNR;
+
 /**
  * @author franz
  *
@@ -10,20 +12,22 @@ package substratenetwork;
 public class SubStrateNetworkParameter {
 
 	// node parameter
-	private int nodeSize = 40;
-	private int nodeComputationMinimum = 500;
-	private int nodeComputationMaximum = 1000;
+	private int nodeSize = EVSNR.SubStrateNodeSize;
+	private int nodeComputationMinimum = EVSNR.SubStrateNodeComputationMinimum;
+	private int nodeComputationMaximum = EVSNR.SubStrateNodeComputationMaximum;
 	
 
 	// edge parameter
-	private double node2nodeProbability = 0.4;
-	private int edgeBandwithMinimum = 500;
-	private int edgeBandwithMaximum = 1000;
+	private double node2nodeProbability = EVSNR.SubStrateNode2nodeProbability;
+	private int edgeBandwithMinimum = EVSNR.SubStrateEdgeBandwithMinimum;
+	private int edgeBandwithMaximum = EVSNR.SubStrateEdgeBandwithMaximum;
 
 	// service parameter
-	private int serviceNumber = 5;
-	private double serivecProbability = 0.5;
+	private int serviceNumber = EVSNR.ServiceNumber;
+	private double serivecProbability = EVSNR.SerivecProbability;
 
+
+		
 	private boolean sampleInit;
 	
 	/**
