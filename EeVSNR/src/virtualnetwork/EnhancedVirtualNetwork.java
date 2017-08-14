@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import evsnr.Algorithm;
 import evsnr.EVSNR;
 import gurobi.*;
 import multipleknapsack.MulitpleKnapsack;
@@ -21,6 +25,8 @@ import substratenetwork.SubstrateNetwork;
  */
 public class EnhancedVirtualNetwork {
 
+	private Logger loggerEnhancedVirtualNetwork = Logger.getLogger(EnhancedVirtualNetwork.class);
+	
 	public final int Method = EVSNR.MatchMethod;
 
 	// nodeSize=enhacnedNodeSize+backupNodeSize
@@ -94,6 +100,8 @@ public class EnhancedVirtualNetwork {
 	 * @param bn
 	 */
 	public EnhancedVirtualNetwork(SubstrateNetwork sn, VirtualNetwork vn, BackupNode bn) {
+		PropertyConfigurator.configure("log4j.properties");
+		
 		this.VN = vn;
 		this.isSucceed = false;
 		// node
@@ -465,6 +473,7 @@ public class EnhancedVirtualNetwork {
 
 		if (this.Method == EVSNR.MatchMethodDP) {
 			if (!MKP.optimalSoutionDP(solution)) {
+				loggerEnhancedVirtualNetwork.warn("Failure node: " + failurenodeID + ", there is not solution");
 				System.out.println("Failure node: " + failurenodeID + ", there is not solution");
 				return false;
 			}
@@ -472,7 +481,7 @@ public class EnhancedVirtualNetwork {
 
 		if (this.Method == EVSNR.MatchMethodILP) {
 			if (!MKP.optimalSoutionILP(solution)) {
-				System.out.println("Failure node: " + failurenodeID + ", there is not solution");
+				loggerEnhancedVirtualNetwork.warn("Failure node: " + failurenodeID + ", there is not solution");
 				return false;
 			}
 		}
@@ -578,44 +587,43 @@ public class EnhancedVirtualNetwork {
 		}
 		for (int i = 0; i < Knapsacks.size(); i++) {
 			mKP.ithKapsack2ithUnionKnapsack[i] = Knapsacks.elementAt(i).starNodeEnhancedVNID;
-			System.out.print((mKP.ithKapsack2ithUnionKnapsack[i] + 1) + "\t ");
+//			System.out.print((mKP.ithKapsack2ithUnionKnapsack[i] + 1) + "\t ");
 		}
-		System.out.println();
 		for (int i = 0; i < this.nodeSize; i++) {
 			mKP.unionKnapsackCapacity[i] = this.nodeComputationCapacity[i];
-			System.out.print((i + 1) + ":" + mKP.unionKnapsackCapacity[i] + "\t ");
+//			System.out.print((i + 1) + ":" + mKP.unionKnapsackCapacity[i] + "\t ");
 		}
-		System.out.println();
+//		System.out.println();
 		for (int i = 0; i < this.VN.nodeSize; i++) {
 			mKP.capacityItem[i] = this.VN.nodeComputationDemand[i];
-			System.out.print(mKP.capacityItem[i] + "\t ");
+//			System.out.print(mKP.capacityItem[i] + "\t ");
 		}
-		System.out.println();
+//		System.out.println();
 
 		for (int i = 0; i < this.VN.nodeSize; i++) {
 			for (int j = 0; j < Knapsacks.size(); j++) {
 				// System.out.print("i: "+i+"j: "+j+" --"+matchingMatrix[i][j]);
-				if (mKP.matchingMatrix[i][j] == Integer.MAX_VALUE)
-					System.out.print("00\t  ");
-				else {
+				if (mKP.matchingMatrix[i][j] != Integer.MAX_VALUE){
+//					System.out.print("00\t  ");
+//				else {
 					// final int addNewNodeCost = 10000000;
 					// final int transformExistedNodeCost = 100000;
 					// final int addNodeComputaionCost = 1000;
 					// final int addEdgeBandwithCost = 1;
 					int printint = mKP.matchingMatrix[i][j];
 					if ((mKP.matchingMatrix[i][j] / EVSNR.addNewNodeCost) > 0)
-						System.out.print("N+");
+//						System.out.print("N+");
 					printint = printint % EVSNR.addNewNodeCost;
 					if ((printint / EVSNR.transformExistedNodeCost) > 0)
-						System.out.print("M+");
+//						System.out.print("M+");
 					printint = printint % EVSNR.transformExistedNodeCost;
 					if ((printint / EVSNR.addNodeComputaionCost) > 0)
-						System.out.print("(" + (printint / EVSNR.addNodeComputaionCost) + ")+");
+//						System.out.print("(" + (printint / EVSNR.addNodeComputaionCost) + ")+");
 					printint = printint % EVSNR.addNodeComputaionCost;
-					System.out.print(printint + "\t  ");
+//					System.out.print(printint + "\t  ");
 				}
 			}
-			System.out.println("");
+//			System.out.println("");
 		}
 		return false;
 
@@ -630,8 +638,6 @@ public class EnhancedVirtualNetwork {
 				number++;
 			}
 		}
-		System.out.print((number - this.consumedResource.consumedNodeNumber) + " Node + ");
-		System.out.print((resource - this.consumedResource.consumedNodeComputation) + " Computation + ");
 		this.consumedResource.consumedNodeNumber = number;
 		this.consumedResource.consumedNodeComputation = resource;
 
@@ -642,7 +648,7 @@ public class EnhancedVirtualNetwork {
 			}
 		}
 		number = number / 2;
-		System.out.println((number - this.consumedResource.consumeEdgeBandwith) + " Bandwith \n");
+		loggerEnhancedVirtualNetwork.info((number - this.consumedResource.consumedNodeNumber) + " Node + "+(resource - this.consumedResource.consumedNodeComputation) + " Computation + "+(number - this.consumedResource.consumeEdgeBandwith) + " Bandwith \n");
 		this.consumedResource.consumeEdgeBandwith = number;
 	}
 
@@ -654,8 +660,8 @@ public class EnhancedVirtualNetwork {
 		// =2 node+11 node computaion+23 bandwidth
 		if (sequence == EVSNR.Ran) {
 			for (int i = 0; i < this.nodeSize4Embeded; i++) {
-				System.out.println(
-						"--------------------------Begin " + i + " node failure--------------------------------------");
+//				loggerEnhancedVirtualNetwork.info(
+//						"--------------------------Begin " + i + " node failure--------------------------------------");
 				if (!failIthNode(i, failurtype)) {
 					return false;
 				}

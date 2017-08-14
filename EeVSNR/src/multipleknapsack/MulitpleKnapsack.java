@@ -3,6 +3,10 @@
  */
 package multipleknapsack;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import evsnr.Algorithm;
 import gurobi.*;
 
 /**
@@ -19,7 +23,11 @@ public class MulitpleKnapsack {
 	public int unionKnapsackCapacity[];
 	public int capacityItem[];
 
+	private Logger loggerMulitpleKnapsack = Logger.getLogger(MulitpleKnapsack.class);
+
 	public MulitpleKnapsack(int row, int col, int unionKnapsackSize) {
+		PropertyConfigurator.configure("log4j.properties");
+
 		this.itemNumber = row;
 		this.knapsackNumber = col;
 		this.unionKnapsackSize = unionKnapsackSize;
@@ -116,20 +124,21 @@ public class MulitpleKnapsack {
 		}
 
 		if (dp[this.itemNumber][dimensionMultiple - 1] != -1) {
-			int index = this.itemNumber ;
+			int index = this.itemNumber;
 			int recurse = dimensionMultiple - 1;
 			while (index > 0) {
-				solution[index-1] = select[index][recurse];
-				recurse -= (radix[select[index][recurse]] * this.capacityItem[index-1]);
+				solution[index - 1] = select[index][recurse];
+				recurse -= (radix[select[index][recurse]] * this.capacityItem[index - 1]);
 				index--;
 			}
-//			for(int i=0;i< this.itemNumber;i++){
-//				System.out.println("+++"+solution[i]);
-//			}
-			System.out.println("----DP optimal solution: (" + dp[this.itemNumber][dimensionMultiple - 1] + ") ");
+			// for(int i=0;i< this.itemNumber;i++){
+			// System.out.println("+++"+solution[i]);
+			// }
+			loggerMulitpleKnapsack
+					.info("----DP optimal solution: (" + dp[this.itemNumber][dimensionMultiple - 1] + ") ");
 			return true;
 		} else {
-			System.out.println("----DP exist no optimal solution");
+			loggerMulitpleKnapsack.warn("----DP exist no optimal solution");
 			return false;
 		}
 	}
@@ -137,6 +146,8 @@ public class MulitpleKnapsack {
 	public boolean optimalSoutionILP(int solution[]) throws GRBException {
 		GRBEnv env = new GRBEnv("franztao");
 		GRBModel model = new GRBModel(env);
+		//close gurobi default system console log
+		model.getEnv().set(GRB.IntParam.OutputFlag,0);
 		GRBVar varx[][];
 		varx = new GRBVar[this.itemNumber][this.knapsackNumber];
 
@@ -194,15 +205,14 @@ public class MulitpleKnapsack {
 		if (optimstatus != GRB.OPTIMAL) {
 			return false;
 		}
-		System.out.println("---ILP optimal solution: (" + model.get(GRB.DoubleAttr.ObjVal) + " )");
-		for (int i = 0; i < this.itemNumber; i++) {
-			for (int j = 0; j < this.knapsackNumber; j++) {
-				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
-					solution[i] = j;
-					System.out.println(j);
-				}
-			}
-		}
+		loggerMulitpleKnapsack.info("---ILP optimal solution: (" + model.get(GRB.DoubleAttr.ObjVal) + " )");
+//		for (int i = 0; i < this.itemNumber; i++) {
+//			for (int j = 0; j < this.knapsackNumber; j++) {
+//				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
+////					System.out.println(j);
+//				}
+//			}
+//		}
 
 		model.dispose();
 		env.dispose();

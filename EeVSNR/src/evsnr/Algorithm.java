@@ -22,7 +22,7 @@ import virtualnetwork.VirtualNetworkParameter;
  *
  */
 public class Algorithm {
-	private Logger logger = Logger.getLogger(Algorithm.class);
+	private Logger loggerAlgorithm = Logger.getLogger(Algorithm.class);
 
 	public String algorithmName;
 
@@ -153,7 +153,7 @@ public class Algorithm {
 						.round(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
 
 				if (vn.nodeComputationDemand[i] > this.sn.getSubstrateRemainComputaion4VN(snodeloc, this.isShared)) {
-					logger.warn("Fail to embed virtual network (" + i + ")-th node into substrate network");
+					loggerAlgorithm.warn("Fail to embed virtual network (" + i + ")-th node into substrate network");
 					return false;
 				} else {
 					vn.nodeComputationCapacity[i] = this.sn.nodeComputationCapacity[snodeloc]
@@ -190,7 +190,7 @@ public class Algorithm {
 						List<Integer> pathList = new LinkedList<Integer>();
 						pathList = shortestPath.Dijkstra(vn.vNode2sNode[i], vn.vNode2sNode[j], topo);
 						if (pathList.isEmpty()) {
-							logger.warn("Fail to embed virtual network (" + i + " to " + j
+							loggerAlgorithm.warn("Fail to embed virtual network (" + i + " to " + j
 									+ ")-edge into substrate network :  substrate network lack feasible path");
 							return false;
 						}
@@ -216,7 +216,7 @@ public class Algorithm {
 						}
 
 						if (distributeBandwith > maxPathBandwith) {
-							logger.warn("Fail to embed virtual network (" + i + " to " + j
+							loggerAlgorithm.warn("Fail to embed virtual network (" + i + " to " + j
 									+ ") edge into substrate network :  substrate network edge resource not more than PathBandwith Demand");
 
 							return false;
@@ -282,10 +282,10 @@ public class Algorithm {
 			vn.setIsRunning(true);
 			this.sn.vnSuceedMap++;
 			this.sn.VNCollection.addElement(vn);
-			logger.info("Succeed to generate (" + (this.sn.VNCollection.size() - 1) + ")-th  virtual network");
+			loggerAlgorithm.info("Succeed to generate (" + (this.sn.VNCollection.size() - 1) + ")-th  virtual network");
 		} else {
 			this.sn.clearTemp();
-			logger.warn("Fail to generate (" + this.sn.VNCollection.size() + ")-th virtual network");
+			loggerAlgorithm.warn("Fail to generate (" + this.sn.VNCollection.size() + ")-th virtual network");
 			return;
 		}
 
@@ -297,10 +297,10 @@ public class Algorithm {
 
 		if (constructEnhanceVirtualNetwork(evn)) {
 			this.sn.evnSuceedMap++;
-			logger.info("Succeed to construct enhance network and Algorithm Succeed");
+			loggerAlgorithm.info("Succeed to construct enhance network and Algorithm Succeed");
 		} else {
 			this.sn.clearTemp();
-			logger.warn("Fail to construct enhanced network");
+			loggerAlgorithm.warn("Fail to construct enhanced network");
 		}
 		this.sn.EVNCollection.addElement(evn);
 		return;
@@ -318,7 +318,7 @@ public class Algorithm {
 				return true;
 			}
 		} else {
-			logger.info("Algorithm fail to get the solution");
+			loggerAlgorithm.info("Algorithm fail to get the solution");
 		}
 		return false;
 	}
@@ -335,6 +335,7 @@ public class Algorithm {
 					if (j < evn.VN.nodeSize) {
 						if (evn.nodeComputationUsed[j] - evn.VN.nodeComputationDemand[j] > 0) {
 							nodeResource += evn.nodeComputationUsed[j] - evn.VN.nodeComputationDemand[j];
+							
 						}
 					} else {
 						if (evn.nodeComputationUsed[j] > 0) {
@@ -347,11 +348,15 @@ public class Algorithm {
 				if (nodeResource < this.sn.getSubstrateRemainComputaion4EVN(i, this.isShared)) {
 					this.sn.nodeComputation4Temp[i] += nodeResource;
 				} else {
-					logger.warn("Fail to distribute enhacned network (" + i + ") node into substrate network");
+					loggerAlgorithm.warn("Fail to distribute enhacned network (" + i + ") node into substrate network");
 
 					return false;
 				}
 			}
+			if (nodeResource < 0) {
+				loggerAlgorithm.error("distributeResource4EVN nodeResource less than zero ");
+			}
+			
 		}
 
 		for (int i = 0; i < evn.nodeSize; i++) {
@@ -383,7 +388,7 @@ public class Algorithm {
 					// do not split shortest path
 					pathList = shortestPath.Dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempTopology);
 					if (pathList.isEmpty()) {
-						logger.warn("Fail to embedd enhanced network ("+i+"--"+j+") edge into substrate network: lack path");
+						loggerAlgorithm.warn("Fail to embedd enhanced network ("+i+"--"+j+") edge into substrate network: lack path");
 						return false;
 					}
 
@@ -425,10 +430,10 @@ public class Algorithm {
 		}
 
 		for (int i = 0; i < sn.nodeSize; i++) {
-			this.sn.nodeComputation4Temp[i] = 0;
 			if (!this.isShared) {
 				this.sn.nodeComputation4EnhanceNoSharedSum[i] += this.sn.nodeComputation4Temp[i];
 			}
+			this.sn.nodeComputation4Temp[i] = 0;
 			for (int j = 0; j < i; j++) {
 				if (!this.isShared) {
 					this.sn.edgeBandwith4EnhanceNoSharedSum[i][j] += this.sn.edgeBandwith4Temp[i][j];
@@ -540,14 +545,14 @@ public class Algorithm {
 
 		for (int i = 0; i < this.sn.nodeSize; i++) {
 			if (this.sn.nodeComputation4Former[i] > 0) {
-				logger.error("substrate (" + i + ") node former resource fail release completely");
+				loggerAlgorithm.error("substrate (" + i + ") node former resource fail release completely");
 				break;
 			}
 		}
 
 		for (int i = 0; i < this.sn.nodeSize; i++) {
 			if (this.sn.nodeComputation4EnhanceNoSharedSum[i] > 0) {
-				logger.error("substrate (" + i + ") node enhance resource fail release completely");
+				loggerAlgorithm.error("substrate (" + i + ") node enhance resource fail release completely");
 				break;
 			}
 		}
@@ -555,7 +560,7 @@ public class Algorithm {
 		for (int i = 0; i < this.sn.nodeSize; i++) {
 			for (int j = 0; j < i; j++) {
 				if (this.sn.edgeBandwith4Former[j][i] > 0) {
-					logger.error("Ishared:(" + this.isShared + ") substrate (" + j + "--" + i
+					loggerAlgorithm.error("Ishared:(" + this.isShared + ") substrate (" + j + "--" + i
 							+ ") edge former resource fail release completely");
 					break;
 				}
@@ -566,7 +571,7 @@ public class Algorithm {
 		for (int i = 0; i < this.sn.nodeSize; i++) {
 			for (int j = 0; j < i; j++) {
 				if (this.sn.edgeBandwith4EnhanceNoSharedSum[j][i] > 0) {
-					logger.error("Ishared:(" + this.isShared + ") substrate (" + j + "--" + i
+					loggerAlgorithm.error("Ishared:(" + this.isShared + ") substrate (" + j + "--" + i
 							+ ") edge enhance resource fail release completely");
 					break;
 				}

@@ -1,10 +1,12 @@
 /**
  * 
  */
+
 package evsnr;
 
 
 import substratenetwork.SubStrateNetworkParameter;
+
 import substratenetwork.SubstrateNetwork;
 import virtualnetwork.VirtualNetworkParameter;
 
@@ -19,7 +21,7 @@ public class main {
 	 */
 
 	public static void main(String[] args) {
-		boolean SampleInit = true;
+		boolean SampleInit = false;
 		Result result=new Result();
 		result.recordParameter();
 		

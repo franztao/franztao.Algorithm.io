@@ -20,13 +20,14 @@ public class EVSNR {
 
 	
 
-	public final static long SubstrateNewtorkRunTimeInterval = 50000;
+	public final static long SubstrateNewtorkRunTimeInterval = 500;//50000
 	public final static long unitTimeInterval = 1;
 	public final static double requestAppearProbability = 1;// 0.1
 	public final static long VNRequestsDuration = 10;
-	public final static long VNRequestsContinueTimeMinimum = 1;
-	public final static long VNRequestsContinueTimeMaximum = 1000;
-
+	public final static long VNRequestsContinueTimeMinimum = 1000;//1
+	public final static long VNRequestsContinueTimeMaximum = 1000;//1000
+	//ExperimentPicture
+	public final static int ExperimentPicturePlotNumber=10;
 	
 	//Algorithm
 	public final static int AlgorithmFranz = 0;
@@ -50,18 +51,18 @@ public class EVSNR {
 
 	// SubStrate Network Parameter
 	// node parameter
-	public final static int SubStrateNodeSize = 100;
-	public final static int SubStrateNodeComputationMinimum = 50;
-	public final static int SubStrateNodeComputationMaximum = 100;
+	public final static int SubStrateNodeSize = 20;
+	public final static int SubStrateNodeComputationMinimum = 500;
+	public final static int SubStrateNodeComputationMaximum = 1000;
 	// edge parameter
 	public final static double SubStrateNodenodeProbability = 0.4;
-	public final static int SubStrateEdgeBandwithMinimum = 10000;
-	public final static int SubStrateEdgeBandwithMaximum = 20000;
+	public final static int SubStrateEdgeBandwithMinimum = 1000;
+	public final static int SubStrateEdgeBandwithMaximum = 2000;
 	
 	//Virtual Network
 	// node parameter //2-5 5-8 5-10
 	public final static int VirtualNodeSizeMinimum = 2;
-	public final static int VirtualNodeSizeMaximum = 10;
+	public final static int VirtualNodeSizeMaximum = 5;
 	public final static int VirtualNodeComputationMinimum = 2;
 	public final static int VirtualNodeComputationMaximum = 10;
 		// edge parameter
@@ -71,6 +72,5 @@ public class EVSNR {
 	
 	public final static int SubStrateFacilityNodeFailDuration=2000;
 
-	//ExperimentPicture
-	public final static int ExperimentPicturePlotNumber=30;
+	
 }

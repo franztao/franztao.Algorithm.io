@@ -171,12 +171,17 @@ public class Result {
 			for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
 				nodeCompution += (algorithm.getSn().nodeComputationCapacity[i]
 						- algorithm.getSn().getSubstrateRemainComputaion4VN(i, algorithm.isShared()));
+//				nodeCompution+=(algorithm.getSn().nodeComputation4Former[i]
+//						+ algorithm.getSn().nodeComputation4Temp[i] + algorithm.getSn().nodeComputation4EnhanceNoSharedSum[i]);
 			}
 			int edgeBandwith = 0;
 			for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
 				for (int j = 0; j < i; j++) {
 					edgeBandwith += (algorithm.getSn().edgeBandwithCapacity[i][j]
 							- algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared()));
+//					
+//					edgeBandwith +=(algorithm.getSn().edgeBandwith4Former[i][j] + algorithm.getSn().edgeBandwith4Temp[i][j]
+//							+ algorithm.getSn().edgeBandwith4EnhanceNoSharedSum[i][j]);
 				}
 			}
 			fw_MappingCost_edge.write(""+edgeBandwith + "\n");
