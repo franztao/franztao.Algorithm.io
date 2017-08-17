@@ -40,21 +40,24 @@ public class Experiment {
 	 * 
 	 */
 	public void startExperiment() {
-		generateComparableAlgorithm(this.vnp);
-		runComparableAlgorithm();
-
+		for (int i = 0; i < EVSNR.ExperimentTimes; i++) {
+			generateComparableAlgorithm(this.vnp);
+			runComparableAlgorithm(i);
+		}
 	}
 
 	/**
+	 * @param experimentTimes
 	 * 
 	 */
-	private void runComparableAlgorithm() {
+	private void runComparableAlgorithm(int experimentTimes) {
+
 		for (int alg = 0; alg < algorithms.size(); alg++) {
 			logger.info("------------------------" + algorithms.get(alg).algorithmName
 					+ " Begin --------------------------------------------------------------------------------------");
 			for (int time = 0; time < EVSNR.SubstrateNewtorkRunTimeInterval; time++) {
-				if((time%(EVSNR.SubstrateNewtorkRunTimeInterval/EVSNR.ExperimentPicturePlotNumber))==0){
-					this.result.recordExperimentData(algorithms.get(alg),time);
+				if ((time % (EVSNR.SubstrateNewtorkRunTimeInterval / EVSNR.ExperimentPicturePlotNumber)) == 0) {
+					this.result.recordExperimentData(experimentTimes, algorithms.get(alg), time);
 				}
 				algorithms.get(alg).releaseResource(false);
 				if ((0 == (time % EVSNR.VNRequestsDuration)) && (Math.random() < EVSNR.requestAppearProbability)) {
@@ -66,6 +69,7 @@ public class Experiment {
 			logger.info("------------------------" + algorithms.get(alg).algorithmName
 					+ " End --------------------------------------------------------------------------------------\n\n");
 		}
+		this.result.recordExperimentParameter(experimentTimes,algorithms);
 	}
 
 	/**
@@ -78,27 +82,10 @@ public class Experiment {
 		// FD ILP EVSNR Min Ran
 		// VNE can not able to compare with VNE algorithm
 		Algorithm alg;
+		this.algorithms.clear();
 		try {
 
-			// SubstrateNetwork sn_FD_ILP_Shared = (SubstrateNetwork)
-			// this.basicSubstrateNework.clone();
-			// alg = new Algorithm();
-			// alg.setFD(EVSNR.FailureDependent);
-			// alg.setShared(true);
-			// alg.setExact(true);
-			// alg.setSn(sn_FD_ILP_Shared);
-			// alg.algorithmName="sn_FD_ILP_Shared";
-			// this.algorithms.addElement(alg);
-			//
-			// SubstrateNetwork sn_FD_ILP_NoShared = (SubstrateNetwork)
-			// this.basicSubstrateNework.clone();
-			// alg = new Algorithm();
-			// alg.setFD(EVSNR.FailureDependent);
-			// alg.setShared(false);
-			// alg.setExact(true);
-			// alg.setSn(sn_FD_ILP_NoShared);
-			// alg.algorithmName="sn_FD_ILP_NoShared";
-			// this.algorithms.addElement(alg);
+			
 
 			SubstrateNetwork sn_FI_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
 			alg = new Algorithm();
@@ -142,6 +129,26 @@ public class Experiment {
 			// alg.setSequence(EVSNR.Min);
 			// alg.setSn(sn_FD_EVSNR_Min_NoShared);
 			// this.algorithms.addElement(alg);
+			
+			// SubstrateNetwork sn_FD_ILP_Shared = (SubstrateNetwork)
+						// this.basicSubstrateNework.clone();
+						// alg = new Algorithm();
+						// alg.setFD(EVSNR.FailureDependent);
+						// alg.setShared(true);
+						// alg.setExact(true);
+						// alg.setSn(sn_FD_ILP_Shared);
+						// alg.algorithmName="sn_FD_ILP_Shared";
+						// this.algorithms.addElement(alg);
+						//
+						// SubstrateNetwork sn_FD_ILP_NoShared = (SubstrateNetwork)
+						// this.basicSubstrateNework.clone();
+						// alg = new Algorithm();
+						// alg.setFD(EVSNR.FailureDependent);
+						// alg.setShared(false);
+						// alg.setExact(true);
+						// alg.setSn(sn_FD_ILP_NoShared);
+						// alg.algorithmName="sn_FD_ILP_NoShared";
+						// this.algorithms.addElement(alg);
 		} catch (CloneNotSupportedException e) {
 			logger.error("Fail to construct various algorithms");
 			e.printStackTrace();

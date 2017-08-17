@@ -8,6 +8,11 @@ package evsnr;
  *
  */
 public class EVSNR {
+	
+	public final static String FileAbsolutePath="C:\\Users\\Taoheng\\Desktop\\NFT4VNR\\";
+	
+	public final static int ExperimentTimes=1;
+	
 	//Parameter
 	public final static int addNewNodeCost = 10000000;
 	public final static int transformExistedNodeCost = 100000;
@@ -24,8 +29,8 @@ public class EVSNR {
 	public final static long unitTimeInterval = 1;
 	public final static double requestAppearProbability = 1;// 0.1
 	public final static long VNRequestsDuration = 10;
-	public final static long VNRequestsContinueTimeMinimum = 1000;//1
-	public final static long VNRequestsContinueTimeMaximum = 1000;//1000
+	public final static long VNRequestsContinueTimeMinimum = 100;//1
+	public final static long VNRequestsContinueTimeMaximum = 120;//1000
 	//ExperimentPicture
 	public final static int ExperimentPicturePlotNumber=10;
 	
@@ -52,12 +57,12 @@ public class EVSNR {
 	// SubStrate Network Parameter
 	// node parameter
 	public final static int SubStrateNodeSize = 20;
-	public final static int SubStrateNodeComputationMinimum = 500;
-	public final static int SubStrateNodeComputationMaximum = 1000;
+	public final static int SubStrateNodeComputationMinimum = 30;
+	public final static int SubStrateNodeComputationMaximum = 30;
 	// edge parameter
 	public final static double SubStrateNodenodeProbability = 0.4;
-	public final static int SubStrateEdgeBandwithMinimum = 1000;
-	public final static int SubStrateEdgeBandwithMaximum = 2000;
+	public final static int SubStrateEdgeBandwithMinimum = 30;
+	public final static int SubStrateEdgeBandwithMaximum = 30;
 	
 	//Virtual Network
 	// node parameter //2-5 5-8 5-10
