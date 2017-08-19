@@ -23,7 +23,7 @@ public class main {
 	public static void main(String[] args) {
 		boolean SampleInit = false;
 		Result result=new Result();
-		result.recordParameter();
+		result.recordTexParameter();
 		
 		SubStrateNetworkParameter snp = new SubStrateNetworkParameter(SampleInit);
 		

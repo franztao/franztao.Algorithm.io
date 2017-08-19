@@ -17,13 +17,23 @@ public class Result {
 	String FileAbsolutePath = EVSNR.FileAbsolutePath;//
 	String prefix = "\\newcommand{\\";
 
+	int[] array_AcceptionRatio_evn;
+	int[] array_AcceptionRatio_vn;
+
+	int[] array_MappingCost_edge;
+	int[] array_MappingCost_node;
+
 	/**
 	 * 
 	 */
 	public Result() {
+		array_AcceptionRatio_evn = new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
+		array_AcceptionRatio_vn =new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
+		array_MappingCost_edge = new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
+		array_MappingCost_node = new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
 	}
 
-	void recordParameter() {
+	void recordTexParameter() {
 		try {
 			FileWriter TexFileWriter = new FileWriter(FileAbsolutePath + "number.tex");
 			TexFileWriter.write(prefix + "addNewNodeCost" + "}{" + EVSNR.addNewNodeCost + "}\n");
@@ -285,7 +295,7 @@ public class Result {
 
 	/**
 	 * @param experimentTimes
-	 * @param algorithms 
+	 * @param algorithms
 	 * 
 	 */
 	public void recordExperimentParameter(int experimentTimes, Vector<Algorithm> algorithms) {
@@ -306,8 +316,9 @@ public class Result {
 				fw_Parameter.write((EVSNR.ExperimentPicturePlotNumber + 1) + "\n");
 				fw_Parameter.write(EVSNR.SubstrateNewtorkRunTimeInterval + "\n");
 				fw_Parameter.write(algorithms.size() + "\n");
-				
-//				fw_Parameter.write(EVSNR.FileAbsolutePath+ "\n");
+				fw_Parameter.write(EVSNR.RelativeCostbetweenComputingBandwidth + "\n");
+
+				// fw_Parameter.write(EVSNR.FileAbsolutePath+ "\n");
 				fw_Parameter.flush();
 				fw_Parameter.close();
 			} catch (IOException e) {

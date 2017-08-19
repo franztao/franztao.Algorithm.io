@@ -55,7 +55,7 @@ public class Experiment {
 		for (int alg = 0; alg < algorithms.size(); alg++) {
 			logger.info("------------------------" + algorithms.get(alg).algorithmName
 					+ " Begin --------------------------------------------------------------------------------------");
-			for (int time = 0; time < EVSNR.SubstrateNewtorkRunTimeInterval; time++) {
+			for (int time = 0; time <= EVSNR.SubstrateNewtorkRunTimeInterval; time++) {
 				if ((time % (EVSNR.SubstrateNewtorkRunTimeInterval / EVSNR.ExperimentPicturePlotNumber)) == 0) {
 					this.result.recordExperimentData(experimentTimes, algorithms.get(alg), time);
 				}
