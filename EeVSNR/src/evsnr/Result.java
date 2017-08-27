@@ -17,20 +17,26 @@ public class Result {
 	String FileAbsolutePath = EVSNR.FileAbsolutePath;//
 	String prefix = "\\newcommand{\\";
 
-	int[] array_AcceptionRatio_evn;
-	int[] array_AcceptionRatio_vn;
+	double[] array_AcceptionRatio_evn;
+	double[] array_AcceptionRatio_vn;
+	int num_AcceptionRatio;
 
 	int[] array_MappingCost_edge;
 	int[] array_MappingCost_node;
+	int num_MappingCost;
+	private int[] array_MappingCost_nodeUsed;
 
 	/**
 	 * 
 	 */
 	public Result() {
-		array_AcceptionRatio_evn = new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
-		array_AcceptionRatio_vn =new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
-		array_MappingCost_edge = new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
-		array_MappingCost_node = new int[(EVSNR.ExperimentPicturePlotNumber + 1)*EVSNR.ExperimentTimes];
+		array_AcceptionRatio_evn = new double[(EVSNR.ExperimentPicturePlotNumber + 1) * EVSNR.ExperimentTimes];
+		array_AcceptionRatio_vn = new double[(EVSNR.ExperimentPicturePlotNumber + 1) * EVSNR.ExperimentTimes];
+		array_MappingCost_edge = new int[(EVSNR.ExperimentPicturePlotNumber + 1) * EVSNR.ExperimentTimes];
+		array_MappingCost_node = new int[(EVSNR.ExperimentPicturePlotNumber + 1) * EVSNR.ExperimentTimes];
+		array_MappingCost_nodeUsed = new int[(EVSNR.ExperimentPicturePlotNumber + 1) * EVSNR.ExperimentTimes];
+		num_AcceptionRatio = 0;
+		num_MappingCost = 0;
 	}
 
 	void recordTexParameter() {
@@ -170,80 +176,8 @@ public class Result {
 	/**
 	 * @param experimentTimes
 	 * @param algorithm
-	 * @param time
 	 */
-	private void recordExperimentData4MappingCost(int experimentTimes, Algorithm algorithm, int time) {
-		File f_MappingCost_node = new File(
-				FileAbsolutePath + "\\Data\\" + "MappingCost_node_" + algorithm.algorithmName + ".txt");
-		File f_MappingCost_edge = new File(
-				FileAbsolutePath + "\\Data\\" + "MappingCost_edge_" + algorithm.algorithmName + ".txt");
-		FileWriter fw_MappingCost_node;
-		FileWriter fw_MappingCost_edge;
-
-		if (!f_MappingCost_node.exists()) {
-			try {
-				f_MappingCost_node.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		if (!f_MappingCost_edge.exists()) {
-			try {
-				f_MappingCost_edge.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		try {
-			if (time == 0 && experimentTimes == 0) {
-				fw_MappingCost_node = new FileWriter(f_MappingCost_node);
-				fw_MappingCost_edge = new FileWriter(f_MappingCost_edge);
-			} else {
-				fw_MappingCost_node = new FileWriter(f_MappingCost_node, true);
-				fw_MappingCost_edge = new FileWriter(f_MappingCost_edge, true);
-			}
-			int nodeCompution = 0;
-			for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
-				nodeCompution += (algorithm.getSn().nodeComputationCapacity[i]
-						- algorithm.getSn().getSubstrateRemainComputaion4VN(i, algorithm.isShared()));
-				// nodeCompution+=(algorithm.getSn().nodeComputation4Former[i]
-				// + algorithm.getSn().nodeComputation4Temp[i] +
-				// algorithm.getSn().nodeComputation4EnhanceNoSharedSum[i]);
-			}
-			int edgeBandwith = 0;
-			for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
-				for (int j = 0; j < i; j++) {
-					edgeBandwith += (algorithm.getSn().edgeBandwithCapacity[i][j]
-							- algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared()));
-					//
-					// edgeBandwith
-					// +=(algorithm.getSn().edgeBandwith4Former[i][j] +
-					// algorithm.getSn().edgeBandwith4Temp[i][j]
-					// +
-					// algorithm.getSn().edgeBandwith4EnhanceNoSharedSum[i][j]);
-				}
-			}
-			fw_MappingCost_edge.write("" + edgeBandwith + "\n");
-			fw_MappingCost_node.write("" + nodeCompution + "\n");
-
-			fw_MappingCost_edge.flush();
-			fw_MappingCost_node.flush();
-
-			fw_MappingCost_edge.close();
-			fw_MappingCost_node.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * @param experimentTimes
-	 * @param time
-	 * @param algorithm
-	 * 
-	 */
-	private void recordExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm, int time) {
+	private void writeExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm) {
 		File f_AcceptionRatio_evn = new File(
 				FileAbsolutePath + "\\Data\\" + "AcceptionRatio_EVN_" + algorithm.algorithmName + ".txt");
 		File f_AcceptionRatio_vn = new File(
@@ -267,22 +201,19 @@ public class Result {
 		}
 
 		try {
-			if (time == 0 && experimentTimes == 0) {
+			if (experimentTimes == 0) {
 				fw_AcceptionRatio_evn = new FileWriter(f_AcceptionRatio_evn);
 				fw_AcceptionRatio_vn = new FileWriter(f_AcceptionRatio_vn);
 			} else {
 				fw_AcceptionRatio_evn = new FileWriter(f_AcceptionRatio_evn, true);
 				fw_AcceptionRatio_vn = new FileWriter(f_AcceptionRatio_vn, true);
 			}
-			if (0 == algorithm.getSn().VNCollection.size()) {
-				fw_AcceptionRatio_vn.write("1.0\n");
-				fw_AcceptionRatio_evn.write("1.0\n");
+			for (int i = 0; i < num_AcceptionRatio; i++) {
+				fw_AcceptionRatio_vn.write(array_AcceptionRatio_vn[i] + "\n");
+				fw_AcceptionRatio_evn.write(array_AcceptionRatio_evn[i] + "\n");
 
-			} else {
-				fw_AcceptionRatio_vn.write((1.0 * algorithm.getSn().vnSuceedMap / algorithm.getSn().vnqNumber) + "\n");
-				fw_AcceptionRatio_evn
-						.write((1.0 * algorithm.getSn().evnSuceedMap / algorithm.getSn().vnqNumber) + "\n");
 			}
+			num_AcceptionRatio = 0;
 			fw_AcceptionRatio_vn.flush();
 			fw_AcceptionRatio_evn.flush();
 
@@ -291,6 +222,29 @@ public class Result {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @param experimentTimes
+	 * @param time
+	 * @param algorithm
+	 * 
+	 */
+	private void recordExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm, int time) {
+
+		if (0 == algorithm.getSn().VNCollection.size()) {
+			array_AcceptionRatio_evn[num_AcceptionRatio] = 1.0;
+			array_AcceptionRatio_vn[num_AcceptionRatio] = 1.0;
+
+		} else {
+			array_AcceptionRatio_evn[num_AcceptionRatio] = (1.0 * algorithm.getSn().evnSuceedMap
+					/ algorithm.getSn().vnqNumber);
+			array_AcceptionRatio_vn[num_AcceptionRatio] = (1.0 * algorithm.getSn().vnSuceedMap
+					/ algorithm.getSn().vnqNumber);
+
+		}
+		num_AcceptionRatio++;
+
 	}
 
 	/**
@@ -318,7 +272,7 @@ public class Result {
 				fw_Parameter.write(algorithms.size() + "\n");
 				fw_Parameter.write(EVSNR.RelativeCostbetweenComputingBandwidth + "\n");
 
-				// fw_Parameter.write(EVSNR.FileAbsolutePath+ "\n");
+				fw_Parameter.write(EVSNR.addNewNodeCost+ "\n");
 				fw_Parameter.flush();
 				fw_Parameter.close();
 			} catch (IOException e) {
@@ -327,4 +281,117 @@ public class Result {
 
 		}
 	}
+
+	/**
+	 * @param experimentTimes
+	 * @param algorithm
+	 * @param time
+	 */
+	private void recordExperimentData4MappingCost(int experimentTimes, Algorithm algorithm, int time) {
+
+		int nodeCompution = 0;
+		int nodeUsed = 0;
+		for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
+			int compution = (algorithm.getSn().nodeComputationCapacity[i]
+					- algorithm.getSn().getSubstrateRemainComputaion4VN(i, algorithm.isShared()));
+			if (compution > 0) {
+				nodeCompution += compution;
+				nodeUsed++;
+			} 
+				
+			
+		}
+		int edgeBandwith = 0;
+		for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
+			for (int j = 0; j < i; j++) {
+				edgeBandwith += (algorithm.getSn().edgeBandwithCapacity[i][j]
+						- algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared()));
+			}
+		}
+		array_MappingCost_node[num_MappingCost] = nodeCompution;
+		array_MappingCost_edge[num_MappingCost] = edgeBandwith;
+		array_MappingCost_nodeUsed[num_MappingCost] = nodeUsed;
+		num_MappingCost++;
+
+	}
+
+	/**
+	 * @param experimentTimes
+	 * @param algorithm
+	 */
+	public void writeExperimentData4MappingCost(int experimentTimes, Algorithm algorithm) {
+		File f_MappingCost_node = new File(
+				FileAbsolutePath + "\\Data\\" + "MappingCost_node_" + algorithm.algorithmName + ".txt");
+		File f_MappingCost_nodeUsed = new File(
+				FileAbsolutePath + "\\Data\\" + "MappingCost_nodeUsed_" + algorithm.algorithmName + ".txt");
+		File f_MappingCost_edge = new File(
+				FileAbsolutePath + "\\Data\\" + "MappingCost_edge_" + algorithm.algorithmName + ".txt");
+		FileWriter fw_MappingCost_node;
+		FileWriter fw_MappingCost_edge;
+		FileWriter fw_MappingCost_nodeUsed;
+
+		if (!f_MappingCost_node.exists()) {
+			try {
+				f_MappingCost_node.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (!f_MappingCost_nodeUsed.exists()) {
+			try {
+				f_MappingCost_nodeUsed.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (!f_MappingCost_edge.exists()) {
+			try {
+				f_MappingCost_edge.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		try {
+			if (experimentTimes == 0) {
+				fw_MappingCost_node = new FileWriter(f_MappingCost_node);
+				fw_MappingCost_nodeUsed = new FileWriter(f_MappingCost_nodeUsed);
+
+				fw_MappingCost_edge = new FileWriter(f_MappingCost_edge);
+			} else {
+				fw_MappingCost_node = new FileWriter(f_MappingCost_node, true);
+				fw_MappingCost_edge = new FileWriter(f_MappingCost_edge, true);
+				fw_MappingCost_nodeUsed = new FileWriter(f_MappingCost_nodeUsed, true);
+			}
+			for (int i = 0; i < num_MappingCost; i++) {
+				fw_MappingCost_edge.write(array_MappingCost_edge[i] + "\n");
+				fw_MappingCost_node.write(array_MappingCost_node[i] + "\n");
+				fw_MappingCost_nodeUsed.write(array_MappingCost_nodeUsed[i] + "\n");
+
+			}
+			num_MappingCost = 0;
+
+			fw_MappingCost_edge.flush();
+			fw_MappingCost_node.flush();
+			fw_MappingCost_nodeUsed.flush();
+
+			
+			fw_MappingCost_edge.close();
+			fw_MappingCost_node.close();
+			fw_MappingCost_nodeUsed.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * @param experimentTimes
+	 * @param algorithm
+	 */
+	public void writeExperimentData(int experimentTimes, Algorithm algorithm) {
+		writeExperimentData4MappingCost(experimentTimes, algorithm);
+		writeExperimentData4AcceptionRatio(experimentTimes, algorithm);
+	}
+
 }

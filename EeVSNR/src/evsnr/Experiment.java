@@ -66,9 +66,11 @@ public class Experiment {
 			}
 			algorithms.get(alg).releaseResource(true);
 			algorithms.get(alg).isClearAllResource();
+			this.result.writeExperimentData(experimentTimes,algorithms.get(alg));
 			logger.info("------------------------" + algorithms.get(alg).algorithmName
 					+ " End --------------------------------------------------------------------------------------\n\n");
 		}
+		
 		this.result.recordExperimentParameter(experimentTimes,algorithms);
 	}
 

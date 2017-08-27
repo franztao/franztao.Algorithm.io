@@ -630,26 +630,27 @@ public class EnhancedVirtualNetwork {
 	}
 
 	public void computeUsedResource() {
-		int number = 0;
-		int resource = 0;
+		int nodenumber = 0;
+		int nodecomputaiton = 0;
 		for (int i = 0; i < this.nodeSize; i++) {
 			if (this.nodeComputationUsed[i] > 0) {
-				resource += this.nodeComputationUsed[i];
-				number++;
+				nodecomputaiton += this.nodeComputationUsed[i];
+				nodenumber++;
 			}
 		}
-		this.consumedResource.consumedNodeNumber = number;
-		this.consumedResource.consumedNodeComputation = resource;
+		
 
-		number = 0;
+		int edgebandwith = 0;
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < this.nodeSize; j++) {
-				number += this.edgeBandwithUsed[i][j];
+				edgebandwith += this.edgeBandwithUsed[i][j];
 			}
 		}
-		number = number / 2;
-		loggerEnhancedVirtualNetwork.info((number - this.consumedResource.consumedNodeNumber) + " Node + "+(resource - this.consumedResource.consumedNodeComputation) + " Computation + "+(number - this.consumedResource.consumeEdgeBandwith) + " Bandwith \n");
-		this.consumedResource.consumeEdgeBandwith = number;
+		edgebandwith = edgebandwith / 2;
+		loggerEnhancedVirtualNetwork.info((nodenumber - this.consumedResource.consumedNodeNumber) + " Node + "+(nodecomputaiton - this.consumedResource.consumedNodeComputation) + " Computation + "+(edgebandwith - this.consumedResource.consumeEdgeBandwith) + " Bandwith \n");
+		this.consumedResource.consumedNodeNumber = nodenumber;
+		this.consumedResource.consumedNodeComputation = nodecomputaiton;
+		this.consumedResource.consumeEdgeBandwith = edgebandwith;
 	}
 
 	public boolean HeursitcAlgorithm4Survivability(boolean failurtype, int sequence) throws GRBException {
