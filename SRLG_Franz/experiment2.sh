@@ -10,8 +10,8 @@ export LD_LIBRARY_PATH=/home/franz/Downloads/gurobi563/linux64/lib:$LD_LIBRARY_P
 #1.franz algorithm:-3
 
 
-example_i=202
-example_num=218 #315
+example_i=1
+example_num=17 #315
 
 srlgdensity_i=0
 

@@ -21,7 +21,7 @@ bool CoSE_findAP_ILP_gurobi(GraphTopo *p_graph, Request *p_request) {
 			sprintf(s, "%d", i);
 //			if (!p_request->APMustPassEdges.at(i))
 //				e.at(i) = model.addVar(1.0, 1.0, 0.0, GRB_BINARY, (str + s));
-			if (!p_request->APMustNotPassEdges.at(i))//
+			if (!p_request->APMustNotPassEdges.at(i)) //
 				e.at(i) = model.addVar(0.0, 0.0, 0.0, GRB_BINARY, (str + s));
 			if ((p_request->APMustNotPassEdges.at(i))) {
 				e.at(i) = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, (str + s));

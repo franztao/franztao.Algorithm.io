@@ -25,9 +25,9 @@ int main(int argc, char *argv[]) {
 
 	//
 	if (argc == 1) {
-		string si = "214";
+		string si = "0";
 		string suffix =
-				"/home/franz/franzDocuments/eclipse4cworkspace/SRLG_Franz/test/test";
+				"/home/franz/franzDocuments/eclipse4cworkspace/gurobi/Sample/test";
 		string strtopo = "/topo.csv";
 		string strdemand = "/demand.csv";
 		string strsrlg = "/srlg.csv";

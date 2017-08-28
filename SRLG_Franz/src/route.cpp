@@ -217,8 +217,8 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 	}
 
 
-/*	//TA
-	if ((algorithm_TA == algorithm) || (algorithm_all == algorithm)) {
+
+	if ((algorithm_TA == algorithm) || (Algorithm_All == algorithm)) {
 		cout << "TA"<<endl;
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
@@ -231,7 +231,7 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		print_time("TAEnd");
 		cout << "--------------------------------------------" << endl << endl;
 	}
-*/
+
 	//KSP
 	if (((algorithm_IHKSP == algorithm) || (Algorithm_All == algorithm))) {
 
@@ -280,10 +280,11 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		cout << "--------------------------------------------" << endl << endl;
 	}
 
-	/*//ILPsum
-	if ((algorithm_ILP_sum == algorithm) || (algorithm_all == algorithm)) {
+
+	if ((algorithm_ILP_sum == algorithm) || (Algorithm_All == algorithm)) {
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
+		cout << "ILPsum"<<endl;
 		print_time("");
 		if (IPAlgorithmBasicFlows(p_graph, algorithm_ILP_sum)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
 			printAnswer(AlgorithmResult, true);
@@ -294,9 +295,10 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		cout << "--------------------------------------------" << endl << endl;
 	}
 	//IQPsum
-	if ((algorithm_IQP_sum == algorithm) || (algorithm_all == algorithm)) {
+	if ((algorithm_IQP_sum == algorithm) || (Algorithm_All == algorithm)) {
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
+		cout << "IQPsum"<<endl;
 		print_time("");
 		if (IPAlgorithmBasicFlows(p_graph, algorithm_IQP_sum)) { // ILPAlgorithmBasicFlows   ILPAlgorithmBasicFlows_LocalSolver
 			printAnswer(AlgorithmResult, true);
@@ -306,7 +308,7 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		print_time("IQPsumEnd");
 		cout << "--------------------------------------------" << endl << endl;
 	}
-*/
+
 	//get srlg.csv file of three types from topo.csv file
 	if (algorithm_getSRLGcsv == algorithm) {
 
