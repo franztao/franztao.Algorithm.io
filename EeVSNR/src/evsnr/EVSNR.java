@@ -34,11 +34,11 @@ public class EVSNR {
 	public final static int Ran = 0;
 	public final static int Min = 1;
 
-	public final static String FileAbsolutePath = "C:\\Users\\Taoheng\\Desktop\\NFT4VNR\\";
+	public final static String FileAbsolutePath = "/home/franz/franzDocuments/eclipse4cworkspace/EeVSNR";
 
-	public final static int ExperimentTimes = 1;
+	public final static int ExperimentTimes = 10;
 
-	public final static long SubstrateNewtorkRunTimeInterval = 30000;// 30000
+	public final static long SubstrateNewtorkRunTimeInterval =30000;// 30000
 	public final static long unitTimeInterval = 1;
 	public final static double requestAppearProbability = 1;// 0.1
 	public final static long VNRequestsDuration = 10;
@@ -54,12 +54,12 @@ public class EVSNR {
 	// SubStrate Network Parameter
 	// node parameter
 	public final static int SubStrateNodeSize = 100;//100
-	public final static int SubStrateNodeComputationMinimum = 50;//50
-	public final static int SubStrateNodeComputationMaximum = 100;//100
+	public final static int SubStrateNodeComputationMinimum = 20;//50
+	public final static int SubStrateNodeComputationMaximum = 50;//100
 	// edge parameter
 	public final static double SubStrateNodenodeProbability = 0.4;
-	public final static int SubStrateEdgeBandwithMinimum = 200;
-	public final static int SubStrateEdgeBandwithMaximum = 300;
+	public final static int SubStrateEdgeBandwithMinimum = 100;
+	public final static int SubStrateEdgeBandwithMaximum = 150;
 
 	// Virtual Network
 	// node parameter //2-5 5-8 5-10

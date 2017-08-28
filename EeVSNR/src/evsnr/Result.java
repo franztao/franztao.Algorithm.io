@@ -15,6 +15,7 @@ import java.util.Vector;
 public class Result {
 
 	String FileAbsolutePath = EVSNR.FileAbsolutePath;//
+	String DataFilePathString="/Data/";
 	String prefix = "\\newcommand{\\";
 
 	double[] array_AcceptionRatio_evn;
@@ -41,7 +42,16 @@ public class Result {
 
 	void recordTexParameter() {
 		try {
-			FileWriter TexFileWriter = new FileWriter(FileAbsolutePath + "number.tex");
+			File f_TexFileWriter = new File(FileAbsolutePath + "/number.tex");
+
+			if (!f_TexFileWriter.exists()) {
+				try {
+					f_TexFileWriter.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			FileWriter TexFileWriter = new FileWriter(f_TexFileWriter);
 			TexFileWriter.write(prefix + "addNewNodeCost" + "}{" + EVSNR.addNewNodeCost + "}\n");
 			TexFileWriter.write(prefix + "transformExistedNodeCost" + "}{" + EVSNR.transformExistedNodeCost + "}\n");
 			TexFileWriter.write(prefix + "addNodeComputaionCost" + "}{" + EVSNR.addNodeComputaionCost + "}\n");
@@ -113,9 +123,9 @@ public class Result {
 	 */
 	private void recordExperimentData4MigrationFrequence(int experimentTimes, Algorithm algorithm, int time) {
 		File f_MappingCost_node = new File(
-				FileAbsolutePath + "\\Data\\" + "MigrationFrequence_node" + algorithm.algorithmName + ".txt");
+				FileAbsolutePath + DataFilePathString + "MigrationFrequence_node" + algorithm.algorithmName + ".txt");
 		File f_MappingCost_edge = new File(
-				FileAbsolutePath + "\\Data\\" + "MigrationFrequence_edge" + algorithm.algorithmName + ".txt");
+				FileAbsolutePath + DataFilePathString + "MigrationFrequence_edge" + algorithm.algorithmName + ".txt");
 		FileWriter fw_MigrationFrequence_node;
 		FileWriter fw_MigrationFrequence_edge;
 
@@ -179,9 +189,9 @@ public class Result {
 	 */
 	private void writeExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm) {
 		File f_AcceptionRatio_evn = new File(
-				FileAbsolutePath + "\\Data\\" + "AcceptionRatio_EVN_" + algorithm.algorithmName + ".txt");
+				FileAbsolutePath + DataFilePathString + "AcceptionRatio_EVN_" + algorithm.algorithmName + ".txt");
 		File f_AcceptionRatio_vn = new File(
-				FileAbsolutePath + "\\Data\\" + "AcceptionRatio_VN_" + algorithm.algorithmName + ".txt");
+				FileAbsolutePath + DataFilePathString + "AcceptionRatio_VN_" + algorithm.algorithmName + ".txt");
 		FileWriter fw_AcceptionRatio_evn;
 		FileWriter fw_AcceptionRatio_vn;
 
@@ -253,7 +263,7 @@ public class Result {
 	 * 
 	 */
 	public void recordExperimentParameter(int experimentTimes, Vector<Algorithm> algorithms) {
-		File f_Parameter = new File(FileAbsolutePath + "\\Data\\" + "Parameter.txt");
+		File f_Parameter = new File(FileAbsolutePath + DataFilePathString + "Parameter.txt");
 		FileWriter fw_Parameter;
 
 		if (!f_Parameter.exists()) {
@@ -321,11 +331,11 @@ public class Result {
 	 */
 	public void writeExperimentData4MappingCost(int experimentTimes, Algorithm algorithm) {
 		File f_MappingCost_node = new File(
-				FileAbsolutePath + "\\Data\\" + "MappingCost_node_" + algorithm.algorithmName + ".txt");
+				FileAbsolutePath + DataFilePathString + "MappingCost_node_" + algorithm.algorithmName + ".txt");
 		File f_MappingCost_nodeUsed = new File(
-				FileAbsolutePath + "\\Data\\" + "MappingCost_nodeUsed_" + algorithm.algorithmName + ".txt");
+				FileAbsolutePath + DataFilePathString + "MappingCost_nodeUsed_" + algorithm.algorithmName + ".txt");
 		File f_MappingCost_edge = new File(
-				FileAbsolutePath + "\\Data\\" + "MappingCost_edge_" + algorithm.algorithmName + ".txt");
+				FileAbsolutePath + DataFilePathString + "MappingCost_edge_" + algorithm.algorithmName + ".txt");
 		FileWriter fw_MappingCost_node;
 		FileWriter fw_MappingCost_edge;
 		FileWriter fw_MappingCost_nodeUsed;
