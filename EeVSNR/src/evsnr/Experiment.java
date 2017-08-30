@@ -87,18 +87,6 @@ public class Experiment {
 		this.algorithms.clear();
 		try {
 
-			
-
-			SubstrateNetwork sn_FI_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setParameter("sn_FI_Shared", sn_FI_Shared, false, EVSNR.FailureIndependent, true);
-			this.algorithms.addElement(alg);
-
-			SubstrateNetwork sn_FI_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-			alg = new Algorithm();
-			alg.setParameter("sn_FI_NoShared", sn_FI_NoShared, false, EVSNR.FailureIndependent, false);
-			this.algorithms.addElement(alg);
-
 			SubstrateNetwork sn_FD_EVSNR_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
 			alg = new Algorithm();
 			alg.setParameter("sn_FD_EVSNR_Ran_Shared", sn_FD_EVSNR_Ran_Shared, false, EVSNR.FailureDependent, true);
@@ -111,6 +99,18 @@ public class Experiment {
 					false);
 			alg.setSequence(EVSNR.Ran);
 			this.algorithms.addElement(alg);
+
+			SubstrateNetwork sn_FI_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			alg = new Algorithm();
+			alg.setParameter("sn_FI_Shared", sn_FI_Shared, false, EVSNR.FailureIndependent, true);
+			this.algorithms.addElement(alg);
+
+			SubstrateNetwork sn_FI_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			alg = new Algorithm();
+			alg.setParameter("sn_FI_NoShared", sn_FI_NoShared, false, EVSNR.FailureIndependent, false);
+			this.algorithms.addElement(alg);
+
+			
 
 			// SubstrateNetwork sn_FD_EVSNR_Min_Shared = (SubstrateNetwork)
 			// this.basicSubstrateNework.clone();

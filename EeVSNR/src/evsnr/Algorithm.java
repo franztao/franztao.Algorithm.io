@@ -316,6 +316,8 @@ public class Algorithm {
 			if (distributeResource4EVN(evn)) {
 				evn.isSucceed = true;
 				return true;
+			} else {
+				loggerAlgorithm.info("Can not distribute enough source for EVN");
 			}
 		} else {
 			loggerAlgorithm.info("Algorithm fail to get the solution");
@@ -335,7 +337,6 @@ public class Algorithm {
 					if (j < evn.VN.nodeSize) {
 						if (evn.nodeComputationUsed[j] - evn.VN.nodeComputationDemand[j] > 0) {
 							nodeResource += evn.nodeComputationUsed[j] - evn.VN.nodeComputationDemand[j];
-							
 						}
 					} else {
 						if (evn.nodeComputationUsed[j] > 0) {
@@ -349,19 +350,19 @@ public class Algorithm {
 					this.sn.nodeComputation4Temp[i] += nodeResource;
 				} else {
 					loggerAlgorithm.warn("Fail to distribute enhacned network (" + i + ") node into substrate network");
-
 					return false;
 				}
 			}
 			if (nodeResource < 0) {
 				loggerAlgorithm.error("distributeResource4EVN nodeResource less than zero ");
 			}
-			
+
 		}
 
 		for (int i = 0; i < evn.nodeSize; i++) {
 			for (int j = 0; j < evn.nodeSize; j++) {
 				if (i < evn.nodeSize4Embeded && j < evn.nodeSize4Embeded) {
+
 					evn.edgeBandwithEnhanced[i][j] = evn.edgeBandwithUsed[i][j] - evn.VN.edgeBandwithDemand[i][j];
 				} else {
 					evn.edgeBandwithEnhanced[i][j] = evn.edgeBandwithUsed[i][j];
@@ -382,13 +383,15 @@ public class Algorithm {
 							}
 						}
 					}
+
 					ShortestPath shortestPath = new ShortestPath(this.sn.nodeSize);
 					List<Integer> pathList = new LinkedList<Integer>();
 
 					// do not split shortest path
 					pathList = shortestPath.Dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempTopology);
 					if (pathList.isEmpty()) {
-						loggerAlgorithm.warn("Fail to embedd enhanced network ("+i+"--"+j+") edge into substrate network: lack path");
+						loggerAlgorithm.warn("Fail to embedd enhanced network (" + i + "--" + j
+								+ ") edge into substrate network: lack path");
 						return false;
 					}
 
@@ -405,6 +408,11 @@ public class Algorithm {
 						this.sn.edgeBandwith4Temp[s][e] += evn.edgeBandwithEnhanced[i][j];
 						this.sn.edgeBandwith4Temp[e][s] = this.sn.edgeBandwith4Temp[s][e];
 						s = e;
+					}
+				} else {
+					if (evn.edgeBandwithEnhanced[i][j] < 0) {
+						loggerAlgorithm.error("distributeResource4EVN edgeResource less than zero ");
+						return false;
 					}
 				}
 			}
