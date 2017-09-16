@@ -4,7 +4,6 @@
 
 package evsnr;
 
-
 import substratenetwork.SubStrateNetworkParameter;
 
 import substratenetwork.SubstrateNetwork;
@@ -22,19 +21,19 @@ public class main {
 
 	public static void main(String[] args) {
 		boolean SampleInit = false;
-		Result result=new Result();
+		Result result = new Result();
 		result.recordTexParameter();
-		
+
 		SubStrateNetworkParameter snp = new SubStrateNetworkParameter(SampleInit);
-		
+
 		SubstrateNetwork sn = new SubstrateNetwork(snp);
-		
+
 		VirtualNetworkParameter vnp = new VirtualNetworkParameter(SampleInit);
-		
-		Experiment exp = new Experiment(sn, vnp,result);
+
+		Experiment exp = new Experiment(sn, vnp, result);
 		exp.startExperiment();
-		
-		return ;
+
+		return;
 	}
 
 }

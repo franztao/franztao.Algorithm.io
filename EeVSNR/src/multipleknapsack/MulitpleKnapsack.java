@@ -146,8 +146,8 @@ public class MulitpleKnapsack {
 	public boolean optimalSoutionILP(int solution[]) throws GRBException {
 		GRBEnv env = new GRBEnv("franztao");
 		GRBModel model = new GRBModel(env);
-		//close gurobi default system console log
-		model.getEnv().set(GRB.IntParam.OutputFlag,0);
+		// close gurobi default system console log
+		model.getEnv().set(GRB.IntParam.OutputFlag, 0);
 		GRBVar varx[][];
 		varx = new GRBVar[this.itemNumber][this.knapsackNumber];
 
@@ -205,14 +205,14 @@ public class MulitpleKnapsack {
 		if (optimstatus != GRB.OPTIMAL) {
 			return false;
 		}
-		loggerMulitpleKnapsack.info("---ILP optimal solution: (" + model.get(GRB.DoubleAttr.ObjVal) + " )");
-//		for (int i = 0; i < this.itemNumber; i++) {
-//			for (int j = 0; j < this.knapsackNumber; j++) {
-//				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
-////					System.out.println(j);
-//				}
-//			}
-//		}
+//		loggerMulitpleKnapsack.info("ILP optimal solution: (" + model.get(GRB.DoubleAttr.ObjVal) + " )");
+		for (int i = 0; i < this.itemNumber; i++) {
+			for (int j = 0; j < this.knapsackNumber; j++) {
+				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
+					solution[i] = j;
+				}
+			}
+		}
 
 		model.dispose();
 		env.dispose();

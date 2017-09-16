@@ -42,7 +42,7 @@ public class Result {
 
 	void recordTexParameter() {
 		try {
-			File f_TexFileWriter = new File(FileAbsolutePath + "/number.tex");
+			File f_TexFileWriter = new File(FileAbsolutePath + DataFilePathString+"number.tex");
 
 			if (!f_TexFileWriter.exists()) {
 				try {

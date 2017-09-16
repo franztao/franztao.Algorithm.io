@@ -26,7 +26,7 @@ import substratenetwork.SubstrateNetwork;
 public class EnhancedVirtualNetwork {
 
 	private Logger loggerEnhancedVirtualNetwork = Logger.getLogger(EnhancedVirtualNetwork.class);
-	
+
 	public final int Method = EVSNR.MatchMethod;
 
 	// nodeSize=enhacnedNodeSize+backupNodeSize
@@ -101,7 +101,7 @@ public class EnhancedVirtualNetwork {
 	 */
 	public EnhancedVirtualNetwork(SubstrateNetwork sn, VirtualNetwork vn, BackupNode bn) {
 		PropertyConfigurator.configure("log4j.properties");
-		
+
 		this.VN = vn;
 		this.isSucceed = false;
 		// node
@@ -147,7 +147,8 @@ public class EnhancedVirtualNetwork {
 	}
 
 	/**
-	 * @param nodeSize the nodeSize to set
+	 * @param nodeSize
+	 *            the nodeSize to set
 	 */
 	public void setNodeSize(int nodeSize) {
 		this.nodeSize = nodeSize;
@@ -175,7 +176,7 @@ public class EnhancedVirtualNetwork {
 		// edge
 		for (int i = 0; i < this.nodeSize; i++) {
 			for (int j = 0; j < i; j++) {
-				if ((i < this.nodeSize4Embeded) && (i < this.nodeSize4Embeded) && this.VN.topology[i][j]) {
+				if ((i < this.nodeSize4Embeded) && (vn.edgeBandwithDemand[i][j]>0)) {
 					this.topology[i][j] = this.topology[j][i] = true;
 					this.edgeBandwithUsed[i][j] = this.edgeBandwithUsed[j][i] = vn.edgeBandwithDemand[i][j];
 				}
@@ -466,9 +467,6 @@ public class EnhancedVirtualNetwork {
 		constructKnapsacks(failurenodeID);
 		MulitpleKnapsack MKP = new MulitpleKnapsack(this.VN.nodeSize, Knapsacks.size(), this.nodeSize);
 		constructMultipleKnapsackProbem(MKP, failurtype);
-		// if (failurenodeID == 3) {
-		// MKP.matchingMatrix[1][5] = Integer.MAX_VALUE;
-		// }
 		int solution[] = new int[this.VN.nodeSize];
 
 		if (this.Method == EVSNR.MatchMethodDP) {
@@ -499,8 +497,6 @@ public class EnhancedVirtualNetwork {
 		if (Method == EVSNR.MatchMethodILP) {
 			for (int i = 0; i < this.VN.nodeSize; i++) {
 				virutialNode2NewVirtualNode[i] = Knapsacks.elementAt(solution[i]).starNodeEnhancedVNID;
-				// System.out.println("00000 "+virutialNode2NewVirtualNode[i] +
-				// 1);
 			}
 		}
 		if (Method == EVSNR.MatchMethodDP) {
@@ -587,43 +583,46 @@ public class EnhancedVirtualNetwork {
 		}
 		for (int i = 0; i < Knapsacks.size(); i++) {
 			mKP.ithKapsack2ithUnionKnapsack[i] = Knapsacks.elementAt(i).starNodeEnhancedVNID;
-//			System.out.print((mKP.ithKapsack2ithUnionKnapsack[i] + 1) + "\t ");
+			// System.out.print((mKP.ithKapsack2ithUnionKnapsack[i] + 1) + "\t
+			// ");
 		}
 		for (int i = 0; i < this.nodeSize; i++) {
 			mKP.unionKnapsackCapacity[i] = this.nodeComputationCapacity[i];
-//			System.out.print((i + 1) + ":" + mKP.unionKnapsackCapacity[i] + "\t ");
+			// System.out.print((i + 1) + ":" + mKP.unionKnapsackCapacity[i] +
+			// "\t ");
 		}
-//		System.out.println();
+		// System.out.println();
 		for (int i = 0; i < this.VN.nodeSize; i++) {
 			mKP.capacityItem[i] = this.VN.nodeComputationDemand[i];
-//			System.out.print(mKP.capacityItem[i] + "\t ");
+			// System.out.print(mKP.capacityItem[i] + "\t ");
 		}
-//		System.out.println();
+		// System.out.println();
 
 		for (int i = 0; i < this.VN.nodeSize; i++) {
 			for (int j = 0; j < Knapsacks.size(); j++) {
 				// System.out.print("i: "+i+"j: "+j+" --"+matchingMatrix[i][j]);
-				if (mKP.matchingMatrix[i][j] != Integer.MAX_VALUE){
-//					System.out.print("00\t  ");
-//				else {
+				if (mKP.matchingMatrix[i][j] != Integer.MAX_VALUE) {
+					// System.out.print("00\t ");
+					// else {
 					// final int addNewNodeCost = 10000000;
 					// final int transformExistedNodeCost = 100000;
 					// final int addNodeComputaionCost = 1000;
 					// final int addEdgeBandwithCost = 1;
 					int printint = mKP.matchingMatrix[i][j];
 					if ((mKP.matchingMatrix[i][j] / EVSNR.addNewNodeCost) > 0)
-//						System.out.print("N+");
-					printint = printint % EVSNR.addNewNodeCost;
+						// System.out.print("N+");
+						printint = printint % EVSNR.addNewNodeCost;
 					if ((printint / EVSNR.transformExistedNodeCost) > 0)
-//						System.out.print("M+");
-					printint = printint % EVSNR.transformExistedNodeCost;
+						// System.out.print("M+");
+						printint = printint % EVSNR.transformExistedNodeCost;
 					if ((printint / EVSNR.addNodeComputaionCost) > 0)
-//						System.out.print("(" + (printint / EVSNR.addNodeComputaionCost) + ")+");
-					printint = printint % EVSNR.addNodeComputaionCost;
-//					System.out.print(printint + "\t  ");
+						// System.out.print("(" + (printint /
+						// EVSNR.addNodeComputaionCost) + ")+");
+						printint = printint % EVSNR.addNodeComputaionCost;
+					// System.out.print(printint + "\t ");
 				}
 			}
-//			System.out.println("");
+			// System.out.println("");
 		}
 		return false;
 
@@ -638,16 +637,16 @@ public class EnhancedVirtualNetwork {
 				nodenumber++;
 			}
 		}
-		
 
 		int edgebandwith = 0;
 		for (int i = 0; i < this.nodeSize; i++) {
-			for (int j = 0; j < this.nodeSize; j++) {
+			for (int j = 0; j < i; j++) {
 				edgebandwith += this.edgeBandwithUsed[i][j];
 			}
 		}
-		edgebandwith = edgebandwith / 2;
-		loggerEnhancedVirtualNetwork.info((nodenumber - this.consumedResource.consumedNodeNumber) + " Node + "+(nodecomputaiton - this.consumedResource.consumedNodeComputation) + " Computation + "+(edgebandwith - this.consumedResource.consumeEdgeBandwith) + " Bandwith \n");
+		loggerEnhancedVirtualNetwork.info((nodenumber - this.consumedResource.consumedNodeNumber) + " Node + "
+				+ (nodecomputaiton - this.consumedResource.consumedNodeComputation) + " Computation + "
+				+ (edgebandwith - this.consumedResource.consumeEdgeBandwith) + " Bandwith \n");
 		this.consumedResource.consumedNodeNumber = nodenumber;
 		this.consumedResource.consumedNodeComputation = nodecomputaiton;
 		this.consumedResource.consumeEdgeBandwith = edgebandwith;
@@ -659,20 +658,32 @@ public class EnhancedVirtualNetwork {
 		// 0 node+2 node computaion+3 bandwidth
 		// 1 node+6 node computaion+3 bandwidth
 		// =2 node+11 node computaion+23 bandwidth
+
+//		loggerEnhancedVirtualNetwork.info("init resource:" + this.consumedResource.initNodeNumber + " Node + "
+//				+ (this.consumedResource.initNodeComputation) + " Computation + "
+//				+ (this.consumedResource.initEdgeBandwith) + " Bandwith \n");
 		if (sequence == EVSNR.Ran) {
 			for (int i = 0; i < this.nodeSize4Embeded; i++) {
-//				loggerEnhancedVirtualNetwork.info(
-//						"--------------------------Begin " + i + " node failure--------------------------------------");
 				if (!failIthNode(i, failurtype)) {
 					return false;
 				}
-				computeUsedResource();
+				
 			}
+
 		}
 		if (sequence == EVSNR.Min) {
 
 		}
+		computeUsedResource();
 		return true;
+
+	}
+
+	/**
+	 * 
+	 */
+	private void initComputeResource() {
+		// TODO Auto-generated method stub
 
 	}
 
