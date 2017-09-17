@@ -112,6 +112,7 @@ void printAnswer(DisjointPathPair *FranzAlgorithmResult, bool getanswer) {
 	cout << "HopSum:"
 			<< (FranzAlgorithmResult->APhop + FranzAlgorithmResult->BPhop)
 			<< "  " << endl;
+	return ;
 	cout << "AP edge(" << (FranzAlgorithmResult->APhop - 1) << "): ";
 	unsigned int i = 0;
 	for (i = 0; i < FranzAlgorithmResult->APedge.size(); i++) {
@@ -219,9 +220,10 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 
 
 	if ((algorithm_TA == algorithm) || (Algorithm_All == algorithm)) {
-		cout << "TA"<<endl;
+
 		AlgorithmResult->clearResult();
 		cout << endl << "--------------------------------------------" << endl;
+		cout << "TA"<<endl;
 		print_time("");
 		if (TAAlgorithmBasicFlows(p_graph)) {
 			printAnswer(AlgorithmResult, true);

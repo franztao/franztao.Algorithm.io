@@ -58,7 +58,7 @@ const int MAX_NodeSize = (2515); //may be overflow
 
 #define LimitedTime 30 //algorithm's rumtime's limitaion.
 #define ThreadNum 1
-#define MAX_ITERATIONS 2000000 //KSP's the most larger iteration's number
+#define MAX_ITERATIONS 200 //KSP's the most larger iteration's number
 
 #define FranzMustNodeAlgorithmType 1 //1:internal dijistra 2:ILP
 
