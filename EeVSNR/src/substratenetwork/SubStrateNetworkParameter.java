@@ -28,13 +28,13 @@ public class SubStrateNetworkParameter {
 
 
 		
-	private boolean sampleInit;
+	private boolean isSampleInit;
 	
 	/**
 	 * @param sampleInit
 	 */
 	public SubStrateNetworkParameter(boolean sampleInit) {
-		this.sampleInit = sampleInit;
+		this.isSampleInit = sampleInit;
 		if (sampleInit) {
 			this.nodeSize = 9;
 			this.serviceNumber = 4;
@@ -157,14 +157,14 @@ public class SubStrateNetworkParameter {
 	 * @return the sampleInit
 	 */
 	public boolean isSampleInit() {
-		return sampleInit;
+		return isSampleInit;
 	}
 
 	/**
 	 * @param sampleInit the sampleInit to set
 	 */
 	public void setSampleInit(boolean sampleInit) {
-		this.sampleInit = sampleInit;
+		this.isSampleInit = sampleInit;
 	}
 
 

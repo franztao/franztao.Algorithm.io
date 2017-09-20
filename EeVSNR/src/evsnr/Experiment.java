@@ -66,12 +66,12 @@ public class Experiment {
 			}
 			algorithms.get(alg).releaseResource(true);
 			algorithms.get(alg).isClearAllResource();
-			this.result.writeExperimentData(experimentTimes,algorithms.get(alg));
+			this.result.writeExperimentData(experimentTimes, algorithms.get(alg));
 			logger.info("------------------------" + algorithms.get(alg).algorithmName
 					+ " End --------------------------------------------------------------------------------------\n\n");
 		}
-		
-		this.result.recordExperimentParameter(experimentTimes,algorithms);
+
+		this.result.recordExperimentParameter(experimentTimes, algorithms);
 	}
 
 	/**
@@ -87,6 +87,30 @@ public class Experiment {
 		this.algorithms.clear();
 		try {
 
+			SubstrateNetwork sn_FI_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			alg = new Algorithm();
+			alg.setParameter("sn_FI_Shared", sn_FI_Shared, false, EVSNR.FailureIndependent, true);
+			alg.setSequence(EVSNR.Ran);
+			this.algorithms.addElement(alg);
+
+			SubstrateNetwork sn_FI_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			alg = new Algorithm();
+			alg.setParameter("sn_FI_NoShared", sn_FI_NoShared, false, EVSNR.FailureIndependent, false);
+			alg.setSequence(EVSNR.Ran);
+			this.algorithms.addElement(alg);
+
+			SubstrateNetwork sn_FI_Shared_Min = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			alg = new Algorithm();
+			alg.setParameter("sn_FI_Shared_Min", sn_FI_Shared_Min, false, EVSNR.FailureIndependent, true);
+			alg.setSequence(EVSNR.Min);
+			this.algorithms.addElement(alg);
+
+			SubstrateNetwork sn_FI_NoShared_Min = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			alg = new Algorithm();
+			alg.setParameter("sn_FI_NoShared_Min", sn_FI_NoShared_Min, false, EVSNR.FailureIndependent, false);
+			alg.setSequence(EVSNR.Min);
+			this.algorithms.addElement(alg);
+
 			SubstrateNetwork sn_FD_EVSNR_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
 			alg = new Algorithm();
 			alg.setParameter("sn_FD_EVSNR_Ran_Shared", sn_FD_EVSNR_Ran_Shared, false, EVSNR.FailureDependent, true);
@@ -100,62 +124,33 @@ public class Experiment {
 			alg.setSequence(EVSNR.Ran);
 			this.algorithms.addElement(alg);
 
-			SubstrateNetwork sn_FI_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			SubstrateNetwork sn_FD_EVSNR_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
 			alg = new Algorithm();
-			alg.setParameter("sn_FI_Shared", sn_FI_Shared, false, EVSNR.FailureIndependent, true);
+			alg.setParameter("sn_FD_EVSNR_Min_Shared", sn_FD_EVSNR_Min_Shared, false, EVSNR.FailureDependent, true);
+			alg.setSequence(EVSNR.Min);
 			this.algorithms.addElement(alg);
 
-			SubstrateNetwork sn_FI_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+			SubstrateNetwork sn_FD_EVSNR_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
 			alg = new Algorithm();
-			alg.setParameter("sn_FI_NoShared", sn_FI_NoShared, false, EVSNR.FailureIndependent, false);
+			alg.setParameter("sn_FD_EVSNR_Min_NoShared", sn_FD_EVSNR_Min_NoShared, false, EVSNR.FailureDependent,
+					false);
+			alg.setSequence(EVSNR.Min);
 			this.algorithms.addElement(alg);
 
-			
-
-			// SubstrateNetwork sn_FD_EVSNR_Min_Shared = (SubstrateNetwork)
-			// this.basicSubstrateNework.clone();
-			// alg = new Algorithm();
-			// alg.setFD(EVSNR.FailureDependent);
-			// alg.setShared(true);
-			// alg.setExact(false);
-			// alg.setSequence(EVSNR.Min);
-			// alg.setSn(sn_FD_EVSNR_Min_Shared);
-			// this.algorithms.addElement(alg);
-			//
-			// SubstrateNetwork sn_FD_EVSNR_Min_NoShared = (SubstrateNetwork)
-			// this.basicSubstrateNework.clone();
-			// alg = new Algorithm();
-			// alg.setFD(EVSNR.FailureDependent);
-			// alg.setShared(false);
-			// alg.setExact(false);
-			// alg.setSequence(EVSNR.Min);
-			// alg.setSn(sn_FD_EVSNR_Min_NoShared);
-			// this.algorithms.addElement(alg);
-			
-			// SubstrateNetwork sn_FD_ILP_Shared = (SubstrateNetwork)
-						// this.basicSubstrateNework.clone();
-						// alg = new Algorithm();
-						// alg.setFD(EVSNR.FailureDependent);
-						// alg.setShared(true);
-						// alg.setExact(true);
-						// alg.setSn(sn_FD_ILP_Shared);
-						// alg.algorithmName="sn_FD_ILP_Shared";
-						// this.algorithms.addElement(alg);
-						//
-						// SubstrateNetwork sn_FD_ILP_NoShared = (SubstrateNetwork)
-						// this.basicSubstrateNework.clone();
-						// alg = new Algorithm();
-						// alg.setFD(EVSNR.FailureDependent);
-						// alg.setShared(false);
-						// alg.setExact(true);
-						// alg.setSn(sn_FD_ILP_NoShared);
-						// alg.algorithmName="sn_FD_ILP_NoShared";
-						// this.algorithms.addElement(alg);
+//			SubstrateNetwork sn_FD_ILP_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+//			alg = new Algorithm();
+//			alg.setParameter("sn_FD_ILP_Shared", sn_FD_ILP_Shared, true, EVSNR.FailureDependent, true);
+//			this.algorithms.addElement(alg);
+//
+//			SubstrateNetwork sn_FD_ILP_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+//			alg = new Algorithm();
+//			alg.setParameter("sn_FD_ILP_NoShared", sn_FD_ILP_NoShared, true, EVSNR.FailureDependent, false);
+//			this.algorithms.addElement(alg);
 		} catch (CloneNotSupportedException e) {
 			logger.error("Fail to construct various algorithms");
 			e.printStackTrace();
 		}
-		logger.info("Succeed to construct various algorithms\n");
+		logger.info("Succeed to initialize various type of algorithms\n");
 		for (int i = 0; i < algorithms.size(); i++) {
 			algorithms.get(i).setVnp(vnp2);
 		}

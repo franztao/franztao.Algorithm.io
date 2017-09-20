@@ -45,11 +45,13 @@ public class ShortestPath {
 				}
 			}
 		}
-		
+
 		DijkstraShortestPath<Integer, DefaultEdge> dijk = new DijkstraShortestPath<>(graph);
 		GraphPath<Integer, DefaultEdge> path = dijk.getPath(source, end);
-		return path.getVertexList();
-
+		if (path != null)
+			return path.getVertexList();
+		else
+			return null;
 	}
 
 }

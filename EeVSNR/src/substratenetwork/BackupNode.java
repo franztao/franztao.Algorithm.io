@@ -26,14 +26,14 @@ public class BackupNode {
 	 * @param isShared 
 	 */
 	public BackupNode(SubstrateNetwork sn, VirtualNetwork vn, boolean isShared) {
-		boolean usedsNode[] = new boolean[sn.nodeSize];
+		boolean isUsedNode[] = new boolean[sn.nodeSize];
 		for (int i = 0; i < vn.nodeSize; i++) {
-			usedsNode[vn.vNode2sNode[i]] = true;
+			isUsedNode[vn.vNode2sNode[i]] = true;
 		}
 		// backup node number;
 		this.backupNodeSize = 0;
 		for (int i = 0; i < sn.nodeSize; i++) {
-			if (!usedsNode[i]) {
+			if (!isUsedNode[i]) {
 				this.backupNodeSize++;
 			}
 		}
@@ -42,7 +42,7 @@ public class BackupNode {
 		this.boolServiceTypeSet = new boolean[this.backupNodeSize][sn.serviceNumber];
 		this.nodeComputationCapacity = new int[this.backupNodeSize];
 		for (int i = 0, j = 0; i < sn.nodeSize; i++) {
-			if (!usedsNode[i]) {
+			if (!isUsedNode[i]) {
 				this.bNode2sNode[j] = i;
 				for (int l = 0; l < sn.serviceNumber; l++) {
 					boolServiceTypeSet[j][l] = sn.boolServiceTypeSet[i][l];
