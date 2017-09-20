@@ -37,8 +37,8 @@ public class SubstrateNetwork implements Cloneable {
 
 	
 	//acceptionRatio
-	public int vnSuceedMap;
-	public int evnSuceedMap;
+	public int vnSuceedEmbed;
+	public int evnSuceedEmbed;
 	//EmbeddingCost
 	public int vnqNumber;
 	
@@ -97,8 +97,8 @@ public class SubstrateNetwork implements Cloneable {
 		}
 		
 		
-		this.vnSuceedMap=0;
-		this.evnSuceedMap=0;
+		this.vnSuceedEmbed=0;
+		this.evnSuceedEmbed=0;
 		this.vnqNumber=0;
 	}
 

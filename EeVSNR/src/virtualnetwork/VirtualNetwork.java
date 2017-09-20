@@ -32,7 +32,7 @@ public class VirtualNetwork {
 
 	public Map<String, Integer> label2Node;
 
-	public boolean isTestSample;
+	public boolean isSampleInit;
 
 	public EnhancedVirtualNetwork EVN;
 
@@ -43,7 +43,7 @@ public class VirtualNetwork {
 
 //		this.leaveTime=
 		
-		if (vnp.sampleInit) {
+		if (vnp.isSampleInit) {
 			this.nodeSize = 4;
 		} else
 			this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
@@ -67,11 +67,10 @@ public class VirtualNetwork {
 
 		this.node2Label = new String[nodeSize];
 		this.label2Node = new HashMap<String, Integer>();
-		this.isTestSample = vnp.sampleInit;
-		
+		this.isSampleInit = vnp.isSampleInit;
 		
 		setNodeLabel();
-		if (vnp.sampleInit) {
+		if (vnp.isSampleInit) {
 			// this.nodeSize = 4;
 			initSample1();
 		}
@@ -244,7 +243,7 @@ public class VirtualNetwork {
 	 * @return the sampleInit
 	 */
 	public boolean isSampleInit() {
-		return isTestSample;
+		return isSampleInit;
 	}
 
 	/**
@@ -252,7 +251,7 @@ public class VirtualNetwork {
 	 *            the sampleInit to set
 	 */
 	public void setSampleInit(boolean sampleInit) {
-		this.isTestSample = sampleInit;
+		this.isSampleInit = sampleInit;
 	}
 
 	/**

@@ -25,13 +25,13 @@ public class VirtualNetworkParameter {
 	// service parameter
 	public int serviceNumber = EVSNR.ServiceNumber;
 
-	public boolean sampleInit;
+	public boolean isSampleInit;
 
 	/**
 	 * @param sampleInit2
 	 */
 	public VirtualNetworkParameter(boolean sampleInit2) {
-		this.sampleInit = sampleInit2;
+		this.isSampleInit = sampleInit2;
 		if (sampleInit2) {
 			this.nodeSize = 4;
 			this.serviceNumber = 4;
@@ -177,7 +177,7 @@ public class VirtualNetworkParameter {
 	 * @return the sampleInit
 	 */
 	public boolean isSampleInit() {
-		return sampleInit;
+		return isSampleInit;
 	}
 
 	/**
@@ -185,6 +185,6 @@ public class VirtualNetworkParameter {
 	 *            the sampleInit to set
 	 */
 	public void setSampleInit(boolean sampleInit) {
-		this.sampleInit = sampleInit;
+		this.isSampleInit = sampleInit;
 	}
 }

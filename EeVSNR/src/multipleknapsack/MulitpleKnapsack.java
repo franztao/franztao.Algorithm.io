@@ -16,7 +16,7 @@ import gurobi.*;
 public class MulitpleKnapsack {
 	public int itemNumber;
 	public int knapsackNumber;
-	public int matchingMatrix[][];
+	public int matchMatrix[][];
 
 	public int unionKnapsackSize;
 	public int ithKapsack2ithUnionKnapsack[];
@@ -31,13 +31,13 @@ public class MulitpleKnapsack {
 		this.itemNumber = row;
 		this.knapsackNumber = col;
 		this.unionKnapsackSize = unionKnapsackSize;
-		matchingMatrix = new int[row][col];
+		matchMatrix = new int[row][col];
 		ithKapsack2ithUnionKnapsack = new int[col];
 		capacityItem = new int[row];
 		unionKnapsackCapacity = new int[unionKnapsackSize];
 	}
 
-	public boolean optimalSoutionDP(int solution[]) {
+	public int optimalSoutionDP(int solution[]) {
 
 		// int[] dims=new int[this.unionKnapsackSize+1];
 		// dims[0]=this.itemNumber+1;
@@ -76,7 +76,7 @@ public class MulitpleKnapsack {
 			int d;
 			for (int j = 0; j < dimensionMultiple; j++) {
 				for (int k = 0; k < this.knapsackNumber; k++) {
-					if (this.matchingMatrix[i - 1][k] != Integer.MAX_VALUE) {
+					if (this.matchMatrix[i - 1][k] != Integer.MAX_VALUE) {
 						int ithunionbag = this.ithKapsack2ithUnionKnapsack[k];
 						if ((dims[ithunionbag] - this.capacityItem[i - 1]) > 0) {
 							int newinteger = 0;
@@ -88,14 +88,14 @@ public class MulitpleKnapsack {
 							}
 							if (dp[i - 1][newinteger] != -1) {
 								if (dp[i][j] == -1) {
-									dp[i][j] = dp[i - 1][newinteger] + this.matchingMatrix[i - 1][k];
+									dp[i][j] = dp[i - 1][newinteger] + this.matchMatrix[i - 1][k];
 									select[i][j] = ithunionbag;
 								} else {
 									// dp[i][j] = Math.min(dp[i][j],
 									// dp[i - 1][newinteger] +
 									// this.matchingMatrix[i - 1][k]);
-									if (dp[i][j] > (dp[i - 1][newinteger] + this.matchingMatrix[i - 1][k])) {
-										dp[i][j] = dp[i - 1][newinteger] + this.matchingMatrix[i - 1][k];
+									if (dp[i][j] > (dp[i - 1][newinteger] + this.matchMatrix[i - 1][k])) {
+										dp[i][j] = dp[i - 1][newinteger] + this.matchMatrix[i - 1][k];
 										select[i][j] = ithunionbag;
 									}
 								}
@@ -136,52 +136,52 @@ public class MulitpleKnapsack {
 			// }
 			loggerMulitpleKnapsack
 					.info("----DP optimal solution: (" + dp[this.itemNumber][dimensionMultiple - 1] + ") ");
-			return true;
+			return dp[this.itemNumber][dimensionMultiple - 1];
 		} else {
 			loggerMulitpleKnapsack.warn("----DP exist no optimal solution");
-			return false;
+			return -1;
 		}
 	}
 
-	public boolean optimalSoutionILP(int solution[]) throws GRBException {
-		GRBEnv env = new GRBEnv("franztao");
-		GRBModel model = new GRBModel(env);
+	public int optimalSoutionILP(int ithItem2ithKnapsack[]) throws GRBException {
+		GRBEnv env = new GRBEnv();
+		GRBModel model = null;
+		model = new GRBModel(env);
+
 		// close gurobi default system console log
 		model.getEnv().set(GRB.IntParam.OutputFlag, 0);
-		GRBVar varx[][];
-		varx = new GRBVar[this.itemNumber][this.knapsackNumber];
+
+		GRBVar varX[][];
+		varX = new GRBVar[this.itemNumber][this.knapsackNumber];
 
 		// Create variables
 		for (int i = 0; i < this.itemNumber; i++) {
 			for (int j = 0; j < this.knapsackNumber; j++) {
-				if (Integer.MAX_VALUE != this.matchingMatrix[i][j])
-					varx[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "r:" + i + " c:" + j);
+				if (Integer.MAX_VALUE != this.matchMatrix[i][j])
+					varX[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "r:" + i + " c:" + j);
 				else
-
-					varx[i][j] = model.addVar(0.0, 0.0, 0.0, GRB.BINARY, "r:" + i + " c:" + j);
+					varX[i][j] = model.addVar(0.0, 0.0, 0.0, GRB.BINARY, "r:" + i + " c:" + j);
 			}
 		}
 		// Integrate new variables
-
 		model.update();
-		GRBLinExpr objexpr = new GRBLinExpr();
-		// Set objective: minimize
 
+		// Set objective: minimize
+		GRBLinExpr objexpr = new GRBLinExpr();
 		for (int i = 0; i < this.itemNumber; i++) {
 			for (int j = 0; j < this.knapsackNumber; j++) {
-				if (Integer.MAX_VALUE != this.matchingMatrix[i][j])
-					objexpr.addTerm(this.matchingMatrix[i][j], varx[i][j]);
+				if (Integer.MAX_VALUE != this.matchMatrix[i][j])
+					objexpr.addTerm(this.matchMatrix[i][j], varX[i][j]);
 			}
 		}
-		// String path = System.getgetProperty("java.library.path");
-		// System.out.println("Java path: " + path);
 		model.setObjective(objexpr, GRB.MINIMIZE);
+
 		// Add constraint
 		for (int i = 0; i < this.itemNumber; i++) {
 			GRBLinExpr conexpr1 = new GRBLinExpr();
 			for (int j = 0; j < this.knapsackNumber; j++) {
-				if (Integer.MAX_VALUE != this.matchingMatrix[i][j])
-					conexpr1.addTerm(1.0, varx[i][j]);
+				if (Integer.MAX_VALUE != this.matchMatrix[i][j])
+					conexpr1.addTerm(1.0, varX[i][j]);
 			}
 			model.addConstr(conexpr1, GRB.EQUAL, 1.0, "constraint_row =" + i);
 		}
@@ -192,8 +192,8 @@ public class MulitpleKnapsack {
 		}
 		for (int i = 0; i < this.knapsackNumber; i++) {
 			for (int j = 0; j < this.itemNumber; j++) {
-				if (Integer.MAX_VALUE != this.matchingMatrix[j][i])
-					conexpr1[this.ithKapsack2ithUnionKnapsack[i]].addTerm(this.capacityItem[j], varx[j][i]);
+				if (Integer.MAX_VALUE != this.matchMatrix[j][i])
+					conexpr1[this.ithKapsack2ithUnionKnapsack[i]].addTerm(this.capacityItem[j], varX[j][i]);
 			}
 		}
 		for (int i = 0; i < this.unionKnapsackSize; i++) {
@@ -201,22 +201,26 @@ public class MulitpleKnapsack {
 		}
 
 		model.optimize();
-		int optimstatus = model.get(GRB.IntAttr.Status);
-		if (optimstatus != GRB.OPTIMAL) {
-			return false;
+		int optimStatus = 0;
+		optimStatus = model.get(GRB.IntAttr.Status);
+		if (optimStatus != GRB.OPTIMAL) {
+			return -1;
 		}
-//		loggerMulitpleKnapsack.info("ILP optimal solution: (" + model.get(GRB.DoubleAttr.ObjVal) + " )");
+		// loggerMulitpleKnapsack.info("ILP optimal solution: (" +
+		// model.get(GRB.DoubleAttr.ObjVal) + " )");
 		for (int i = 0; i < this.itemNumber; i++) {
 			for (int j = 0; j < this.knapsackNumber; j++) {
-				if (1.0 == varx[i][j].get(GRB.DoubleAttr.X)) {
-					solution[i] = j;
+				if (1.0 == varX[i][j].get(GRB.DoubleAttr.X)) {
+					ithItem2ithKnapsack[i] = j;
 				}
 			}
 		}
+		int iReturnResult = new Double(objexpr.getValue()).intValue();
 
 		model.dispose();
 		env.dispose();
-		return true;
+
+		return iReturnResult;
 	}
 
 }

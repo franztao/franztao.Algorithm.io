@@ -10,10 +10,10 @@ package evsnr;
 public class EVSNR {
 
 	// Parameter
-	public final static int addNewNodeCost = 10000000;
-	public final static int transformExistedNodeCost = 100000;
-	public final static int addNodeComputaionCost = 3;
-	public final static int addEdgeBandwithCost = 1;
+	public final static int addNewNodeCost = 100000;
+	public final static int transformExistedNodeCost = 0;
+	public final static int addNodeComputaionCost = 300;
+	public final static int addEdgeBandwithCost = 100;
 	public final static int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost / addEdgeBandwithCost;
 
 	public final static boolean FailureDependent = true;
@@ -36,41 +36,43 @@ public class EVSNR {
 //	/home/franz/franzDocuments/eclipse4cworkspace/EeVSNR
 	public final static String FileAbsolutePath = "C:\\Users\\Taoheng\\Desktop\\NFT4VNR";
 
-	public final static int ExperimentTimes = 20;
+	
+	public final static boolean IsReleaseVNafterEVNFailure=false;
+	public final static int ExperimentTimes = 10;
 
-	public final static long SubstrateNewtorkRunTimeInterval =10000;// 30000
+	public final static long SubstrateNewtorkRunTimeInterval =1000;// 30000
 	public final static long unitTimeInterval = 1;
-	public final static double requestAppearProbability = 1;// 0.1
-	public final static long VNRequestsDuration = 50;
+	public final static double requestAppearProbability = 0.1;// 0.1
+	public final static long VNRequestsDuration = 1;
 	public final static long VNRequestsContinueTimeMinimum = 50;
-	public final static long VNRequestsContinueTimeMaximum = VNRequestsContinueTimeMinimum*5;
+	public final static long VNRequestsContinueTimeMaximum = 500;
 	// ExperimentPicture
 	public final static int ExperimentPicturePlotNumber = 25;
 
 	// service parameter
 	public final static int ServiceNumber = 20;
-	public final static double SerivecProbability = 0.9;
+	public final static double SerivecProbability = 0.25;
 
 	// SubStrate Network Parameter
 	// node parameter
-	public final static int SubStrateNodeSize = 30;//100
+	public final static int SubStrateNodeSize = 50;//100
 	public final static int SubStrateNodeComputationMinimum = 20;//50
-	public final static int SubStrateNodeComputationMaximum = SubStrateNodeComputationMinimum*2;//100
+	public final static int SubStrateNodeComputationMaximum = 40;//100
 	// edge parameter
-	public final static double SubStrateNodenodeProbability = 0.8;
-	public final static int SubStrateEdgeBandwithMinimum = 30;
-	public final static int SubStrateEdgeBandwithMaximum = SubStrateEdgeBandwithMinimum*2;
+	public final static double SubStrateNodenodeProbability = 0.5;
+	public final static int SubStrateEdgeBandwithMinimum = 500;
+	public final static int SubStrateEdgeBandwithMaximum = 1000;
 
 	// Virtual Network
 	// node parameter //2-5 5-8 5-10
 	public final static int VirtualNodeSizeMinimum =5;//2
-	public final static int VirtualNodeSizeMaximum = 10;//10
-	public final static int VirtualNodeComputationMinimum = 2;//1
-	public final static int VirtualNodeComputationMaximum = VirtualNodeComputationMinimum*3;//5
+	public final static int VirtualNodeSizeMaximum = 15;//10
+	public final static int VirtualNodeComputationMinimum = 1;//1
+	public final static int VirtualNodeComputationMaximum = 5;//5
 	// edge parameter
-	public final static double VirtualNodenodeProbability = 0.8;//0.5
+	public final static double VirtualNodenodeProbability = 0.5;//0.5
 	public final static int VirtualEdgeBandwithMinimum = 5;//10
-	public final static int VirtualEdgeBandwithMaximum = VirtualEdgeBandwithMinimum*3;//20
+	public final static int VirtualEdgeBandwithMaximum = 25;//20
 
 	public final static int SubStrateFacilityNodeFailDuration = 2000;
 

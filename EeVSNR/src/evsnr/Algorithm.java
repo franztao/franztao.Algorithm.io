@@ -25,7 +25,6 @@ public class Algorithm {
 	private Logger loggerAlgorithm = Logger.getLogger(Algorithm.class);
 
 	public String algorithmName;
-
 	private SubstrateNetwork sn;
 	private VirtualNetworkParameter vnp;
 
@@ -41,7 +40,6 @@ public class Algorithm {
 	private int sequence;
 
 	public Algorithm() {
-
 		PropertyConfigurator.configure("log4j.properties");
 	}
 
@@ -139,11 +137,21 @@ public class Algorithm {
 				+ Math.random() * (EVSNR.VNRequestsContinueTimeMaximum - EVSNR.VNRequestsContinueTimeMinimum)));
 
 		// node
-		if (!vn.isTestSample) {
+		if (!vn.isSampleInit) {
+
+			boolean [] isSamesNode=new boolean[this.sn.nodeSize];
 			for (int i = 0; i < vn.nodeSize; i++) {
-				// the virtual node map whose phisical node
-				int snodeloc = (int) Math.round(Math.random() * (this.sn.nodeSize - 1));
-				vn.vNode2sNode[i] = snodeloc;
+				// the virtual node map whose physical node
+				//every virtual node must map different physical node
+				int snodeloc;
+				do{
+					snodeloc = (int) Math.round(Math.random() * (this.sn.nodeSize - 1));
+					if(!isSamesNode[snodeloc]){
+						vn.vNode2sNode[i] = snodeloc;
+						isSamesNode[snodeloc]=true;
+						break;
+					}
+				}while(true);
 				// service
 				int nodeservice = this.sn.vectorServiceTypeSet.get(snodeloc)
 						.elementAt((int) Math.random() * (this.sn.vectorServiceTypeSet.get(snodeloc).size() - 1));
@@ -167,9 +175,9 @@ public class Algorithm {
 		// edge
 		for (int i = 0; i < vn.nodeSize; i++) {
 			for (int j = 0; j < i; j++) {
-				if ((vn.isTestSample && vn.topology[i][j])
-						|| ((!vn.isTestSample) && (Math.random() < vnp.node2nodeProbability))) {
-					int distributeBandwith = 0;
+				if ((vn.isSampleInit && vn.topology[i][j])
+						|| ((!vn.isSampleInit) && (Math.random() < vnp.node2nodeProbability))) {
+					int distributeIthEdgeBandwith = 0;
 					if (vn.vNode2sNode[i] != vn.vNode2sNode[j]) {
 
 						// exist edge's path,bandwith
@@ -189,18 +197,24 @@ public class Algorithm {
 						ShortestPath shortestPath = new ShortestPath(this.sn.nodeSize);
 						List<Integer> pathList = new LinkedList<Integer>();
 						pathList = shortestPath.Dijkstra(vn.vNode2sNode[i], vn.vNode2sNode[j], topo);
+
+						if (pathList == null) {
+							loggerAlgorithm.warn("Fail to embed virtual network (" + i + " to " + j
+									+ ")-edge into substrate network : feasible path is null");
+							return false;
+						}
 						if (pathList.isEmpty()) {
 							loggerAlgorithm.warn("Fail to embed virtual network (" + i + " to " + j
-									+ ")-edge into substrate network :  substrate network lack feasible path");
+									+ ")-edge into substrate network : feasible path is is empty");
 							return false;
 						}
 
 						// set virtual network's edge bandwith
-						int maxPathBandwith = 0;
+						int pathMaximumBandwith = 0;
 						vn.vEdge2sPath.get(i).get(j).addElement(pathList.get(0));
 						for (int s = pathList.get(0), k = 1; k < pathList.size(); k++) {
 							int e = pathList.get(k);
-							maxPathBandwith = Math.max(maxPathBandwith, bandwith[s][e]);
+							pathMaximumBandwith = Math.max(pathMaximumBandwith, bandwith[s][e]);
 							vn.vEdge2sPath.get(i).get(j).addElement(e);
 							s = e;
 						}
@@ -208,23 +222,22 @@ public class Algorithm {
 							vn.vEdge2sPath.get(j).get(i).addElement(pathList.get(k));
 						}
 
-						if (vn.isTestSample) {
-							distributeBandwith = vn.edgeBandwithDemand[i][j];
+						if (vn.isSampleInit) {
+							distributeIthEdgeBandwith = vn.edgeBandwithDemand[i][j];
 						} else {
-							distributeBandwith = (int) (vnp.edgeBandwithMinimum
+							distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum
 									+ Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
 						}
 
-						if (distributeBandwith > maxPathBandwith) {
+						if (distributeIthEdgeBandwith > pathMaximumBandwith) {
 							loggerAlgorithm.warn("Fail to embed virtual network (" + i + " to " + j
 									+ ") edge into substrate network :  substrate network edge resource not more than PathBandwith Demand");
-
 							return false;
 						}
 
 						for (int s = pathList.get(0), k = 1; k < pathList.size(); k++) {
 							int e = pathList.get(k);
-							this.sn.edgeBandwith4Temp[s][e] += distributeBandwith;
+							this.sn.edgeBandwith4Temp[s][e] += distributeIthEdgeBandwith;
 							this.sn.edgeBandwith4Temp[e][s] = this.sn.edgeBandwith4Temp[s][e];
 							s = e;
 						}
@@ -241,7 +254,7 @@ public class Algorithm {
 					// }
 					// }
 					vn.topology[i][j] = vn.topology[j][i] = true;
-					vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeBandwith;
+					vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeIthEdgeBandwith;
 				}
 			}
 		}
@@ -266,7 +279,6 @@ public class Algorithm {
 				}
 			}
 		}
-
 		return true;
 	}
 
@@ -280,7 +292,7 @@ public class Algorithm {
 		if (constructVirtualNetwork(vn)) {
 			vn.setIndex(this.sn.VNCollection.size());
 			vn.setIsRunning(true);
-			this.sn.vnSuceedMap++;
+			this.sn.vnSuceedEmbed++;
 			this.sn.VNCollection.addElement(vn);
 			loggerAlgorithm.info("Succeed to generate (" + (this.sn.VNCollection.size() - 1) + ")-th  virtual network");
 		} else {
@@ -296,8 +308,11 @@ public class Algorithm {
 		vn.EVN = evn;
 
 		if (constructEnhanceVirtualNetwork(evn)) {
-			this.sn.evnSuceedMap++;
-			loggerAlgorithm.info("Succeed to construct enhance network and Algorithm Succeed");
+//			if (this.sn.VNCollection.get(this.sn.VNCollection.size() - 1).getLeaveTime() > 1)
+//				this.sn.VNCollection.get(this.sn.VNCollection.size() - 1)
+//						.setLeaveTime(this.sn.VNCollection.get(this.sn.VNCollection.size() - 1).getLeaveTime() / 2);
+			this.sn.evnSuceedEmbed++;
+			loggerAlgorithm.info("Succeed to construct enhance network and embed enhance network");
 		} else {
 			this.sn.clearTemp();
 			loggerAlgorithm.warn("Fail to construct enhanced network");
@@ -317,10 +332,13 @@ public class Algorithm {
 				evn.isSucceed = true;
 				return true;
 			} else {
-				loggerAlgorithm.info("Can not distribute enough source for EVN");
+				if (EVSNR.IsReleaseVNafterEVNFailure) {
+					this.sn.VNCollection.get(this.sn.VNCollection.size() - 1).setLeaveTime(1);
+				}
+				loggerAlgorithm.info("Fail distribute enough resource for EVN");
 			}
 		} else {
-			loggerAlgorithm.info("Algorithm fail to get the solution");
+			loggerAlgorithm.info("Algorithm Fail to obtain the solution");
 		}
 		return false;
 	}
@@ -389,6 +407,11 @@ public class Algorithm {
 
 					// do not split shortest path
 					pathList = shortestPath.Dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempTopology);
+					if (pathList == null) {
+						loggerAlgorithm.warn("Fail to embedd enhanced network (" + i + "--" + j
+								+ ") edge into substrate network: null value");
+						return false;
+					}
 					if (pathList.isEmpty()) {
 						loggerAlgorithm.warn("Fail to embedd enhanced network (" + i + "--" + j
 								+ ") edge into substrate network: lack path");
