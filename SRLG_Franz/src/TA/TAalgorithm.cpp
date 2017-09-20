@@ -268,7 +268,7 @@ bool TAAlgorithm(GraphTopo *p_graph) {
 			return true;
 		} else {
 			int R = MostRiskyActiveLink(p_graph, p_request, T);
-			cout<<"R:   "<<R<<"  ("<<p_graph->getithEdge(R).from<<")->("<<p_graph->getithEdge(R).to<<")"<<endl;
+//			cout<<"R:   "<<R<<"  ("<<p_graph->getithEdge(R).from<<")->("<<p_graph->getithEdge(R).to<<")"<<endl;
 			A.at(R) = false;
 		}
 		T.clear();

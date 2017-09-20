@@ -25,9 +25,9 @@ int main(int argc, char *argv[]) {
 
 	//
 	if (argc == 1) {
-		string si = "0";
+		string si = "1";
 		string suffix =
-				"/home/franz/franzDocuments/eclipse4cworkspace/gurobi/Sample/test";
+				"/home/franz/franzDocuments/eclipse4cworkspace/SRLG_Franz/test/test";
 		string strtopo = "/topo.csv";
 		string strdemand = "/demand.csv";
 		string strsrlg = "/srlg.csv";
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 //		srlg_file=argv3;
 //		result_file=argv4;
 
-		alg =0;
+		alg = 0;//algorithm_getSRLGcsv;
 		string s1 = (suffix + si + strtopo);
 		string s2 = (suffix + si + strdemand);
 		string s3 = (suffix + si + strsrlg);
@@ -80,7 +80,6 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	//begin to find disjoint paths.
-	cout<<"srlg_num:  "<<srlg_num<<endl;
 	search_route(topo, edge_num, demand, demand_num, srlg, srlg_num, alg,
 			topo_file);
 
