@@ -27,7 +27,7 @@
 #include<errno.h>
 
 using namespace std;
-
+//#define __FranzDebug true
 #ifndef __FranzDebug
 #define debug_showinitmatrix (false)
 #define debug_showsrlginfo (true)
@@ -36,9 +36,9 @@ using namespace std;
 #define debug_showdijkstrainfo (false)
 #endif // __FranzDebug
 
-const int MAX_NodeSize = (2015); //may be overflow
+const int MAX_NodeSize = (2515); //may be overflow
 
-#define algorithm_all 0
+#define Algorithm_All 0
 #define algorithm_franz 1
 #define algorithm_COSE 2
 #define algorithm_IHKSP 3
@@ -46,23 +46,27 @@ const int MAX_NodeSize = (2015); //may be overflow
 #define algorithm_IQP 5
 #define algorithm_ILP_sum 6
 #define algorithm_IQP_sum 7
+#define algorithm_TA 8
 
 #define algorithm_getSRLGcsv -2
 #define algorithm_statisticParallelFranzAlgorithm -3
 
+#define MustNodePathAlgorithmPermuteDijkstra 1
+#define MustNodePathAlgorithmGUROBI 2
 #define ConsolePrint false
 
 #define exit_ILP_glp_set_obj_coef 50
 #define exit_pthread_create 51//ERROR; return code from pthread_create()
 
-#define LimitedTime 10 //algorithm's rumtime's limitaion.
+#define LimitedTime 30 //algorithm's rumtime's limitaion.
 #define ThreadNum 1
-#define MAX_ITERATIONS 1000000 //KSP's the most larger iteration's number
+#define MAX_ITERATIONS 100000 //KSP's the most larger iteration's number
 
 #define FranzMustNodeAlgorithmType 1 //1:internal dijistra 2:ILP
+#define CoSEMustNodeAlgorithmType 1 //1:internal dijistra 2:ILP
 
 const int WeightSort = (0); //0:weight value,1:hop
-const bool isUndirectedGraph = false; //the graph is or not directed
+const bool isUndirectedGraph = true; //the graph is or not directed
 
 //every srlg and what srlg is belonged from a edge.
 class SrlgMember {
@@ -73,7 +77,7 @@ public:
 	unsigned int srlgMembersNum;
 };
 
-class Edge {
+class EdgeClass {
 public:
 	int from; //start node
 	int to; //end node
@@ -85,7 +89,8 @@ public:
 //	int ithsrlg4virtualedge; //SRLG's id of the edge which form the dummy vertex//could be removed
 	int revedgeid; //reverse edge's id -1:represent the graph is directed//could be removed
 	bool fsrlg, rsrlg;
-	Edge(int f, int t, int c, int index, int id, int cap, int iths, int r) {
+	EdgeClass(int f, int t, int c, int index, int id, int cap, int iths,
+			int r) {
 		this->from = f;
 		this->to = t;
 		this->cost = c;
@@ -103,12 +108,11 @@ class EdgeList {
 public:
 	vector<int> edgeList; //the list of every edge's id.
 };
-class Graph {
-private:
-	//all edges of graph.
-	vector<Edge> edges;
+class GraphTopo {
 public:
-	Edge& getithEdge(unsigned int i) {
+	//all edges of graph.
+	vector<EdgeClass> edges;
+	EdgeClass& getithEdge(unsigned int i) {
 		return this->edges.at(i);
 	}
 	unsigned int getEdgeSize() {
@@ -143,7 +147,7 @@ public:
 
 	vector<int> virtualNode;
 
-	Graph(int edgenum) {
+	GraphTopo(int edgenum) {
 		source = destination = -1;
 		edgeNum = nodeNum = initNodeNumber_beforeTransToNostar = srlgGroupsNum =
 				0;
@@ -187,7 +191,7 @@ public:
 					}
 				}
 				if (-1 != virtualnode) {
-					Edge e((this->edges[pre].from), virtualnode, 0,
+					EdgeClass e((this->edges[pre].from), virtualnode, 0,
 							(this->edges.size()), this->edgeNum, 1, i, -1);
 					this->edges[pre].from = virtualnode;
 					this->edges[pre].fsrlg = true;
@@ -229,7 +233,7 @@ public:
 				}
 				if (-1 != virtualnode) {
 					//(inEdgeFlag,outEdgeflag,EdgeWeight,EdgeFlag,1,-1,-1,-1);
-					Edge e(virtualnode, (this->edges[pre].to), 0,
+					EdgeClass e(virtualnode, (this->edges[pre].to), 0,
 							this->edges.size(), this->edgeNum, 1, i, -1);
 					this->edges[pre].to = virtualnode;
 					this->edges[pre].rsrlg = true;
@@ -243,21 +247,16 @@ public:
 	//add edge into the topo structure.
 	void AddEdges(int EdgeFlag, int inEdgeFlag, int outEdgeflag,
 			int EdgeWeight) {
-		Edge fe(inEdgeFlag, outEdgeflag, EdgeWeight, EdgeFlag, this->edgeNum, 1,
-				-1, -1);
+		EdgeClass fe(inEdgeFlag, outEdgeflag, EdgeWeight, EdgeFlag,
+				this->edgeNum, 1, -1, -1);
 
 		this->edgeNum++;
-		if (isUndirectedGraph) {
-			fe.revedgeid = this->edgeNum;
-		}
+
 		this->edges.push_back(fe);
-		if (isUndirectedGraph) {
-			Edge re(outEdgeflag, inEdgeFlag, EdgeWeight, EdgeFlag,
-					this->edgeNum, 1, -1, -1);
-			re.revedgeid = this->edgeNum - 1;
-			this->edgeNum++;
-			this->edges.push_back(re);
-		}
+
+	}
+	void AddEdges(EdgeClass e) {
+		this->edges.push_back(e);
 	}
 
 	//construte the topo's form(ith node's edgelist)
@@ -372,6 +371,8 @@ public:
 		APHopSum = APCostSum = BPCostSum = 0;
 		this->AP_PathNode.clear();
 		this->AP_PathEdge.clear();
+		this->BP_PathNode.clear();
+		this->BP_PathEdge.clear();
 		this->RLAP_PathEdge.clear();
 		for (int i = 0; i < edgenum; i++) {
 			this->APMustNotPassEdges[i] = true;
@@ -419,7 +420,7 @@ public:
 	bool SolutionisOptimalFeasible;
 
 	//true: the franz algorithm parralle
-	bool Isornot_Paralle;
+	bool IsParalle;
 	//init class disjointpaths.
 	DisjointPathPair() {
 		this->APcostsum = INT_MAX;
@@ -427,7 +428,7 @@ public:
 		this->APhop = 0;
 		this->BPhop = 0;
 		this->SolutionNotFeasible = true;
-		this->Isornot_Paralle = false;
+		this->IsParalle = false;
 		this->SolutionisOptimalFeasible = false;
 	}
 	//init class disjointpathpair,and define the length of APedge and BPedge.
@@ -437,7 +438,7 @@ public:
 		this->APhop = 0;
 		this->BPhop = 0;
 		this->SolutionNotFeasible = true;
-		this->Isornot_Paralle = false;
+		this->IsParalle = false;
 		this->SolutionisOptimalFeasible = false;
 		this->APedge = vector<int>(aplen);
 		this->BPedge = vector<int>(bplen);
@@ -465,7 +466,7 @@ public:
 		this->APcostsum = this->BPcostsum = INT_MAX;
 		this->APhop = this->BPhop = 0;
 		this->SolutionNotFeasible = true;
-		this->Isornot_Paralle = false;
+		this->IsParalle = false;
 		this->SolutionisOptimalFeasible = false;
 		this->APedge.clear();
 		this->BPedge.clear();

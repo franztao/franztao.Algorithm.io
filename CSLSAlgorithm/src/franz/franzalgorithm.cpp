@@ -12,7 +12,7 @@
 //#include "lib/lib_io.h"
 //#include <glpk.h>
 
-extern Graph *p_graph;
+extern GraphTopo *p_graph;
 extern pthread_mutex_t mutex_result;
 extern DisjointPathPair *AlgorithmResult;
 extern pthread_mutex_t mutex_thread;
@@ -125,7 +125,7 @@ void DivideAndConquer(Request *p_request) {
 }
 
 //construct G* graph.set the capacity of every edges.
-void BuildNetworkFlowGraph(Graph *p_graph, Request *p_request) {
+void BuildNetworkFlowGraph(GraphTopo *p_graph, Request *p_request) {
 	int AP = p_request->AP_PathEdge.size();
 	int RLAP = p_request->RLAP_PathEdge.size();
 	for (unsigned int i = 0; i < p_graph->getEdgeSize(); i++) {
@@ -141,46 +141,58 @@ void BuildNetworkFlowGraph(Graph *p_graph, Request *p_request) {
 }
 
 //get the cut set.
-void GetCutEdge(Graph& graph, Request &request) {
+void GetCutEdge(GraphTopo& graph, Request &request) {
+	set<int>SRLGset;
 	for (unsigned int i = 0; i < graph.edgeNum; i++) {
-		Edge &e = graph.getithEdge(i);
+		EdgeClass &e = graph.getithEdge(i);
 		if ((1 == request.edgeCapacity[e.id])
-				&& (false == request.STNodeCut[e.from])
-				&& (true == request.STNodeCut[e.to])) {
+				&&(true == request.STNodeCut[e.from])&& (false == request.STNodeCut[e.to])) {//
 			if ((true == request.APMustPassEdges[e.id])
 					&& (true == request.APMustNotPassEdges[e.id])) {
-				request.APInclusionEdges.push_back(e.id);
+				if(-1==e.ithsrlg){
+					request.APInclusionEdges.push_back(e.id);
+				}else{
+					if(SRLGset.find(e.ithsrlg)==SRLGset.end()){
+						request.APInclusionEdges.push_back(e.id);
+						SRLGset.insert(e.ithsrlg);
+					}
+				}
 //				request.APMustPassEdges[e.id] = false;
-
 			}
 		}
 		if (((request.APHopSum + 1) == request.edgeCapacity[e.id])
 				&& (true == request.STNodeCut[e.from])
 				&& (false == request.STNodeCut[e.to])) {
-			if ((true == request.APMustPassEdges[e.id])
-					&& (true == request.APMustNotPassEdges[e.id])) {
-				request.APExlusionEdges.push_back(e.id);
+//			if ((true == request.APMustPassEdges[e.id])
+//					&& (true == request.APMustNotPassEdges[e.id])) {
+//				request.APExlusionEdges.push_back(e.id);
 //				request.APMustNotPassEdges[e.id] = false;
-			}
+//			}
 			int ithsrlg = e.ithsrlg;
+			if(SRLGset.find(ithsrlg)!=SRLGset.end()){
+				continue;
+			}
 			for (unsigned int j = 0; j < request.AP_PathEdge.size(); j++) {
 				int id = request.AP_PathEdge[j];
 				if (ithsrlg == graph.getithEdge(id).ithsrlg) {
 					if ((true == request.APMustPassEdges[e.id])
 							&& (true == request.APMustNotPassEdges[e.id])) {
 						request.APInclusionEdges.push_back(id);
+						SRLGset.insert(ithsrlg);
 //						request.APMustPassEdges[id] = false;
 					}
 
 				}
 			}
+			//positive cut.
+//			request.APExlusionEdges.clear();
 
-			sort(request.APInclusionEdges.begin(),
-					request.APInclusionEdges.end());
-			vector<int>::iterator pos;
-			pos = unique(request.APInclusionEdges.begin(),
-					request.APInclusionEdges.end());
-			request.APInclusionEdges.erase(pos, request.APInclusionEdges.end());
+//			sort(request.APInclusionEdges.begin(),
+//					request.APInclusionEdges.end());
+//			vector<int>::iterator pos;
+//			pos = unique(request.APInclusionEdges.begin(),
+//					request.APInclusionEdges.end());
+//			request.APInclusionEdges.erase(pos, request.APInclusionEdges.end());
 		}
 	}
 #ifndef ConsolePrint
@@ -200,7 +212,7 @@ void GetCutEdge(Graph& graph, Request &request) {
 }
 
 //get confiliting srlg link edge set.
-void GetConflictingSRLGLinkSet(Graph *p_graph, Request *p_request) {
+void GetConflictingSRLGLinkSet(GraphTopo *p_graph, Request *p_request) {
 
 	BuildNetworkFlowGraph(p_graph, p_request);
 	MaxFlowAlgorithm_fordfulkerson((*p_graph), (*p_request));
@@ -239,13 +251,12 @@ void *franzParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 		}
 	}
 	if (bool_existmustedge) {
-		AlgorithmResult->Isornot_Paralle = true;
+		AlgorithmResult->IsParalle = true;
 		if (algorithm_statisticParallelFranzAlgorithm == Algorithm) {
 			return NULL;
 		}
 		bool succeed_findAP = false;
-
-		if (1 == FranzMustNodeAlgorithmType) {
+		if (MustNodePathAlgorithmPermuteDijkstra == FranzMustNodeAlgorithmType) {
 			vector<int> permute;
 			for (unsigned int i = 0; i < p_graph->edgeNum; i++) {
 				if (!p_request->APMustPassEdges.at(i)) {
@@ -254,11 +265,13 @@ void *franzParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 			}
 			if (reverseDFS_mustedgeoutnode(p_graph, p_request, permute)) {
 				if (findAP_interval_dijastra(p_graph, p_request, permute)) {
+//					cout<<"findAP_interval_dijastra　Suceed"<<endl;
 					succeed_findAP = true;
-				} else {
-					//cout<<"findAP_ILP_gurobi"<<endl;
-					succeed_findAP = findAP_ILP_gurobi(p_graph, p_request);
 				}
+//				else {
+//					cout<<"findAP_interval_dijastra　failure then use ILP"<<endl;
+//					//succeed_findAP = findAP_ILP_gurobi(p_graph, p_request);
+//				}
 				if (succeed_findAP) {
 					if (!findBP(p_graph, p_request)) {
 						GetConflictingSRLGLinkSet(p_graph, p_request);
@@ -267,7 +280,7 @@ void *franzParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 				}
 			}
 		}
-		if (2 == FranzMustNodeAlgorithmType) {
+		if (MustNodePathAlgorithmGUROBI == FranzMustNodeAlgorithmType) {
 			if (findAP_ILP_gurobi(p_graph, p_request)) {
 				if (!findBP(p_graph, p_request)) {
 					GetConflictingSRLGLinkSet(p_graph, p_request);
@@ -298,7 +311,7 @@ void *franzParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 }
 
 //the main structure of our algorithm
-bool FranzAlgorithmBasicFlows(Graph *p_graph) {
+bool FranzAlgorithmBasicFlows(GraphTopo  *p_graph) {
 
 //	sem_init(&mutex_result, 0, 1);
 	pthread_mutex_init(&mutex_result, NULL);

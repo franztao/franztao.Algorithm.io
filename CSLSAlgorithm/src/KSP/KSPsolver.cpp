@@ -9,7 +9,7 @@
 #include"../route.h"
 
 bool KSPanswer;
-extern Graph *p_graph;
+extern GraphTopo *p_graph;
 
 pthread_cond_t KSP_cond;
 pthread_mutex_t KSP_mutex;
@@ -38,7 +38,7 @@ void *KSPParallelThread(void *vargp) { //Graph *p_graph,Request *p_request
 	return NULL;
 }
 
-bool KSPAlgorithmBasicFlows(Graph *p_graph) {
+bool KSPAlgorithmBasicFlows(GraphTopo *p_graph) {
 //	pthread_t tid;
 
 	int rc;

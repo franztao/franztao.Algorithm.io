@@ -1,14 +1,14 @@
 #include "../head.h"
 #include"glpk.h"
 #include<vector>
-#include "localsolver.h"
+//#include "localsolver.h"
 #include"gurobi_c++.h"
-using namespace localsolver;
+//using namespace localsolver;
 using namespace std;
 
 extern DisjointPathPair *AlgorithmResult;
 
-void RecordResult(Graph *p_graph, vector<bool>&APpath, vector<bool>&BPpath) {
+void RecordResult(GraphTopo *p_graph, vector<bool>&APpath, vector<bool>&BPpath) {
 	AlgorithmResult->APcostsum = 0;
 	AlgorithmResult->BPcostsum = 0;
 	int state = p_graph->source;
@@ -47,259 +47,259 @@ void RecordResult(Graph *p_graph, vector<bool>&APpath, vector<bool>&BPpath) {
 	AlgorithmResult->SolutionNotFeasible=false;
 }
 
-bool ILPAlgorithm_glpk(Graph *p_graph) {
-	char s[1000];
-	string strc;
+//bool ILPAlgorithm_glpk(Graph *p_graph) {
+//	char s[1000];
+//	string strc;
+//
+//	glp_prob *lp;
+//	lp = glp_create_prob();
+//	glp_set_prob_name(lp, "sample");
+//	glp_set_obj_dir(lp, GLP_MIN);
+//	unsigned int srlgmulti = 0;
+//	for (unsigned i = 0; i < p_graph->srlgGroups.size(); i++) {
+//		srlgmulti += (p_graph->srlgGroups.at(i).srlgMember.size()
+//				* p_graph->srlgGroups.at(i).srlgMember.size());
+//	}
+//	int rownum = (2 * p_graph->nodeNum) + p_graph->edgeNum + srlgmulti;
+//	int colnum = (2 * p_graph->edgeNum);
+//
+//	int index = 0;
+//	//AX1=u
+//
+//	glp_add_cols(lp, colnum);
+//	//APedge
+//	strc = "APedge";
+//	for (unsigned int i = 1; i <= p_graph->edgeNum; i++) {
+//		sprintf(s, "%d", i);
+//		glp_set_col_name(lp, i + index, (strc + s).c_str());
+////		glp_set_col_kind(lp, i + index, GLP_BV);
+////		glp_set_col_kind(lp, i + index, GLP_IV);
+//		glp_set_col_bnds(lp, i + index, GLP_DB, 0.0, 1.0);
+////		glp_set_col_stat(lp, i+ index,GLP_NF);
+//		glp_set_obj_coef(lp, i, p_graph->getithEdge(i - 1).cost);
+//
+//	}
+//	//BPedge
+//	index += p_graph->edgeNum;
+//	strc = "BPedge";
+//	for (unsigned int i = 1; i <= p_graph->edgeNum; i++) {
+//		sprintf(s, "%d", i);
+//		glp_set_col_name(lp, i + index, (strc + s).c_str());
+////		glp_set_col_kind(lp, i + index, GLP_BV);
+////		glp_set_col_kind(lp, i + index, GLP_IV);
+//		glp_set_col_bnds(lp, i + index, GLP_DB, 0.0, 1.0);
+//		glp_set_obj_coef(lp, i + index, 0.0);
+////		glp_set_col_stat(lp, i+ index,GLP_NF);
+//
+//	}
+//
+//	index = 0;
+//	glp_add_rows(lp, rownum);
+//	strc = "APinoutdegrezero";
+//	for (int i = 1; i <= p_graph->nodeNum; i++) {
+//		sprintf(s, "%d", i);
+//		glp_set_row_name(lp, i, (strc + s).c_str());
+//		if ((i - 1) == p_graph->source)
+//			glp_set_row_bnds(lp, i, GLP_FX, 1.0, 1.0);
+//		if ((i - 1) == p_graph->destination)
+//			glp_set_row_bnds(lp, i, GLP_FX, -1.0, -1.0);
+//		if (((i - 1) != p_graph->source) && ((i - 1) != p_graph->destination))
+//			glp_set_row_bnds(lp, i, GLP_FX, 0.0, 0.0);
+//	}
+//
+//	//AX2=u
+//	index += p_graph->nodeNum;
+//	strc = "BPinoutdegrezero";
+//	for (unsigned int i = 1; i <= p_graph->nodeNum; i++) {
+//		sprintf(s, "%d", i);
+//		glp_set_row_name(lp, i + index, (strc + s).c_str());
+//		if ((i - 1) == p_graph->source)
+//			glp_set_row_bnds(lp, i + index, GLP_FX, 1.0, 1.0);
+//		if ((i - 1) == p_graph->destination)
+//			glp_set_row_bnds(lp, i + index, GLP_FX, -1.0, -1.0);
+//		if (((i - 1) != p_graph->source) && ((i - 1) != p_graph->destination))
+//			glp_set_row_bnds(lp, i + index, GLP_FX, 0.0, 0.0);
+//	}
+//
+//	//0<=X1+X2<=1
+//	index += p_graph->nodeNum;
+//	strc = "APnotcrossBP";
+//	for (unsigned int i = 1; i <= p_graph->edgeNum; i++) {
+//		sprintf(s, "%d", i);
+//		glp_set_row_name(lp, i + index, (strc + s).c_str());
+//		glp_set_row_bnds(lp, i + index, GLP_DB, 0.0, 1.0);
+//	}
+//
+//	index += p_graph->edgeNum;
+//
+//	strc = "APsrlgnotcrossBPsrlg";
+//	for (unsigned int i = 1; i <= srlgmulti; i++) {
+//		sprintf(s, "%d", i);
+//		glp_set_row_name(lp, i + index, (strc + s).c_str());
+//		glp_set_row_bnds(lp, (i + index), GLP_DB, 0.0, 1.0);
+//	}
+//
+//	int *ia, *ja;
+//	double *ar;
+//
+//	ia = (int*) malloc(((rownum * colnum) + 2) * sizeof(int));
+//	ja = (int*) malloc(((rownum * colnum) + 2) * sizeof(int));
+//	ar = (double*) malloc(((rownum * colnum) + 2) * sizeof(double));
+//	if (NULL == ia) {
+//		printf("ERROR:there is enough storage for ia array\n");
+//		exit(-1);
+//	}
+//	if (NULL == ja) {
+//		printf("ERROR:there is enough storage for ja array\n");
+//		exit(-1);
+//	}
+//	if (NULL == ar) {
+//		printf("ERROR:there is enough storage for ar array\n");
+//		exit(-1);
+//	}
+//
+//	int jlimit1 = p_graph->edgeNum;
+//	int jlimit2 = 2 * p_graph->edgeNum;
+//
+//	index = 1;
+//	int indexrow = 0;
+//
+//	//AX1=u
+//	for (int i = 0; i < p_graph->nodeNum; i++) {
+//		for (int j = 0; j < colnum; j++) {
+//			ia[index] = i + 1;
+//			ja[index] = j + 1;
+//			ar[index] = 0;
+//			if (j < jlimit1) {
+//				if (i == p_graph->getithEdge(j).from) {
+//					ar[index] = 1;
+//				}
+//				if (i == p_graph->getithEdge(j).to) {
+//					ar[index] = -1;
+//				}
+//			}
+//			index++;
+//		}
+//	}
+//	//AX2=u
+//	indexrow += p_graph->nodeNum;
+//	for (int i = 0; i < p_graph->nodeNum; i++) {
+//		for (int j = 0; j < colnum; j++) {
+//			ia[index] = i + 1 + indexrow;
+//			ja[index] = j + 1;
+//			ar[index] = 0;
+//			if ((j < jlimit2) && (j >= jlimit1)) {
+//				if (i == p_graph->getithEdge(j - jlimit1).from) {
+//					ar[index] = 1;
+//				}
+//				if (i == p_graph->getithEdge(j - jlimit1).to) {
+//					ar[index] = -1;
+//				}
+//			}
+//			index++;
+//		}
+//	}
+//	//0<=X1+X2<=1
+//	indexrow += p_graph->nodeNum;
+//	for (int i = 0; i < p_graph->edgeNum; i++) {
+//		for (int j = 0; j < colnum; j++) {
+//			ia[index] = i + 1 + indexrow;
+//			ja[index] = j + 1;
+//			ar[index] = 0;
+//			if (j < jlimit1) {
+//				if (i == j) {
+//					ar[index] = 1;
+//				}
+//			}
+//			if ((j < jlimit2) && (j >= jlimit1)) {
+//				if (i == (j - jlimit1)) {
+//					ar[index] = 1;
+//				}
+//			}
+//			index++;
+//		}
+//	}
+//
+//	indexrow += p_graph->edgeNum;
+//
+//	//0<=APsrlge1+BPsrlge2<=1
+//
+//	for (unsigned int i = 0; i < p_graph->srlgGroupsNum; i++) {
+//		unsigned srlglen = p_graph->srlgGroups.at(i).srlgMember.size();
+//		for (unsigned j = 0; j < srlglen; j++) {
+//			for (unsigned k = 0; k < srlglen; k++) {
+//				indexrow++;
+//				for (int l = 0; l < colnum; l++) {
+//					ia[index] = indexrow;
+//					ja[index] = l + 1;
+//					ar[index] = 0;
+//
+//					if ((l < p_graph->edgeNum)
+//							&& (l == p_graph->srlgGroups.at(i).srlgMember.at(j)))
+//						ar[index] = 1;
+//					if ((l >= p_graph->edgeNum)
+//							&& ((l - p_graph->edgeNum)
+//									== p_graph->srlgGroups.at(i).srlgMember.at(
+//											k)))
+//						ar[index] = 1;
+//					index++;
+//				}
+//			}
+//		}
+//	}
+//
+//	glp_load_matrix(lp, (rownum * colnum), ia, ja, ar);
+//	glp_simplex(lp, NULL);
+////	glp_interior(lp,NULL);
+//
+//	if (!(GLP_OPT == glp_get_status(lp))) {
+//		return false;
+//	}
+//
+////	cout << "ILP value:" << glp_get_obj_val(lp) << endl;
+////	cout << "glp get num rows" << glp_get_num_rows(lp) << endl;
+////	cout << "glp_get_num_cols" << glp_get_num_cols(lp) << endl;
+////	cout << " glp_get_num_nz" << glp_get_num_nz(lp) << endl;
+//
+//	bool SolutionIsInteger = true;
+//
+//	for (int i = 1; i <= colnum; i++) {
+//		if (glp_get_col_prim(lp, i)) {
+//			if (glp_get_col_prim(lp, i) != 1.0) {
+//				SolutionIsInteger = false;
+//			}
+//		}
+//	}
+//	if (SolutionIsInteger == false)
+//		return false;
+//
+//	vector<bool> apvis = vector<bool>(p_graph->edgeNum, false);
+//	for (int i = 1; i <= jlimit1; i++) {
+//		if (glp_get_col_prim(lp, i)) {
+//			int id = i - 1;
+//			apvis[id] = true;
+//		}
+//	}
+//	vector<bool> bpvis = vector<bool>(p_graph->edgeNum, false);
+//	for (int i = jlimit1 + 1; i <= jlimit2; i++) {
+//		if (glp_get_col_prim(lp, i)) {
+//			int id = i - 1 - jlimit1;
+//			bpvis[id] = true;
+//		}
+//	}
+//	RecordResult(p_graph, apvis, bpvis);
+//
+//	glp_delete_prob(lp);
+//	free(ia);
+//	free(ja);
+//	free(ar);
+//	if (INT_MAX == AlgorithmResult->APcostsum)
+//		return false;
+//	else
+//		return true;
+//}
 
-	glp_prob *lp;
-	lp = glp_create_prob();
-	glp_set_prob_name(lp, "sample");
-	glp_set_obj_dir(lp, GLP_MIN);
-	unsigned int srlgmulti = 0;
-	for (unsigned i = 0; i < p_graph->srlgGroups.size(); i++) {
-		srlgmulti += (p_graph->srlgGroups.at(i).srlgMember.size()
-				* p_graph->srlgGroups.at(i).srlgMember.size());
-	}
-	int rownum = (2 * p_graph->nodeNum) + p_graph->edgeNum + srlgmulti;
-	int colnum = (2 * p_graph->edgeNum);
-
-	int index = 0;
-	//AX1=u
-
-	glp_add_cols(lp, colnum);
-	//APedge
-	strc = "APedge";
-	for (unsigned int i = 1; i <= p_graph->edgeNum; i++) {
-		sprintf(s, "%d", i);
-		glp_set_col_name(lp, i + index, (strc + s).c_str());
-//		glp_set_col_kind(lp, i + index, GLP_BV);
-//		glp_set_col_kind(lp, i + index, GLP_IV);
-		glp_set_col_bnds(lp, i + index, GLP_DB, 0.0, 1.0);
-//		glp_set_col_stat(lp, i+ index,GLP_NF);
-		glp_set_obj_coef(lp, i, p_graph->getithEdge(i - 1).cost);
-
-	}
-	//BPedge
-	index += p_graph->edgeNum;
-	strc = "BPedge";
-	for (unsigned int i = 1; i <= p_graph->edgeNum; i++) {
-		sprintf(s, "%d", i);
-		glp_set_col_name(lp, i + index, (strc + s).c_str());
-//		glp_set_col_kind(lp, i + index, GLP_BV);
-//		glp_set_col_kind(lp, i + index, GLP_IV);
-		glp_set_col_bnds(lp, i + index, GLP_DB, 0.0, 1.0);
-		glp_set_obj_coef(lp, i + index, 0.0);
-//		glp_set_col_stat(lp, i+ index,GLP_NF);
-
-	}
-
-	index = 0;
-	glp_add_rows(lp, rownum);
-	strc = "APinoutdegrezero";
-	for (int i = 1; i <= p_graph->nodeNum; i++) {
-		sprintf(s, "%d", i);
-		glp_set_row_name(lp, i, (strc + s).c_str());
-		if ((i - 1) == p_graph->source)
-			glp_set_row_bnds(lp, i, GLP_FX, 1.0, 1.0);
-		if ((i - 1) == p_graph->destination)
-			glp_set_row_bnds(lp, i, GLP_FX, -1.0, -1.0);
-		if (((i - 1) != p_graph->source) && ((i - 1) != p_graph->destination))
-			glp_set_row_bnds(lp, i, GLP_FX, 0.0, 0.0);
-	}
-
-	//AX2=u
-	index += p_graph->nodeNum;
-	strc = "BPinoutdegrezero";
-	for (unsigned int i = 1; i <= p_graph->nodeNum; i++) {
-		sprintf(s, "%d", i);
-		glp_set_row_name(lp, i + index, (strc + s).c_str());
-		if ((i - 1) == p_graph->source)
-			glp_set_row_bnds(lp, i + index, GLP_FX, 1.0, 1.0);
-		if ((i - 1) == p_graph->destination)
-			glp_set_row_bnds(lp, i + index, GLP_FX, -1.0, -1.0);
-		if (((i - 1) != p_graph->source) && ((i - 1) != p_graph->destination))
-			glp_set_row_bnds(lp, i + index, GLP_FX, 0.0, 0.0);
-	}
-
-	//0<=X1+X2<=1
-	index += p_graph->nodeNum;
-	strc = "APnotcrossBP";
-	for (unsigned int i = 1; i <= p_graph->edgeNum; i++) {
-		sprintf(s, "%d", i);
-		glp_set_row_name(lp, i + index, (strc + s).c_str());
-		glp_set_row_bnds(lp, i + index, GLP_DB, 0.0, 1.0);
-	}
-
-	index += p_graph->edgeNum;
-
-	strc = "APsrlgnotcrossBPsrlg";
-	for (unsigned int i = 1; i <= srlgmulti; i++) {
-		sprintf(s, "%d", i);
-		glp_set_row_name(lp, i + index, (strc + s).c_str());
-		glp_set_row_bnds(lp, (i + index), GLP_DB, 0.0, 1.0);
-	}
-
-	int *ia, *ja;
-	double *ar;
-
-	ia = (int*) malloc(((rownum * colnum) + 2) * sizeof(int));
-	ja = (int*) malloc(((rownum * colnum) + 2) * sizeof(int));
-	ar = (double*) malloc(((rownum * colnum) + 2) * sizeof(double));
-	if (NULL == ia) {
-		printf("ERROR:there is enough storage for ia array\n");
-		exit(-1);
-	}
-	if (NULL == ja) {
-		printf("ERROR:there is enough storage for ja array\n");
-		exit(-1);
-	}
-	if (NULL == ar) {
-		printf("ERROR:there is enough storage for ar array\n");
-		exit(-1);
-	}
-
-	int jlimit1 = p_graph->edgeNum;
-	int jlimit2 = 2 * p_graph->edgeNum;
-
-	index = 1;
-	int indexrow = 0;
-
-	//AX1=u
-	for (int i = 0; i < p_graph->nodeNum; i++) {
-		for (int j = 0; j < colnum; j++) {
-			ia[index] = i + 1;
-			ja[index] = j + 1;
-			ar[index] = 0;
-			if (j < jlimit1) {
-				if (i == p_graph->getithEdge(j).from) {
-					ar[index] = 1;
-				}
-				if (i == p_graph->getithEdge(j).to) {
-					ar[index] = -1;
-				}
-			}
-			index++;
-		}
-	}
-	//AX2=u
-	indexrow += p_graph->nodeNum;
-	for (int i = 0; i < p_graph->nodeNum; i++) {
-		for (int j = 0; j < colnum; j++) {
-			ia[index] = i + 1 + indexrow;
-			ja[index] = j + 1;
-			ar[index] = 0;
-			if ((j < jlimit2) && (j >= jlimit1)) {
-				if (i == p_graph->getithEdge(j - jlimit1).from) {
-					ar[index] = 1;
-				}
-				if (i == p_graph->getithEdge(j - jlimit1).to) {
-					ar[index] = -1;
-				}
-			}
-			index++;
-		}
-	}
-	//0<=X1+X2<=1
-	indexrow += p_graph->nodeNum;
-	for (int i = 0; i < p_graph->edgeNum; i++) {
-		for (int j = 0; j < colnum; j++) {
-			ia[index] = i + 1 + indexrow;
-			ja[index] = j + 1;
-			ar[index] = 0;
-			if (j < jlimit1) {
-				if (i == j) {
-					ar[index] = 1;
-				}
-			}
-			if ((j < jlimit2) && (j >= jlimit1)) {
-				if (i == (j - jlimit1)) {
-					ar[index] = 1;
-				}
-			}
-			index++;
-		}
-	}
-
-	indexrow += p_graph->edgeNum;
-
-	//0<=APsrlge1+BPsrlge2<=1
-
-	for (unsigned int i = 0; i < p_graph->srlgGroupsNum; i++) {
-		unsigned srlglen = p_graph->srlgGroups.at(i).srlgMember.size();
-		for (unsigned j = 0; j < srlglen; j++) {
-			for (unsigned k = 0; k < srlglen; k++) {
-				indexrow++;
-				for (int l = 0; l < colnum; l++) {
-					ia[index] = indexrow;
-					ja[index] = l + 1;
-					ar[index] = 0;
-
-					if ((l < p_graph->edgeNum)
-							&& (l == p_graph->srlgGroups.at(i).srlgMember.at(j)))
-						ar[index] = 1;
-					if ((l >= p_graph->edgeNum)
-							&& ((l - p_graph->edgeNum)
-									== p_graph->srlgGroups.at(i).srlgMember.at(
-											k)))
-						ar[index] = 1;
-					index++;
-				}
-			}
-		}
-	}
-
-	glp_load_matrix(lp, (rownum * colnum), ia, ja, ar);
-	glp_simplex(lp, NULL);
-//	glp_interior(lp,NULL);
-
-	if (!(GLP_OPT == glp_get_status(lp))) {
-		return false;
-	}
-
-//	cout << "ILP value:" << glp_get_obj_val(lp) << endl;
-//	cout << "glp get num rows" << glp_get_num_rows(lp) << endl;
-//	cout << "glp_get_num_cols" << glp_get_num_cols(lp) << endl;
-//	cout << " glp_get_num_nz" << glp_get_num_nz(lp) << endl;
-
-	bool SolutionIsInteger = true;
-
-	for (int i = 1; i <= colnum; i++) {
-		if (glp_get_col_prim(lp, i)) {
-			if (glp_get_col_prim(lp, i) != 1.0) {
-				SolutionIsInteger = false;
-			}
-		}
-	}
-	if (SolutionIsInteger == false)
-		return false;
-
-	vector<bool> apvis = vector<bool>(p_graph->edgeNum, false);
-	for (int i = 1; i <= jlimit1; i++) {
-		if (glp_get_col_prim(lp, i)) {
-			int id = i - 1;
-			apvis[id] = true;
-		}
-	}
-	vector<bool> bpvis = vector<bool>(p_graph->edgeNum, false);
-	for (int i = jlimit1 + 1; i <= jlimit2; i++) {
-		if (glp_get_col_prim(lp, i)) {
-			int id = i - 1 - jlimit1;
-			bpvis[id] = true;
-		}
-	}
-	RecordResult(p_graph, apvis, bpvis);
-
-	glp_delete_prob(lp);
-	free(ia);
-	free(ja);
-	free(ar);
-	if (INT_MAX == AlgorithmResult->APcostsum)
-		return false;
-	else
-		return true;
-}
-
-bool IQPAlgorithm_gurobi(Graph *p_graph, int type) {
+bool IQPAlgorithm_gurobi(GraphTopo *p_graph, int type) {
 	try {
 		GRBEnv env = GRBEnv();
 		GRBModel model = GRBModel(env);
@@ -464,7 +464,7 @@ bool IQPAlgorithm_gurobi(Graph *p_graph, int type) {
 	return false;
 }
 
-bool ILPAlgorithm_gurobi(Graph *p_graph, int type) {
+bool ILPAlgorithm_gurobi(GraphTopo *p_graph, int type) {
 	try {
 
 		GRBEnv env = GRBEnv();

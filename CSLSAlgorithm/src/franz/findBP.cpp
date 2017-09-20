@@ -3,7 +3,7 @@
 extern pthread_mutex_t mutex_result;
 extern DisjointPathPair *AlgorithmResult;
 //find the second path(BP),if there is not BP,the algorithm begin conquer and divide ,otherwise return true and the algorithm get srlg-min-min disjoint path
-bool findBP(Graph *p_graph, Request *p_request) {
+bool findBP(GraphTopo *p_graph, Request *p_request) {
 #ifndef ConsolePrint
 	cout << endl << "is finding the BP" << endl;
 #endif
@@ -26,7 +26,7 @@ bool findBP(Graph *p_graph, Request *p_request) {
 			continue;
 		len = (*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList.size();
 		for (unsigned int i = 0; i < len; i++) {
-			Edge e = p_graph->getithEdge(
+			EdgeClass e = p_graph->getithEdge(
 					(*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 			//BP must not pass the edges of AP or the related slrgs's edges about AP
 			if (!p_request->BPMustNotPassEdges4AP[e.id]

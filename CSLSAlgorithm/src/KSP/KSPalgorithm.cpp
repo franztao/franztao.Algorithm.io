@@ -7,9 +7,9 @@
 #include"../head.h"
 #include<bitset>
 extern DisjointPathPair *AlgorithmResult;
-extern Graph *p_graph;
+extern GraphTopo *p_graph;
 //reverse edge and get the shortest path's array from destination node to every other node
-void ReverseEdgeGetSSP(Graph *p_graph, vector<int> &dis) {
+void ReverseEdgeGetSSP(GraphTopo const *p_graph, vector<int> &dis) {
 	typedef pair<int, int> P;
 	vector<int> hop((*p_graph).nodeNum, (-1));
 	priority_queue<P, vector<P>, greater<P> > que;
@@ -26,8 +26,7 @@ void ReverseEdgeGetSSP(Graph *p_graph, vector<int> &dis) {
 			continue;
 		len = (*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList.size();
 		for (unsigned int i = 0; i < len; i++) {
-			Edge e = p_graph->getithEdge(
-					(*p_graph).rtopo_r_Node_c_EdgeList[v].edgeList[i]);
+			EdgeClass e = p_graph->edges.at(p_graph->rtopo_r_Node_c_EdgeList[v].edgeList[i]);
 			if (-1 == dis[e.from]) {
 				dis[e.from] = dis[v] + e.cost;
 				hop[e.from] = hop[v] + 1;
@@ -77,11 +76,11 @@ public:
 	}
 };
 //Compute the (i+1)th shortest path pi using dijstra and A* salgorithm.
-bool GetKthShotestPath(Graph &graph, Request &request, int iterative,
+bool GetKthShotestPath(GraphTopo const* graph, Request * request, int iterative,
 		vector<int> &h) {
 
-	vector<int> path_node = vector<int>(graph.nodeNum, (-1));
-	vector<int> path_edge = vector<int>(graph.nodeNum, (-1));
+	vector<int> path_node = vector<int>(graph->nodeNum, (-1));
+	vector<int> path_edge = vector<int>(graph->nodeNum, (-1));
 //	while(!que.empty()){
 //		que.pop();
 //	}
@@ -92,11 +91,11 @@ bool GetKthShotestPath(Graph &graph, Request &request, int iterative,
 	//get the distance of ith shortest path
 
 	ite = iterative;
-	int nodelen = graph.nodeNum;
+	int nodelen = graph->nodeNum;
 	state start;
 	start.cost = 0;
-	start.hc = start.cost + h[graph.source];
-	start.loc = graph.source;
+	start.hc = start.cost + h[graph->source];
+	start.loc = graph->source;
 	start.hop = 0;
 	start.pathnode = vector<int>(nodelen, -1);
 	start.pathedge = vector<int>(nodelen, -1);
@@ -106,24 +105,24 @@ bool GetKthShotestPath(Graph &graph, Request &request, int iterative,
 		que.pop();
 		int v = p.loc;
 		//if node is destination when poping node from the priortiy
-		if (v == graph.destination) {
+		if (v == graph->destination) {
 			ite--;
 			if (ite == 0) {
 				std::copy(p.pathnode.begin(), p.pathnode.end(),
 						path_node.begin());
 				std::copy(p.pathedge.begin(), p.pathedge.end(),
 						path_edge.begin());
-				request.APCostSum = p.cost;
-				request.APHopSum = p.hop;
+				request->APCostSum = p.cost;
+				request->APHopSum = p.hop;
 				break;
 			}
 
 		}
 		for (unsigned int i = 0;
-				i < graph.ftopo_r_Node_c_EdgeList[v].edgeList.size(); i++) {
-			Edge e = graph.getithEdge(
-					graph.ftopo_r_Node_c_EdgeList[v].edgeList[i]);
-			if (e.to == graph.source) {
+				i < graph->ftopo_r_Node_c_EdgeList[v].edgeList.size(); i++) {
+			EdgeClass e = graph->edges.at(
+					graph->ftopo_r_Node_c_EdgeList[v].edgeList[i]);
+			if (e.to == graph->source) {
 				continue;
 			}
 			if (-1 != p.pathedge.at(e.to)) {
@@ -158,7 +157,7 @@ bool GetKthShotestPath(Graph &graph, Request &request, int iterative,
 //	return true;
 	int now;
 	int next;
-	now = graph.destination;
+	now = graph->destination;
 	vector<int> midnode;
 	vector<int> midedge;
 	next = path_node[now];
@@ -166,50 +165,50 @@ bool GetKthShotestPath(Graph &graph, Request &request, int iterative,
 	while (next != -1) {
 		midnode.push_back(next);
 		midedge.push_back(path_edge[now]);
-		request.BPMustNotPassEdges4AP[path_edge[now]] = false;
+		request->BPMustNotPassEdges4AP[path_edge[now]] = false;
 
 		//modified by cose bug from code (DesignAllEdgtoHaveSRLG)
-		if (-1 != graph.getithEdge(path_edge[now]).ithsrlg
-				&& (graph.srlgGroups.at(
-						graph.getithEdge(path_edge[now]).ithsrlg).srlgMembersNum
+		if (-1 != graph->edges.at(path_edge[now]).ithsrlg
+				&& (graph->srlgGroups.at(
+						graph->edges.at(path_edge[now]).ithsrlg).srlgMembersNum
 						> 1))
-			request.APSrlgs.push_back(graph.getithEdge(path_edge[now]).ithsrlg);
+			request->APSrlgs.push_back(graph->edges.at(path_edge[now]).ithsrlg);
 		now = next;
 		next = path_node[now];
 	}
 	for (int k = (midnode.size() - 1); k >= 0; k--) {
-		request.AP_PathNode.push_back(midnode[k]);
+		request->AP_PathNode.push_back(midnode[k]);
 	}
 	for (int k = (midedge.size() - 1); k >= 0; k--) {
-		request.AP_PathEdge.push_back(midedge[k]);
+		request->AP_PathEdge.push_back(midedge[k]);
 
 	}
 
-	sort(request.APSrlgs.begin(), request.APSrlgs.end());
+	sort(request->APSrlgs.begin(), request->APSrlgs.end());
 	vector<int>::iterator pos;
-	pos = unique(request.APSrlgs.begin(), request.APSrlgs.end());
-	request.APSrlgs.erase(pos, request.APSrlgs.end());
+	pos = unique(request->APSrlgs.begin(), request->APSrlgs.end());
+	request->APSrlgs.erase(pos, request->APSrlgs.end());
 
-	for (unsigned int i = 0; i < request.APSrlgs.size(); i++) {
-		int srlg = request.APSrlgs[i];
-		for (unsigned int j = 0; j < graph.srlgGroups[srlg].srlgMember.size();
+	for (unsigned int i = 0; i < request->APSrlgs.size(); i++) {
+		int srlg = request->APSrlgs[i];
+		for (unsigned int j = 0; j < graph->srlgGroups[srlg].srlgMember.size();
 				j++) {
-			int srlgmem = graph.srlgGroups[srlg].srlgMember[j];
-			if (request.BPMustNotPassEdges4AP[srlgmem]
-					&& request.BPMustNotPassEdgesRLAP[srlgmem]) {
-				request.BPMustNotPassEdgesRLAP[srlgmem] = false;
-				request.RLAP_PathEdge.push_back(srlgmem);
+			int srlgmem = graph->srlgGroups[srlg].srlgMember[j];
+			if (request->BPMustNotPassEdges4AP[srlgmem]
+					&& request->BPMustNotPassEdgesRLAP[srlgmem]) {
+				request->BPMustNotPassEdgesRLAP[srlgmem] = false;
+				request->RLAP_PathEdge.push_back(srlgmem);
 			}
 		}
 	}
 	return true;
 }
 bool nodeedgelistcomp(const int& pfirst, const int& psecond) {
-	return p_graph->getithEdge(pfirst).cost <= p_graph->getithEdge(psecond).cost;
+	return p_graph->edges.at(pfirst).cost <= p_graph->edges.at(psecond).cost;
 }
 
 //sort every node's neighbor edge
-void SortEdges(Graph *p_graph) {
+void SortEdges(GraphTopo *p_graph) {
 	int nodesize = p_graph->nodeNum;
 	//****there is a bug in the  sort function.
 	for (int i = 0; i < nodesize; i++) {
@@ -224,7 +223,7 @@ void SortEdges(Graph *p_graph) {
 					nodeedgelistcomp);
 	}
 }
-bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
+bool ITKSPAlgorithm(GraphTopo const *p_graph, Request *p_request) {
 
 	typedef pair<int, int> P;
 	vector<int> dist((*p_graph).nodeNum, (-1));
@@ -245,8 +244,7 @@ bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 		for (unsigned int i = 0;
 				i < (*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList.size();
 				i++) {
-			Edge e = p_graph->getithEdge(
-					(*p_graph).ftopo_r_Node_c_EdgeList[v].edgeList[i]);
+			EdgeClass e = p_graph->edges.at(p_graph->ftopo_r_Node_c_EdgeList[v].edgeList[i]);
 			if (!p_request->BPMustNotPassEdges4AP[e.id]
 					|| !p_request->BPMustNotPassEdgesRLAP[e.id])
 				continue;
@@ -293,7 +291,7 @@ bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 //			(*p_request).BP_PathEdge.push_back(path_edge[now]);
 			midnode.push_back(next);
 			midedge.push_back(path_edge[now]);
-			(*p_request).BPCostSum += p_graph->getithEdge(path_edge[now]).cost;
+			(*p_request).BPCostSum += p_graph->edges.at(path_edge[now]).cost;
 			now = next;
 			next = path_node[now];
 		}
@@ -326,7 +324,7 @@ bool ITKSPAlgorithm(Graph *p_graph, Request *p_request) {
 	}
 	return false;
 }
-bool IHKSPAlgorithm(Graph *p_graph) {
+bool IHKSPAlgorithm(GraphTopo const *p_graph) {
 	int ite = 0;
 
 	vector<int> dest_dis = vector<int>(p_graph->nodeNum, -1); //-1 represent inf
@@ -341,9 +339,9 @@ bool IHKSPAlgorithm(Graph *p_graph) {
 	while ((-1 != dest_dis[p_graph->source])
 			&& (INT_MAX == AlgorithmResult->APcostsum)
 			&& (ite <= MAX_ITERATIONS)) {
-		cout << "iterative number: " << ite << endl;
+//		cout << "iterative number: " << ite << endl;
 		p_request->clear(p_graph->edgeNum);
-		if (GetKthShotestPath((*p_graph), (*p_request), ite + 1, dest_dis)) {
+		if (GetKthShotestPath(p_graph, p_request, ite + 1, dest_dis)) {
 			if (ITKSPAlgorithm(p_graph, p_request)) {
 				cout << "iterative number: " << ite << " /" << MAX_ITERATIONS
 						<< endl;

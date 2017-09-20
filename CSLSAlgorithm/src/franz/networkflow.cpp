@@ -40,7 +40,7 @@ void dfsGetSTCut(NetworkFlow & netflow, int s, Request & request) {
 	}
 }
 //time complexity=O(EF) find maxflow in graph G*,
-void MaxFlowAlgorithm_fordfulkerson(Graph &graph, Request & request) {
+void MaxFlowAlgorithm_fordfulkerson(GraphTopo &graph, Request & request) {
 	int maxflow = 0;
 	NetworkFlow netflow(graph, request);
 	for (;;) {
@@ -106,7 +106,7 @@ int dfsNetworkFlow_dinic(NetworkFlow & netflow, int v, int t, int f) {
 	return 0;
 }
 //time complexity=O(EV2)
-void MaxFlowAlgorithm_dinic(Graph &graph, Request & request) {
+void MaxFlowAlgorithm_dinic(GraphTopo &graph, Request & request) {
 	int maxflow = 0;
 	NetworkFlow netflow(graph, request);
 
