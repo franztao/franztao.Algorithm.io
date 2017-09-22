@@ -663,9 +663,7 @@ public class EnhancedVirtualNetwork {
 				} else {
 					augmentNodeEdge(solution, i, Method);
 				}
-
 			}
-
 		}
 		if (sequence == EVSNR.Min) {
 			boolean[] isFailed = new boolean[this.nodeSize4Embeded];
@@ -713,9 +711,9 @@ public class EnhancedVirtualNetwork {
 	 */
 	public boolean OptimalAlgorithmIP4Survivability() {
 		try {
-			GRBEnv env = new GRBEnv("EeVSNAlgorithmIP");
+			GRBEnv env = new GRBEnv();
 			GRBModel model = new GRBModel(env);
-
+			model.getEnv().set(GRB.IntParam.OutputFlag, 0);
 			// Create variables
 			GRBVar TransfromMatrix[][][];
 			TransfromMatrix = new GRBVar[this.nodeSize4Embeded + 1][this.VN.nodeSize][this.nodeSize];
@@ -728,12 +726,17 @@ public class EnhancedVirtualNetwork {
 										"T" + i + " r:" + j + " c:" + k);
 							} else {
 								TransfromMatrix[i][j][k] = model.addVar(0.0, 0.0, 0.0, GRB.CONTINUOUS,
-
-								"T" + i + " r:" + j + " c:" + k);
+										"T" + i + " r:" + j + " c:" + k);
 							}
 						} else {
-							TransfromMatrix[i][j][k] = model.addVar(0.0, 1.0, 0.0, GRB.CONTINUOUS,
-									"T" + i + " r:" + j + " c:" + k);
+							// 3
+							if ((i - 1) == k) {
+								TransfromMatrix[i][j][k] = model.addVar(0.0, 0.0, 0.0, GRB.CONTINUOUS,
+										"T" + i + " r:" + j + " c:" + k);
+							} else {
+								TransfromMatrix[i][j][k] = model.addVar(0.0, 1.0, 0.0, GRB.CONTINUOUS,
+										"T" + i + " r:" + j + " c:" + k);
+							}
 						}
 					}
 				}
@@ -744,63 +747,117 @@ public class EnhancedVirtualNetwork {
 			for (int j = 0; j < this.nodeSize; j++) {
 				for (int k = 0; k < this.nodeSize; k++) {
 					EnhancedGraphBandwithMatrix[j][k] = model.addVar(0.0, Integer.MAX_VALUE, 0.0, GRB.CONTINUOUS,
-							"EGBM" + " r:" + j + " c:" + k);
-				} // Integer.MAX_VALUE
+							"MBG" + " r:" + j + " c:" + k);
+				}
 			}
 
-			GRBVar UsedNodeVector[];
-			UsedNodeVector = new GRBVar[this.nodeSize];
+			GRBVar EnhancedGraphComputationMatrix[];
+			EnhancedGraphComputationMatrix = new GRBVar[this.nodeSize];
+			for (int j = 0; j < this.nodeSize; j++) {
+				EnhancedGraphComputationMatrix[j] = model.addVar(0.0, this.nodeComputationCapacity[j], 0.0,
+						GRB.CONTINUOUS, "MBC" + " r:" + j);
+			}
+
+			GRBVar usedNodeVector[];
+			usedNodeVector = new GRBVar[this.nodeSize];
 			for (int j = 0; j < this.nodeSize; j++) {
 				if (j < this.nodeSize4Embeded)
-					UsedNodeVector[j] = model.addVar(0.0, 1.0, 0.0, GRB.CONTINUOUS, "UNV" + ": " + j);
+					usedNodeVector[j] = model.addVar(1.0, 1.0, 0.0, GRB.CONTINUOUS, "usedNodeVector" + ": " + j);
 				else
-					UsedNodeVector[j] = model.addVar(1.0, 1.0, 0.0, GRB.CONTINUOUS, "UNV" + ": " + j);
+					usedNodeVector[j] = model.addVar(0.0, 1.0, 0.0, GRB.CONTINUOUS, "usedNodeVector" + ": " + j);
 			}
 
 			// Integrate new variables
 			model.update();
+			// set objecion function
 			GRBLinExpr objexpr = new GRBLinExpr();
 			for (int i = 0; i < this.nodeSize; i++) {
-				objexpr.addTerm(EVSNR.addNewNodeCost, UsedNodeVector[i]);
+				objexpr.addTerm(EVSNR.addNewNodeCost, usedNodeVector[i]);
+				objexpr.addTerm(EVSNR.addNodeComputaionCost, EnhancedGraphComputationMatrix[i]);
 				for (int j = 0; j < this.nodeSize; j++) {
 					objexpr.addTerm(1.0, EnhancedGraphBandwithMatrix[i][j]);
 				}
 			}
 			model.setObjective(objexpr, GRB.MINIMIZE);
 
-			// Add constraint
+			// Add constraint 7
 			// regulate the TransfromMatrix
 			for (int k = 0; k < this.nodeSize; k++) {
 				for (int i = 0; i <= this.nodeSize4Embeded; i++) {
 					for (int j = 0; j < this.VN.nodeSize; j++) {
 						GRBLinExpr conexpr = new GRBLinExpr();
 						conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
-						model.addConstr(conexpr, GRB.LESS_EQUAL, UsedNodeVector[k],
+						model.addConstr(conexpr, GRB.LESS_EQUAL, usedNodeVector[k],
 								"Con usedNode:" + k + " " + i + " " + j);
 					}
 				}
 
 			}
 
+			// 2
 			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
 				for (int j = 0; j < this.VN.nodeSize; j++) {
 					GRBLinExpr conexpr = new GRBLinExpr();
 					for (int k = 0; k < this.nodeSize; k++) {
 						conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
 					}
-					model.addConstr(conexpr, GRB.EQUAL, 1.0, "Con all VN Node have a embedding:" + i + " " + j);
+					model.addConstr(conexpr, GRB.EQUAL, 1.0, "Con Tiv=1: " + i + " " + j);
 				}
 			}
 
+			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
+				for (int k = 0; k < this.nodeSize; k++) {
+					GRBLinExpr conexpr = new GRBLinExpr();
+					for (int j = 0; j < this.VN.nodeSize; j++) {
+						conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
+					}
+					model.addConstr(conexpr, GRB.LESS_EQUAL, 1.0, "Con Tuj<=1:" + i + " " + k);
+				}
+			}
+
+			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
+				GRBLinExpr conexpr = new GRBLinExpr();
+				for (int j = 0; j < this.VN.nodeSize; j++) {
+					for (int k = 0; k < this.nodeSize; k++) {
+						conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
+					}
+				}
+				model.addConstr(conexpr, GRB.EQUAL, this.nodeSize4Embeded, "Con Tuv=n:" + i);
+			}
+
+			// 3
 			for (int i = 1; i <= this.nodeSize4Embeded; i++) {
 				GRBLinExpr conexpr = new GRBLinExpr();
 				for (int j = 0; j < this.VN.nodeSize; j++) {
-					conexpr.addTerm(1.0, TransfromMatrix[i - 1][j][i - 1]);
+					conexpr.addTerm(1.0, TransfromMatrix[i][j][i - 1]);
 				}
-				model.addConstr(conexpr, GRB.EQUAL, 0.0, "Con Tiji=false :");
+				model.addConstr(conexpr, GRB.EQUAL, 0.0, "Con Tuk=0:");
 			}
 
-			// T*ESM>VSM
+			// 4 MAG<=MBG
+			for (int i = 0; i < this.nodeSize4Embeded; i++) {
+				for (int j = 0; j < this.nodeSize4Embeded; j++) {
+					GRBLinExpr conexpr = new GRBLinExpr();
+					conexpr.addTerm(1.0, EnhancedGraphBandwithMatrix[i][j]);
+					model.addConstr(conexpr, GRB.GREATER_EQUAL, this.VN.edgeBandwithDemand[i][j], "con MAB<=MBB");
+				}
+			}
+
+			// 8
+			// MAC*T<MBC
+			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
+				for (int j = 0; j < this.nodeSize; j++) {
+					GRBLinExpr conexpr = new GRBLinExpr();
+					for (int k = 0; k < this.VN.nodeSize; k++) {
+						conexpr.addTerm(this.VN.nodeComputationDemand[k], TransfromMatrix[i][k][j]);
+					}
+					model.addConstr(conexpr, GRB.LESS_EQUAL, EnhancedGraphComputationMatrix[j],
+							"MAC*T" + "T " + i + "r " + j);
+				}
+			}
+
+			// 5
+			// T*MBS>MAS
 			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
 				for (int j = 0; j < this.VN.nodeSize; j++) {
 					for (int l = 0; l < this.serviceNumber; l++) {
@@ -810,61 +867,63 @@ public class EnhancedVirtualNetwork {
 								conexpr.addTerm(1.0, TransfromMatrix[i][j][k]);
 						}
 						if (this.VN.nodeServiceType[j] == (l)) {
-							model.addConstr(conexpr, GRB.GREATER_EQUAL, 1.0, "T*ESM" + "T " + i + "r " + j + "c: " + l);
-						} else {
-							model.addConstr(conexpr, GRB.GREATER_EQUAL, 0.0, "T*ESM" + "T " + i + "r " + j + "c: " + l);
+							model.addConstr(conexpr, GRB.GREATER_EQUAL, 1.0, "T*MBS" + "T " + i + "r " + j + "c: " + l);
 						}
+						// else {
+						// model.addConstr(conexpr, GRB.GREATER_EQUAL, 0.0,
+						// "T*ESM" + "T " + i + "r " + j + "c: " + l);
+						// }
 					}
-				}
-			}
-
-			// MACN*T<MBC
-			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
-				for (int j = 0; j < this.nodeSize; j++) {
-					GRBLinExpr conexpr = new GRBLinExpr();
-					for (int k = 0; k < this.VN.nodeSize; k++) {
-						conexpr.addTerm(this.VN.nodeComputationDemand[k], TransfromMatrix[i][k][j]);
-					}
-					model.addConstr(conexpr, GRB.LESS_EQUAL, this.nodeComputationCapacity[j],
-							"MACN*T" + "T " + i + "r " + j);
 				}
 			}
 
 			// (MAG*T)'*T<MBG
-
-			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
-				// T'*MAG'
-				GRBQuadExpr TMAG[][] = new GRBQuadExpr[this.nodeSize][this.nodeSize];
-				for (int j = 0; j < this.nodeSize; j++) {
-					for (int t = 0; t < this.nodeSize; t++) {
-						TMAG[j][t] = new GRBQuadExpr();
-						for (int k = 0; k < this.VN.nodeSize; k++) {
-							for (int l = 0; l < this.VN.nodeSize; l++) {
-								// TMAG[j][k].addTerm(this.VNR.edgeBandwithDemand[k][l],
-								// TransfromMatrix[i][l][j]);
-								for (int p = 0; p < this.VN.nodeSize; p++) {
-									Integer inte = this.VN.edgeBandwithDemand[k][p];
-									TMAG[j][t].addTerm(inte.doubleValue(), TransfromMatrix[i][k][j],
-											TransfromMatrix[i][p][t]);
-								}
-							}
-						}
-						model.addQConstr(TMAG[j][t], GRB.LESS_EQUAL, EnhancedGraphBandwithMatrix[j][t],
-								"T " + i + "T'*MAG'*T" + "r " + j + " c " + t);
-					}
-				}
-			}
+//
+//			for (int i = 0; i <= this.nodeSize4Embeded; i++) {
+//				// T'*MAG'
+//				GRBQuadExpr TMAG[][] = new GRBQuadExpr[this.nodeSize][this.nodeSize];
+//				for (int j = 0; j < this.nodeSize; j++) {
+//					for (int t = 0; t < this.nodeSize; t++) {
+//						TMAG[j][t] = new GRBQuadExpr();
+//						for (int k = 0; k < this.VN.nodeSize; k++) {
+//							for (int l = 0; l < this.VN.nodeSize; l++) {
+//								// TMAG[j][k].addTerm(this.VNR.edgeBandwithDemand[k][l],
+//								// TransfromMatrix[i][l][j]);
+//								for (int p = 0; p < this.VN.nodeSize; p++) {
+//									Integer inte = this.VN.edgeBandwithDemand[k][p];
+//									TMAG[j][t].addTerm(inte.doubleValue(), TransfromMatrix[i][k][j],
+//											TransfromMatrix[i][p][t]);
+//								}
+//							}
+//						}
+//						model.addQConstr(TMAG[j][t], GRB.LESS_EQUAL, EnhancedGraphBandwithMatrix[j][t],
+//								"T " + i + "T'*MAG'*T" + "r " + j + " c " + t);
+//					}
+//				}
+//			}
 			model.optimize();
 			int optimstatus = model.get(GRB.IntAttr.Status);
 			if (optimstatus != GRB.OPTIMAL) {
 				return false;
 			}
-			// for (int i = 0; i < this.nodeSize; i++) {
-			// System.out.print(i + ": " +
-			// UsedNodeVector[i].get(GRB.DoubleAttr.X) + " ");
-			// }
-			// System.out.println();
-
+			for (int i = 0; i < this.nodeSize; i++) {
+				if (i >= this.nodeSize4Embeded) {
+					this.nodeComputationUsed[i] = (int) EnhancedGraphComputationMatrix[i].get(GRB.DoubleAttr.X);
+				} else {
+					this.nodeComputationUsed[i] = (int) EnhancedGraphComputationMatrix[i].get(GRB.DoubleAttr.X)
+							- this.VN.nodeComputationDemand[i];
+				}
+				for (int j = 0; j < this.nodeSize; j++) {
+					if (i < this.nodeSize4Embeded && j < this.nodeSize4Embeded) {
+						this.edgeBandwithUsed[i][j] = (int) (EnhancedGraphBandwithMatrix[i][j].get(GRB.DoubleAttr.X)
+								- this.VN.edgeBandwithDemand[i][j]);
+					} else {
+						this.edgeBandwithUsed[i][j] = (int) EnhancedGraphBandwithMatrix[i][j].get(GRB.DoubleAttr.X);
+					}
+				}
+			}
+			loggerEnhancedVirtualNetwork.info("ILP method Succed");
+			computeUsedResource();
 		} catch (GRBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -875,13 +934,12 @@ public class EnhancedVirtualNetwork {
 
 	/**
 	 * @param sequence
-	 * @param isFD2
 	 * @param isFD
 	 * @param isExact
 	 * @return
 	 * 
 	 */
-	public boolean startEnhanceVirtualNetwork(boolean isExact, boolean isFD, boolean isShared, int sequence) {
+	public boolean startEnhanceVirtualNetwork(boolean isExact, boolean isFD, int sequence) {
 		boolean enhanceEmbedAlgorithmResult = false;
 		if (isExact) {
 			enhanceEmbedAlgorithmResult = OptimalAlgorithmIP4Survivability();
