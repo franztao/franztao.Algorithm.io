@@ -40,13 +40,26 @@ public class VirtualNetwork {
 	 * @param vnp
 	 */
 	public VirtualNetwork(VirtualNetworkParameter vnp) {
+		this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
+		this.serviceNumber = vnp.serviceNumber;
+		instantiation();
 
-//		this.leaveTime=
-		
-		if (vnp.isSampleInit) {
-			this.nodeSize = 4;
-		} else
-			this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
+	}
+
+	/**
+	 * @param vnp
+	 * @param sameVN
+	 */
+	public VirtualNetwork(VirtualNetworkParameter vnp, VirtualNetwork sameVN) {
+		this.nodeSize = sameVN.nodeSize;
+		this.serviceNumber = sameVN.serviceNumber;
+		instantiation();
+	}
+
+	/**
+	 * 
+	 */
+	private void instantiation() {
 		this.vNode2sNode = new int[nodeSize];
 		this.nodeComputationDemand = new int[nodeSize];
 		this.nodeComputationCapacity = new int[nodeSize];
@@ -62,19 +75,14 @@ public class VirtualNetwork {
 			}
 		}
 
-		this.serviceNumber = vnp.serviceNumber;
 		this.nodeServiceType = new int[nodeSize];
 
 		this.node2Label = new String[nodeSize];
 		this.label2Node = new HashMap<String, Integer>();
-		this.isSampleInit = vnp.isSampleInit;
-		
 		setNodeLabel();
-		if (vnp.isSampleInit) {
-			// this.nodeSize = 4;
-			initSample1();
-		}
+
 	}
+
 	/**
 	 * 
 	 */
@@ -89,6 +97,7 @@ public class VirtualNetwork {
 		vEdge2sPath.clear();
 		label2Node.clear();
 	}
+
 	/**
 	 * @return the nodeSize
 	 */
@@ -364,7 +373,5 @@ public class VirtualNetwork {
 	public void setIsRunning(boolean isRunning) {
 		this.isRunning = isRunning;
 	}
-
-	
 
 }

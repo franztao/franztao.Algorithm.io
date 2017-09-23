@@ -247,9 +247,9 @@ public class Result {
 			array_AcceptionRatio_vn[acceptionRatioDataLength] = 1.0;
 
 		} else {
-			array_AcceptionRatio_evn[acceptionRatioDataLength] = (1.0 * algorithm.getSn().evnSuceedEmbed
+			array_AcceptionRatio_evn[acceptionRatioDataLength] = (1.0 * algorithm.getSn().EVNSuceedEmbedSum
 					/ algorithm.getSn().vnqNumber);
-			array_AcceptionRatio_vn[acceptionRatioDataLength] = (1.0 * algorithm.getSn().vnSuceedEmbed
+			array_AcceptionRatio_vn[acceptionRatioDataLength] = (1.0 * algorithm.getSn().VNSuceedEmbedSum
 					/ algorithm.getSn().vnqNumber);
 
 		}
