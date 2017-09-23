@@ -50,6 +50,7 @@ const int MAX_NodeSize = (2515); //may be overflow
 
 #define algorithm_getSRLGcsv -2
 #define algorithm_statisticParallelFranzAlgorithm -3
+#define algorithm_setSRLGcsv -4
 
 #define MustNodePathAlgorithmPermuteDijkstra 1
 #define MustNodePathAlgorithmGUROBI 2

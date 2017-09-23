@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
 	//
 	if (argc == 1) {
-		string si = "3";
+		string si = "0";
 		string suffix =
 				"/home/franz/franzDocuments/eclipse4cworkspace/CSLSAlgorithm/Sample/test";
 		string strtopo = "/topo.csv";
@@ -80,9 +80,10 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	//begin to find disjoint paths.
+//	alg=-4;
 	cout<<"allsrlg:"<<srlg_num<<endl;
 	search_route(topo, edge_num, demand, demand_num, srlg, srlg_num, alg,
-			topo_file);
+			topo_file,srlg_file);
 
 	//write disjoint paths to file.
 //	write_result(result_file);
