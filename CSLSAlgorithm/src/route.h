@@ -15,14 +15,14 @@ extern bool LoadGraphData(GraphTopo *graph, char *topo[MAX_EDGE_NUM], int edgenu
 extern void DebugPrint(GraphTopo *graph);
 extern void search_route(char *graph[MAX_EDGE_NUM], int edge_num,
 		char *condition[MAX_DEMAND_NUM], int demand_num,
-		char *srlg[MAX_SRLG_NUM], int srlg_num, int algorithm, char *str);
+		char *srlg[MAX_SRLG_NUM], int srlg_num, int algorithm, char *str,char *srlg_file_name);
 extern bool judge_isStarProperty();
 extern void eliminate_invalidnodeandedge();
 extern void getSRLGcsv(GraphTopo* p_graph, char * str);
 extern void BuildNetworkFlowGraph(GraphTopo *p_graph, Request *p_request);
 extern void GetConflictingSRLGLinkSet(GraphTopo *p_graph, Request *p_request);
 
-
+extern void setSRLGcsv(GraphTopo *p_graph, char *str);
 
 extern bool findAP_ILP_gurobi(GraphTopo *p_graph, Request *p_request);
 extern bool findAP_dijastra(GraphTopo *p_graph, Request *p_request);

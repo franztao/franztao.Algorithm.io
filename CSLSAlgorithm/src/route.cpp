@@ -160,7 +160,8 @@ void verify_result(DisjointPathPair *FranzAlgorithmResult) {
 
 void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 		char *demand[MAX_DEMAND_NUM], int demand_num, char *srlg[MAX_SRLG_NUM],
-		int srlg_num, int algorithm, char *str) {
+		int srlg_num, int algorithm, char *topo_file_name,
+		char *srlg_file_name) {
 
 	Algorithm = algorithm;
 	//init result's class .
@@ -308,12 +309,16 @@ void search_route(char *topo[MAX_EDGE_NUM], int edge_num,
 
 		char abusolutepath[100];
 		int i;
-		int len = strlen(str);
+		int len = strlen(topo_file_name);
 		for (i = 0; i < (len - 8); i++) {
-			abusolutepath[i] = str[i];
+			abusolutepath[i] = topo_file_name[i];
 		}
 		abusolutepath[i] = '\0';
 		getSRLGcsv(p_graph, abusolutepath);
+	}
+
+	if (algorithm_setSRLGcsv == algorithm) {
+		setSRLGcsv(p_graph, srlg_file_name);
 	}
 
 	if (algorithm_statisticParallelFranzAlgorithm == algorithm) {
