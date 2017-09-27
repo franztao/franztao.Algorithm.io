@@ -40,7 +40,8 @@ public class VirtualNetwork {
    * @param vnp
    */
   public VirtualNetwork(VirtualNetworkParameter vnp) {
-    this.nodeSize = (int) (vnp.nodeSizeMinimum + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
+    this.nodeSize = (int) (vnp.nodeSizeMinimum
+        + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
     this.serviceNumber = vnp.serviceNumber;
     instantiation();
 

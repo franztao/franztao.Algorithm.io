@@ -18,6 +18,7 @@ import virtualnetwork.VirtualNetworkParameter;
 
 /**
  * Algorithm.
+ * 
  * @author franz
  *
  */
@@ -45,6 +46,7 @@ public class Algorithm {
 
   /**
    * releaseResource.
+   * 
    * @param isForceRelease
    * 
    */
@@ -71,8 +73,8 @@ public class Algorithm {
     if (!this.isShared) {
       for (int i = 0; i < this.sn.EVNCollection.get(index).nodeSize; i++) {
         if (this.sn.EVNCollection.get(index).nodeComputationEnhanced[i] > 0) {
-          this.sn.nodeComputation4EnhanceNoSharedSum[this.sn.EVNCollection
-              .get(index).eNode2sNode[i]] -= this.sn.EVNCollection.get(index).nodeComputationEnhanced[i];
+          this.sn.nodeComputation4EnhanceNoSharedSum[this.sn.EVNCollection.get(
+              index).eNode2sNode[i]] -= this.sn.EVNCollection.get(index).nodeComputationEnhanced[i];
         }
       }
     }
@@ -80,7 +82,8 @@ public class Algorithm {
       for (int i = 0; i < this.sn.EVNCollection.get(index).nodeSize; i++) {
         for (int j = 0; j < i; j++) {
           if (this.sn.EVNCollection.get(index).edgeBandwithEnhanced[i][j] > 0) {
-            for (int p = 0; p < this.sn.EVNCollection.get(index).eEdge2sPath.get(i).get(j).size() - 1; p++) {
+            for (int p = 0; p < this.sn.EVNCollection.get(index).eEdge2sPath.get(i).get(j).size()
+                - 1; p++) {
               int from = this.sn.EVNCollection.get(index).eEdge2sPath.get(i).get(j).get(p);
               int to = this.sn.EVNCollection.get(index).eEdge2sPath.get(i).get(j).get(p + 1);
               this.sn.edgeBandwith4EnhanceNoSharedSum[from][to] -= this.sn.EVNCollection
@@ -105,18 +108,20 @@ public class Algorithm {
 
     // node
     for (int i = 0; i < this.sn.VNCollection.get(index).nodeSize; i++) {
-      this.sn.nodeComputation4Former[this.sn.VNCollection.get(index).vNode2sNode[i]] -= this.sn.VNCollection
-          .get(index).nodeComputationDemand[i];
+      this.sn.nodeComputation4Former[this.sn.VNCollection
+          .get(index).vNode2sNode[i]] -= this.sn.VNCollection.get(index).nodeComputationDemand[i];
     }
 
     // edge
     for (int i = 0; i < this.sn.VNCollection.get(index).nodeSize; i++) {
       for (int j = 0; j < i; j++) {
         if (this.sn.VNCollection.get(index).edgeBandwithDemand[i][j] > 0) {
-          for (int p = 0; p < this.sn.VNCollection.get(index).vEdge2sPath.get(i).get(j).size() - 1; p++) {
+          for (int p = 0; p < this.sn.VNCollection.get(index).vEdge2sPath.get(i).get(j).size()
+              - 1; p++) {
             int from = this.sn.VNCollection.get(index).vEdge2sPath.get(i).get(j).get(p);
             int to = this.sn.VNCollection.get(index).vEdge2sPath.get(i).get(j).get(p + 1);
-            this.sn.edgeBandwith4Former[from][to] -= this.sn.VNCollection.get(index).edgeBandwithDemand[i][j];
+            this.sn.edgeBandwith4Former[from][to] -= this.sn.VNCollection
+                .get(index).edgeBandwithDemand[i][j];
             this.sn.edgeBandwith4Former[to][from] = this.sn.edgeBandwith4Former[from][to];
           }
         }
@@ -127,63 +132,71 @@ public class Algorithm {
   }
 
   /**
-   * @param VN
-   * @param sameVN
-   * @param vnp
-   * @return
+   * constructVirtualNetwork.
+   * @param vn vn
+   * @param sameVn sameVn
+   * @param vnp vnp
+   * @return boolean
    */
-  private boolean constructVirtualNetwork(VirtualNetwork VN, VirtualNetwork sameVN) {
-    VN.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum
-        + Math.random() * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+  private boolean constructVirtualNetwork(VirtualNetwork vn, VirtualNetwork sameVn) {
 
+    if (Parameter.isSameVNQ4EveryTime) {
+      vn.setLeaveTime(sameVn.getLeaveTime());
+    } else {
+      vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
+          * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+    }
     // node
     boolean[] isSamesNode = new boolean[this.sn.nodeSize];
-    for (int i = 0; i < VN.nodeSize; i++) {
+    for (int i = 0; i < vn.nodeSize; i++) {
       // the virtual node map whose physical node
       // every virtual node must map different physical node
       int snodeloc;
       if (Parameter.isSameVNQ4EveryTime) {
-        snodeloc = sameVN.vNode2sNode[i];
-        VN.vNode2sNode[i] = snodeloc;
-        VN.nodeServiceType[i] = sameVN.nodeServiceType[i];
-        VN.nodeComputationDemand[i] = sameVN.nodeComputationDemand[i];
+        snodeloc = sameVn.vNode2sNode[i];
+        vn.vNode2sNode[i] = snodeloc;
+        vn.nodeServiceType[i] = sameVn.nodeServiceType[i];
+        vn.nodeComputationDemand[i] = sameVn.nodeComputationDemand[i];
       } else {
         do {
           snodeloc = (int) Math.round(Math.random() * (this.sn.nodeSize - 1));
           if (!isSamesNode[snodeloc]) {
-            VN.vNode2sNode[i] = snodeloc;
+            vn.vNode2sNode[i] = snodeloc;
             isSamesNode[snodeloc] = true;
             break;
           }
         } while (true);
         // service
-        int nodeservice = this.sn.vectorServiceTypeSet.get(snodeloc)
-            .elementAt((int) Math.random() * (this.sn.vectorServiceTypeSet.get(snodeloc).size() - 1));
-        VN.nodeServiceType[i] = nodeservice;
+        int nodeservice = this.sn.vectorServiceTypeSet.get(snodeloc).elementAt(
+            (int) Math.random() * (this.sn.vectorServiceTypeSet.get(snodeloc).size() - 1));
+        vn.nodeServiceType[i] = nodeservice;
         // node demand
-        VN.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum
-            + Math.round(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
+        vn.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum + Math.round(
+            Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
       }
-      if (VN.nodeComputationDemand[i] > this.sn.getSubstrateRemainComputaion4VirNet(snodeloc, this.isShared)) {
-        algorithmLog.warn("Fail to embed virtual network (" + i + ")-th node into substrate network");
+      if (vn.nodeComputationDemand[i] > this.sn.getSubstrateRemainComputaion4VirNet(snodeloc,
+          this.isShared)) {
+        algorithmLog
+            .warn("Fail to embed virtual network (" + i + ")-th node into substrate network");
         return false;
       } else {
-        VN.nodeComputationCapacity[i] = this.sn.nodeComputationCapacity[snodeloc]
+        vn.nodeComputationCapacity[i] = this.sn.nodeComputationCapacity[snodeloc]
             - this.sn.getSubstrateRemainComputaion4VirNet(snodeloc, this.isShared);
-        this.sn.nodeComputation4Temp[snodeloc] += VN.nodeComputationDemand[i];
+        this.sn.nodeComputation4Temp[snodeloc] += vn.nodeComputationDemand[i];
       }
 
     }
 
     // edge
-    for (int i = 0; i < VN.nodeSize; i++) {
+    for (int i = 0; i < vn.nodeSize; i++) {
       for (int j = 0; j < i; j++) {
-        if ((Parameter.isSameVNQ4EveryTime && sameVN.topology[i][j])
-            || ((Parameter.isSameVNQ4EveryTime == false) && (Math.random() < vnp.node2nodeProbability))) {
+        if ((Parameter.isSameVNQ4EveryTime && sameVn.topology[i][j])
+            || ((Parameter.isSameVNQ4EveryTime == false)
+                && (Math.random() < vnp.node2nodeProbability))) {
           int distributeIthEdgeBandwith = 0;
           // System.out.println("distributeIthEdgeBandwith
           // "+distributeIthEdgeBandwith);
-          if (VN.vNode2sNode[i] != VN.vNode2sNode[j]) {
+          if (vn.vNode2sNode[i] != vn.vNode2sNode[j]) {
             // exist edge's path,bandwith
             // source destination bandwith[][]
             int[][] tempBandwith = new int[this.sn.nodeSize][this.sn.nodeSize];
@@ -200,39 +213,39 @@ public class Algorithm {
 
             ShortestPath shortestPath = new ShortestPath(this.sn.nodeSize);
             List<Integer> pathList = new LinkedList<Integer>();
-            pathList = shortestPath.Dijkstra(VN.vNode2sNode[i], VN.vNode2sNode[j], tempTopo);
+            pathList = shortestPath.dijkstra(vn.vNode2sNode[i], vn.vNode2sNode[j], tempTopo);
 
             if (pathList == null) {
-              algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
-                  + ")-edge into SN : feasible path is null");
+              algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to "
+                  + j + ")-edge into SN : feasible path is null");
               return false;
             }
             if (pathList.isEmpty()) {
-              algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
-                  + ")-edge into SN : feasible path is is empty");
+              algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to "
+                  + j + ")-edge into SN : feasible path is is empty");
               return false;
             }
             // set virtual network's edge bandwith
             int pathMaximumBandwith = 0;
-            VN.vEdge2sPath.get(i).get(j).addElement(pathList.get(0));
+            vn.vEdge2sPath.get(i).get(j).addElement(pathList.get(0));
             for (int s = pathList.get(0), k = 1; k < pathList.size(); k++) {
               int e = pathList.get(k);
               pathMaximumBandwith = Math.max(pathMaximumBandwith, tempBandwith[s][e]);
-              VN.vEdge2sPath.get(i).get(j).addElement(e);
+              vn.vEdge2sPath.get(i).get(j).addElement(e);
               s = e;
             }
             for (int k = pathList.size() - 1; k >= 0; k--) {
-              VN.vEdge2sPath.get(j).get(i).addElement(pathList.get(k));
+              vn.vEdge2sPath.get(j).get(i).addElement(pathList.get(k));
             }
             if (Parameter.isSameVNQ4EveryTime) {
-              distributeIthEdgeBandwith = sameVN.edgeBandwithDemand[i][j];
+              distributeIthEdgeBandwith = sameVn.edgeBandwithDemand[i][j];
             } else {
-              distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum
-                  + Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
+              distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum + Math
+                  .round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
             }
             if (distributeIthEdgeBandwith > pathMaximumBandwith) {
-              algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
-                  + ") edge into SN :SN edge resource not more than PathBandwith Demand");
+              algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to "
+                  + j + ") edge into SN :SN edge resource not more than PathBandwith Demand");
               return false;
             }
 
@@ -243,8 +256,8 @@ public class Algorithm {
               s = e;
             }
           }
-          VN.topology[i][j] = VN.topology[j][i] = true;
-          VN.edgeBandwithDemand[i][j] = VN.edgeBandwithDemand[j][i] = distributeIthEdgeBandwith;
+          vn.topology[i][j] = vn.topology[j][i] = true;
+          vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeIthEdgeBandwith;
         }
       }
     }
@@ -261,12 +274,12 @@ public class Algorithm {
         }
       }
     }
-    for (int i = 0; i < VN.nodeSize; i++) {
-      this.sn.VNQIndexSet4sNode.get(VN.vNode2sNode[i]).addElement(this.sn.VNCollection.size());
-      for (int j = 0; j < VN.nodeSize; j++) {
-        for (int k = 0; k < VN.vEdge2sPath.get(i).get(j).size() - 1; k++) {
-          this.sn.VNQIndexSet4Edge.get(VN.vEdge2sPath.get(i).get(j).get(k)).get(VN.vEdge2sPath.get(i).get(j).get(k + 1))
-              .addElement(this.sn.VNCollection.size());
+    for (int i = 0; i < vn.nodeSize; i++) {
+      this.sn.VNQIndexSet4sNode.get(vn.vNode2sNode[i]).addElement(this.sn.VNCollection.size());
+      for (int j = 0; j < vn.nodeSize; j++) {
+        for (int k = 0; k < vn.vEdge2sPath.get(i).get(j).size() - 1; k++) {
+          this.sn.VNQIndexSet4Edge.get(vn.vEdge2sPath.get(i).get(j).get(k))
+              .get(vn.vEdge2sPath.get(i).get(j).get(k + 1)).addElement(this.sn.VNCollection.size());
         }
       }
     }
@@ -291,11 +304,12 @@ public class Algorithm {
       vn.setIsRunning(true);
       this.sn.VNSuceedEmbedSum++;
       this.sn.VNCollection.addElement(vn);
-      algorithmLog.info(
-          "Alg: " + this.algorithmName + " Succeed to generate (" + (this.sn.VNCollection.size() - 1) + ")-th  VN");
+      algorithmLog.info("Alg: " + this.algorithmName + " Succeed to generate ("
+          + (this.sn.VNCollection.size() - 1) + ")-th  VN");
     } else {
       this.sn.clearTempResource();
-      algorithmLog.warn("Alg: " + this.algorithmName + " Fail to generate (" + this.sn.VNCollection.size() + ")-th VN");
+      algorithmLog.warn("Alg: " + this.algorithmName + " Fail to generate ("
+          + this.sn.VNCollection.size() + ")-th VN");
       return;
     }
 
@@ -325,7 +339,8 @@ public class Algorithm {
     if (EVN.startEnhanceVirtualNetwork(this.isExact, this.isFailDep, this.sequence)) {
       if (distributeResource4EVN(EVN)) {
         EVN.isSucceed = true;
-        algorithmLog.info("Alg: " + this.algorithmName + " Succeed distribute enough resource 4 EVN");
+        algorithmLog
+            .info("Alg: " + this.algorithmName + " Succeed distribute enough resource 4 EVN");
         return true;
       } else {
         if (Parameter.IsReleaseVNafterEVNFailure) {
@@ -334,7 +349,8 @@ public class Algorithm {
         algorithmLog.info("Alg: " + this.algorithmName + " Fail distribute enough resource 4 EVN");
       }
     } else {
-      algorithmLog.info("Alg: " + this.algorithmName + " Algorithm Fail to obtain the solution of EVN");
+      algorithmLog
+          .info("Alg: " + this.algorithmName + " Algorithm Fail to obtain the solution of EVN");
     }
     return false;
   }
@@ -348,9 +364,9 @@ public class Algorithm {
       int nodeResource = 0;
       for (int j = 0; j < evn.nodeSize; j++) {
         if (i == evn.eNode2sNode[j]) {
-          if (j < evn.VN.nodeSize) {
-            if (evn.nodeComputationUsed[j] - evn.VN.nodeComputationDemand[j] > 0) {
-              nodeResource += evn.nodeComputationUsed[j] - evn.VN.nodeComputationDemand[j];
+          if (j < evn.virNet.nodeSize) {
+            if (evn.nodeComputationUsed[j] - evn.virNet.nodeComputationDemand[j] > 0) {
+              nodeResource += evn.nodeComputationUsed[j] - evn.virNet.nodeComputationDemand[j];
             }
           } else {
             if (evn.nodeComputationUsed[j] > 0) {
@@ -363,7 +379,8 @@ public class Algorithm {
         if (nodeResource < this.sn.getSubstrateRemainComputaion4EVN(i, this.isShared)) {
           this.sn.nodeComputation4Temp[i] += nodeResource;
         } else {
-          algorithmLog.warn("Fail to distribute enhacned network (" + i + ") node into substrate network");
+          algorithmLog
+              .warn("Fail to distribute enhacned network (" + i + ") node into substrate network");
           return false;
         }
       }
@@ -377,7 +394,8 @@ public class Algorithm {
       for (int j = 0; j < evn.nodeSize; j++) {
         if (i < evn.nodeSize4Embeded && j < evn.nodeSize4Embeded) {
 
-          evn.edgeBandwithEnhanced[i][j] = evn.edgeBandwithUsed[i][j] - evn.VN.edgeBandwithDemand[i][j];
+          evn.edgeBandwithEnhanced[i][j] = evn.edgeBandwithUsed[i][j]
+              - evn.virNet.edgeBandwithDemand[i][j];
         } else {
           evn.edgeBandwithEnhanced[i][j] = evn.edgeBandwithUsed[i][j];
         }
@@ -402,15 +420,15 @@ public class Algorithm {
           List<Integer> pathList = new LinkedList<Integer>();
 
           // do not split shortest path
-          pathList = shortestPath.Dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempTopology);
+          pathList = shortestPath.dijkstra(evn.eNode2sNode[i], evn.eNode2sNode[j], tempTopology);
           if (pathList == null) {
-            algorithmLog
-                .warn("Fail to embedd enhanced network (" + i + "--" + j + ") edge into substrate network: null value");
+            algorithmLog.warn("Fail to embedd enhanced network (" + i + "--" + j
+                + ") edge into substrate network: null value");
             return false;
           }
           if (pathList.isEmpty()) {
-            algorithmLog
-                .warn("Fail to embedd enhanced network (" + i + "--" + j + ") edge into substrate network: lack path");
+            algorithmLog.warn("Fail to embedd enhanced network (" + i + "--" + j
+                + ") edge into substrate network: lack path");
             return false;
           }
 
@@ -442,15 +460,17 @@ public class Algorithm {
       for (int j = 0; j < evn.nodeSize; j++) {
         for (int k = 0; k < evn.eEdge2sPath.get(i).get(j).size() - 1; k++) {
           this.sn.EVNIndexSet4Edge.get(evn.eEdge2sPath.get(i).get(j).get(k))
-              .get(evn.eEdge2sPath.get(i).get(j).get(k + 1)).addElement(this.sn.EVNCollection.size());
+              .get(evn.eEdge2sPath.get(i).get(j).get(k + 1))
+              .addElement(this.sn.EVNCollection.size());
         }
       }
     }
 
     // set node and edge new value
     for (int i = 0; i < evn.nodeSize; i++) {
-      if (i < evn.VN.nodeSize) {
-        evn.nodeComputationEnhanced[i] = evn.nodeComputationUsed[i] - evn.VN.nodeComputationDemand[i];
+      if (i < evn.virNet.nodeSize) {
+        evn.nodeComputationEnhanced[i] = evn.nodeComputationUsed[i]
+            - evn.virNet.nodeComputationDemand[i];
       } else {
         evn.nodeComputationEnhanced[i] = evn.nodeComputationUsed[i];
       }
@@ -610,14 +630,20 @@ public class Algorithm {
 
   /**
    * setParameter.
-   * @param string
-   * @param sn_FI_NoShared
+   * 
+   * @param algName
+   *          algName
+   * @param sn
+   *          sn
    * @param isExact
+   *          isExact
    * @param failureindependent
+   *          failureindependent
    * @param isShared
+   *          isShared
    */
-  public void setParameter(String algName, SubstrateNetwork sn, boolean isExact, boolean failureindependent,
-      boolean isShared) {
+  public void setParameter(String algName, SubstrateNetwork sn, boolean isExact,
+      boolean failureindependent, boolean isShared) {
     this.algorithmName = algName;
     this.sn = sn;
     this.isExact = isExact;

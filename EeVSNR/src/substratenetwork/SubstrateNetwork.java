@@ -131,7 +131,8 @@ public class SubstrateNetwork implements Cloneable {
       for (int i = 0; i < this.EVNIndexSet4sNode.get(nodeloc).size(); i++) {
         int ithEVN = this.EVNIndexSet4sNode.get(nodeloc).get(i);
         int temp = 0;
-        if (this.VNCollection.get(ithEVN).getIsRunning() && this.EVNCollection.get(ithEVN).isSucceed) {
+        if (this.VNCollection.get(ithEVN).getIsRunning()
+            && this.EVNCollection.get(ithEVN).isSucceed) {
           for (int j = 0; j < this.EVNCollection.get(ithEVN).getNodeSize(); j++) {
             if (nodeloc == this.EVNCollection.get(ithEVN).eNode2sNode[j]) {
               // one substrate network node map multiple virtual
@@ -184,12 +185,15 @@ public class SubstrateNetwork implements Cloneable {
         int ithEVN = this.EVNIndexSet4Edge.get(from).get(to).get(i);
 
         int tempBandwith = 0;
-        if (this.VNCollection.get(ithEVN).getIsRunning() && this.EVNCollection.get(ithEVN).isSucceed) {
+        if (this.VNCollection.get(ithEVN).getIsRunning()
+            && this.EVNCollection.get(ithEVN).isSucceed) {
           for (int p = 0; p < this.EVNCollection.get(ithEVN).getNodeSize(); p++) {
             for (int q = 0; q < this.EVNCollection.get(ithEVN).getNodeSize(); q++) {
-              for (int t = 0; t < (this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).size() - 1); t++) {
+              for (int t = 0; t < (this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).size()
+                  - 1); t++) {
                 if (from == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t)
-                    && (to == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q).get(t + 1))) {
+                    && (to == this.EVNCollection.get(ithEVN).eEdge2sPath.get(p).get(q)
+                        .get(t + 1))) {
 
                   tempBandwith += this.EVNCollection.get(ithEVN).edgeBandwithEnhanced[p][q];
                 }
