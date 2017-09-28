@@ -11,6 +11,7 @@ import java.util.Vector;
 
 /**
  * Result.
+ * 
  * @author Taoheng
  *
  */
@@ -33,11 +34,16 @@ public class Result {
    * Result.
    */
   public Result() {
-    arrayAcceptionRatioEvn = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-    arrayAcceptionRatioVn = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-    arrayMappingCostEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-    arrayMappingCostNode = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-    arrayMappingCostNodeUsed = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+    arrayAcceptionRatioEvn = new double[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayAcceptionRatioVn = new double[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayMappingCostEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayMappingCostNode = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayMappingCostNodeUsed = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
     acceptionRatioDataLength = 0;
     mappingCostDataLength = 0;
   }
@@ -55,45 +61,56 @@ public class Result {
       }
       FileWriter TexFileWriter = new FileWriter(f_TexFileWriter);
       TexFileWriter.write(prefix + "addNewNodeCost" + "}{" + Parameter.addNewVirNodeCost + "}\n");
-      TexFileWriter.write(prefix + "transformExistedNodeCost" + "}{" + Parameter.transformExistedNodeCost + "}\n");
-      TexFileWriter.write(prefix + "addNodeComputaionCost" + "}{" + Parameter.addNodeComputaionCost + "}\n");
-      TexFileWriter.write(prefix + "addEdgeBandwithCost" + "}{" + Parameter.addEdgeBandwithCost + "}\n");
+      TexFileWriter.write(
+          prefix + "transformExistedNodeCost" + "}{" + Parameter.transformExistedNodeCost + "}\n");
+      TexFileWriter
+          .write(prefix + "addNodeComputaionCost" + "}{" + Parameter.addNodeComputaionCost + "}\n");
+      TexFileWriter
+          .write(prefix + "addEdgeBandwithCost" + "}{" + Parameter.addEdgeBandwithCost + "}\n");
       TexFileWriter.write(prefix + "RelativeCostbetweenComputingBandwidth" + "}{"
           + Parameter.RelativeCostbetweenComputingBandwidth + "}\n");
 
-      TexFileWriter
-          .write(prefix + "SubstrateNewtorkRunTimeInterval" + "}{" + Parameter.SubstrateNewtorkRunTimeInterval + "}\n");
+      TexFileWriter.write(prefix + "SubstrateNewtorkRunTimeInterval" + "}{"
+          + Parameter.SubstrateNewtorkRunTimeInterval + "}\n");
       TexFileWriter.write(prefix + "unitTimeInterval" + "}{" + Parameter.unitTimeInterval + "}\n");
-      TexFileWriter.write(prefix + "requestAppearProbability" + "}{" + Parameter.requestAppearProbability + "}\n");
-      TexFileWriter.write(prefix + "VNRequestsDuration" + "}{" + Parameter.VNRequestsDuration + "}\n");
-      TexFileWriter
-          .write(prefix + "VNRequestsContinueTimeMinimum" + "}{" + Parameter.VNRequestsContinueTimeMinimum + "}\n");
-      TexFileWriter
-          .write(prefix + "VNRequestsContinueTimeMaximum" + "}{" + Parameter.VNRequestsContinueTimeMaximum + "}\n");
-
-      TexFileWriter.write(prefix + "SubStrateNodeSize" + "}{" + Parameter.SubStrateNodeSize + "}\n");
-      TexFileWriter
-          .write(prefix + "SubStrateNodeComputationMinimum" + "}{" + Parameter.SubStrateNodeComputationMinimum + "}\n");
-      TexFileWriter
-          .write(prefix + "SubStrateNodeComputationMaximum" + "}{" + Parameter.SubStrateNodeComputationMaximum + "}\n");
-      TexFileWriter
-          .write(prefix + "SubStrateNodenodeProbability" + "}{" + Parameter.SubStrateNodenodeProbability + "}\n");
-      TexFileWriter
-          .write(prefix + "SubStrateEdgeBandwithMinimum" + "}{" + Parameter.SubStrateEdgeBandwithMinimum + "}\n");
-      TexFileWriter
-          .write(prefix + "SubStrateEdgeBandwithMaximum" + "}{" + Parameter.SubStrateEdgeBandwithMaximum + "}\n");
-
-      TexFileWriter.write(prefix + "VirtualNodeSizeMinimum" + "}{" + Parameter.VirtualNodeSizeMinimum + "}\n");
-      TexFileWriter.write(prefix + "VirtualNodeSizeMaximum" + "}{" + Parameter.VirtualNodeSizeMaximum + "}\n");
-      TexFileWriter
-          .write(prefix + "VirtualNodeComputationMinimum" + "}{" + Parameter.VirtualNodeComputationMinimum + "}\n");
-      TexFileWriter
-          .write(prefix + "VirtualNodeComputationMaximum" + "}{" + Parameter.VirtualNodeComputationMaximum + "}\n");
-      TexFileWriter.write(prefix + "VirtualNodenodeProbability" + "}{" + Parameter.VirtualNodenodeProbability + "}\n");
-      TexFileWriter.write(prefix + "VirtualEdgeBandwithMinimum" + "}{" + Parameter.VirtualEdgeBandwithMinimum + "}\n");
-      TexFileWriter.write(prefix + "VirtualEdgeBandwithMaximum" + "}{" + Parameter.VirtualEdgeBandwithMaximum + "}\n");
       TexFileWriter.write(
-          prefix + "SubStrateFacilityNodeFailDuration" + "}{" + Parameter.SubStrateFacilityNodeFailDuration + "}\n");
+          prefix + "requestAppearProbability" + "}{" + Parameter.RequestAppearProbability + "}\n");
+      TexFileWriter
+          .write(prefix + "VNRequestsDuration" + "}{" + Parameter.VirNetDuration + "}\n");
+      TexFileWriter.write(prefix + "VNRequestsContinueTimeMinimum" + "}{"
+          + Parameter.VNRequestsContinueTimeMinimum + "}\n");
+      TexFileWriter.write(prefix + "VNRequestsContinueTimeMaximum" + "}{"
+          + Parameter.VNRequestsContinueTimeMaximum + "}\n");
+
+      TexFileWriter
+          .write(prefix + "SubStrateNodeSize" + "}{" + Parameter.SubStrateNodeSize + "}\n");
+      TexFileWriter.write(prefix + "SubStrateNodeComputationMinimum" + "}{"
+          + Parameter.SubStrateNodeComputationMinimum + "}\n");
+      TexFileWriter.write(prefix + "SubStrateNodeComputationMaximum" + "}{"
+          + Parameter.SubStrateNodeComputationMaximum + "}\n");
+      TexFileWriter.write(prefix + "SubStrateNodenodeProbability" + "}{"
+          + Parameter.SubStrateNodenodeProbability + "}\n");
+      TexFileWriter.write(prefix + "SubStrateEdgeBandwithMinimum" + "}{"
+          + Parameter.SubStrateEdgeBandwithMinimum + "}\n");
+      TexFileWriter.write(prefix + "SubStrateEdgeBandwithMaximum" + "}{"
+          + Parameter.SubStrateEdgeBandwithMaximum + "}\n");
+
+      TexFileWriter.write(
+          prefix + "VirtualNodeSizeMinimum" + "}{" + Parameter.VirtualNodeSizeMinimum + "}\n");
+      TexFileWriter.write(
+          prefix + "VirtualNodeSizeMaximum" + "}{" + Parameter.VirtualNodeSizeMaximum + "}\n");
+      TexFileWriter.write(prefix + "VirtualNodeComputationMinimum" + "}{"
+          + Parameter.VirtualNodeComputationMinimum + "}\n");
+      TexFileWriter.write(prefix + "VirtualNodeComputationMaximum" + "}{"
+          + Parameter.VirtualNodeComputationMaximum + "}\n");
+      TexFileWriter.write(prefix + "VirtualNodenodeProbability" + "}{"
+          + Parameter.VirtualNodenodeProbability + "}\n");
+      TexFileWriter.write(prefix + "VirtualEdgeBandwithMinimum" + "}{"
+          + Parameter.VirtualEdgeBandwithMinimum + "}\n");
+      TexFileWriter.write(prefix + "VirtualEdgeBandwithMaximum" + "}{"
+          + Parameter.VirtualEdgeBandwithMaximum + "}\n");
+      TexFileWriter.write(prefix + "SubStrateFacilityNodeFailDuration" + "}{"
+          + Parameter.SubStrateFacilityNodeFailDuration + "}\n");
 
       TexFileWriter.flush();
       TexFileWriter.close();
@@ -120,11 +137,12 @@ public class Result {
    * @param algorithm
    * @param time
    */
-  private void recordExperimentData4MigrationFrequence(int experimentTimes, Algorithm algorithm, int time) {
-    File f_MappingCost_node = new File(
-        fileAbsolutePath + dataFilePathString + "MigrationFrequence_node" + algorithm.algorithmName + ".txt");
-    File f_MappingCost_edge = new File(
-        fileAbsolutePath + dataFilePathString + "MigrationFrequence_edge" + algorithm.algorithmName + ".txt");
+  private void recordExperimentData4MigrationFrequence(int experimentTimes, Algorithm algorithm,
+      int time) {
+    File f_MappingCost_node = new File(fileAbsolutePath + dataFilePathString
+        + "MigrationFrequence_node" + algorithm.algorithmName + ".txt");
+    File f_MappingCost_edge = new File(fileAbsolutePath + dataFilePathString
+        + "MigrationFrequence_edge" + algorithm.algorithmName + ".txt");
     FileWriter fw_MigrationFrequence_node;
     FileWriter fw_MigrationFrequence_edge;
 
@@ -159,10 +177,10 @@ public class Result {
 
         int failnode = (int) (Math.random() * (algorithm.getSn().nodeSize - 1));
         int migrate = 0;
-        for (int i = 0; i < algorithm.getSn().VNCollection.size(); i++) {
-          if (algorithm.getSn().VNCollection.get(i).getIsRunning()) {
-            for (int j = 0; j < algorithm.getSn().VNCollection.get(i).nodeSize; j++) {
-              if (algorithm.getSn().VNCollection.get(i).vNode2sNode[j] == failnode) {
+        for (int i = 0; i < algorithm.getSn().virNetCollection.size(); i++) {
+          if (algorithm.getSn().virNetCollection.get(i).getIsRunning()) {
+            for (int j = 0; j < algorithm.getSn().virNetCollection.get(i).nodeSize; j++) {
+              if (algorithm.getSn().virNetCollection.get(i).vNode2sNode[j] == failnode) {
                 migrate++;
               }
             }
@@ -187,10 +205,10 @@ public class Result {
    * @param algorithm
    */
   private void writeExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm) {
-    File f_AcceptionRatio_evn = new File(
-        fileAbsolutePath + dataFilePathString + "AcceptionRatio_EVN_" + algorithm.algorithmName + ".txt");
-    File f_AcceptionRatio_vn = new File(
-        fileAbsolutePath + dataFilePathString + "AcceptionRatio_VN_" + algorithm.algorithmName + ".txt");
+    File f_AcceptionRatio_evn = new File(fileAbsolutePath + dataFilePathString
+        + "AcceptionRatio_EVN_" + algorithm.algorithmName + ".txt");
+    File f_AcceptionRatio_vn = new File(fileAbsolutePath + dataFilePathString + "AcceptionRatio_VN_"
+        + algorithm.algorithmName + ".txt");
     FileWriter fw_AcceptionRatio_evn;
     FileWriter fw_AcceptionRatio_vn;
 
@@ -239,17 +257,18 @@ public class Result {
    * @param algorithm
    * 
    */
-  private void recordExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm, int time) {
+  private void recordExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm,
+      int time) {
 
-    if (0 == algorithm.getSn().VNCollection.size()) {
+    if (0 == algorithm.getSn().virNetCollection.size()) {
       arrayAcceptionRatioEvn[acceptionRatioDataLength] = 1.0;
       arrayAcceptionRatioVn[acceptionRatioDataLength] = 1.0;
 
     } else {
-      arrayAcceptionRatioEvn[acceptionRatioDataLength] = (1.0 * algorithm.getSn().EVNSuceedEmbedSum
-          / algorithm.getSn().vnqNumber);
-      arrayAcceptionRatioVn[acceptionRatioDataLength] = (1.0 * algorithm.getSn().VNSuceedEmbedSum
-          / algorithm.getSn().vnqNumber);
+      arrayAcceptionRatioEvn[acceptionRatioDataLength] = (1.0
+          * algorithm.getSn().surVirNetSuceedEmbedSum / algorithm.getSn().virNetSum);
+      arrayAcceptionRatioVn[acceptionRatioDataLength] = (1.0
+          * algorithm.getSn().virNetSuceedEmbedSum / algorithm.getSn().virNetSum);
 
     }
     acceptionRatioDataLength++;
@@ -257,33 +276,33 @@ public class Result {
   }
 
   /**
-   * @param experimentTimes
-   * @param algorithms
+   * recordExperimentParameter.
+   * @param experimentTimes experimentTimes
+   * @param algorithms algorithms
    * 
    */
   public void recordExperimentParameter(int experimentTimes, Vector<Algorithm> algorithms) {
-    File f_Parameter = new File(fileAbsolutePath + dataFilePathString + "Parameter.txt");
-    FileWriter fw_Parameter;
+    File flParameter = new File(fileAbsolutePath + dataFilePathString + "Parameter.txt");
+    FileWriter fwParameter;
 
-    if (!f_Parameter.exists()) {
+    if (!flParameter.exists()) {
       try {
-        f_Parameter.createNewFile();
+        flParameter.createNewFile();
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
     if (experimentTimes == 0) {
       try {
-        fw_Parameter = new FileWriter(f_Parameter);
-        fw_Parameter.write(Parameter.ExperimentTimes + "\n");
-        fw_Parameter.write((Parameter.ExperimentPicturePlotNumber + 1) + "\n");
-        fw_Parameter.write(Parameter.SubstrateNewtorkRunTimeInterval + "\n");
-        fw_Parameter.write(algorithms.size() + "\n");
-        fw_Parameter.write(Parameter.RelativeCostbetweenComputingBandwidth + "\n");
-
-        fw_Parameter.write(Parameter.addNewVirNodeCost + "\n");
-        fw_Parameter.flush();
-        fw_Parameter.close();
+        fwParameter = new FileWriter(flParameter);
+        fwParameter.write(Parameter.ExperimentTimes + "\n");
+        fwParameter.write((Parameter.ExperimentPicturePlotNumber + 1) + "\n");
+        fwParameter.write(Parameter.SubstrateNewtorkRunTimeInterval + "\n");
+        fwParameter.write(algorithms.size() + "\n");
+        fwParameter.write(Parameter.RelativeCostbetweenComputingBandwidth + "\n");
+        fwParameter.write(Parameter.addNewVirNodeCost + "\n");
+        fwParameter.flush();
+        fwParameter.close();
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -296,7 +315,8 @@ public class Result {
    * @param algorithm
    * @param time
    */
-  private void recordExperimentData4MappingCost(int experimentTimes, Algorithm algorithm, int time) {
+  private void recordExperimentData4MappingCost(int experimentTimes, Algorithm algorithm,
+      int time) {
 
     int nodeCompution = 0;
     int nodeUsed = 0;
@@ -328,12 +348,12 @@ public class Result {
    * @param algorithm
    */
   public void writeExperimentData4MappingCost(int experimentTimes, Algorithm algorithm) {
-    File f_MappingCost_node = new File(
-        fileAbsolutePath + dataFilePathString + "MappingCost_node_" + algorithm.algorithmName + ".txt");
-    File f_MappingCost_nodeUsed = new File(
-        fileAbsolutePath + dataFilePathString + "MappingCost_nodeUsed_" + algorithm.algorithmName + ".txt");
-    File f_MappingCost_edge = new File(
-        fileAbsolutePath + dataFilePathString + "MappingCost_edge_" + algorithm.algorithmName + ".txt");
+    File f_MappingCost_node = new File(fileAbsolutePath + dataFilePathString + "MappingCost_node_"
+        + algorithm.algorithmName + ".txt");
+    File f_MappingCost_nodeUsed = new File(fileAbsolutePath + dataFilePathString
+        + "MappingCost_nodeUsed_" + algorithm.algorithmName + ".txt");
+    File f_MappingCost_edge = new File(fileAbsolutePath + dataFilePathString + "MappingCost_edge_"
+        + algorithm.algorithmName + ".txt");
     FileWriter fw_MappingCost_node;
     FileWriter fw_MappingCost_edge;
     FileWriter fw_MappingCost_nodeUsed;

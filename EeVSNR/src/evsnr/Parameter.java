@@ -31,14 +31,14 @@ public class Parameter {
   // /home/franz/franzDocuments/eclipse4cworkspace/EeVSNR
   public static final String FileAbsolutePath = "C:\\Users\\Taoheng\\Desktop\\NFT4VNR";
 
-  public static final boolean isSameVNQ4EveryTime = true;
+  public static final boolean isSameVirNet4EveryTime = true;
   public static final boolean IsReleaseVNafterEVNFailure = false;
   public static final int ExperimentTimes = 10;
 
   public static final long SubstrateNewtorkRunTimeInterval = 1000;// 30000
   public static final long unitTimeInterval = 1;
-  public static final double requestAppearProbability = 0.1;// 0.1
-  public static final long VNRequestsDuration = 1;
+  public static final double RequestAppearProbability = 0.1;// 0.1
+  public static final long VirNetDuration = 1;
   public static final long VNRequestsContinueTimeMinimum = 25;
   public static final long VNRequestsContinueTimeMaximum = 500;
   // ExperimentPicture

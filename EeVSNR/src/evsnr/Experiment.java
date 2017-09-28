@@ -30,6 +30,9 @@ public class Experiment {
 
   Vector<Algorithm> algorithms;
 
+  /**
+   * Experiment .
+   */
   public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp, Result result) {
     this.basicSubstrateNework = sn;
     this.vnp = vnp;
@@ -49,14 +52,14 @@ public class Experiment {
   public void startExperiment() {
     for (int i = 0; i < Parameter.ExperimentTimes; i++) {
       generateComparableAlgorithm(this.vnp);
-      if (Parameter.isSameVNQ4EveryTime) {
+      if (Parameter.isSameVirNet4EveryTime) {
         runComparableAlgorithmInSameVirNet(i);
       } else {
         runComparableAlgorithm(i);
       }
-      this.result.recordExperimentParameter(i, algorithms);
 
     }
+    this.result.recordExperimentParameter(0, algorithms);
   }
 
   /**
@@ -68,20 +71,22 @@ public class Experiment {
   private void runComparableAlgorithmInSameVirNet(int experimentTimes) {
     for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++) {
       for (int alg = 0; alg < algorithms.size(); alg++) {
-
         if ((time % (Parameter.SubstrateNewtorkRunTimeInterval
             / Parameter.ExperimentPicturePlotNumber)) == 0) {
           this.algorithmResult[alg].recordExperimentData(experimentTimes, algorithms.get(alg),
               time);
         }
+        
         algorithms.get(alg).releaseResource(false);
-        if ((0 == (time % Parameter.VNRequestsDuration))) {
-          if ((Math.random() < Parameter.requestAppearProbability)) {
+        
+        if ((0 == (time % Parameter.VirNetDuration))) {
+          if ((Math.random() < Parameter.RequestAppearProbability)) {
             VirtualNetwork sameVirNet = new VirtualNetwork(this.vnp);
             constructSameVirNet(sameVirNet);
-            algorithms.get(alg).generateAndEnhanceVNrequest(sameVirNet);
+            algorithms.get(alg).generateAndProtectVirNet(sameVirNet);
           }
         }
+        
       }
     }
 
@@ -126,6 +131,8 @@ public class Experiment {
           Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
 
     }
+    
+    //edge demand
     for (int i = 0; i < vn.nodeSize; i++) {
       for (int j = 0; j < i; j++) {
         if ((Math.random() < vnp.node2nodeProbability)) {
@@ -156,9 +163,9 @@ public class Experiment {
           this.result.recordExperimentData(experimentTimes, algorithms.get(alg), time);
         }
         algorithms.get(alg).releaseResource(false);
-        if ((0 == (time % Parameter.VNRequestsDuration))
-            && (Math.random() < Parameter.requestAppearProbability)) {
-          algorithms.get(alg).generateAndEnhanceVNrequest(null);
+        if ((0 == (time % Parameter.VirNetDuration))
+            && (Math.random() < Parameter.RequestAppearProbability)) {
+          algorithms.get(alg).generateAndProtectVirNet(null);
         }
       }
       algorithms.get(alg).releaseResource(true);

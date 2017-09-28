@@ -21,6 +21,7 @@ public class BackupNode {
   public boolean[] isHaveSubstrateNodeResource4buNode;
 
   /**
+   * BackupNode.
    * @param sn
    *          sn
    * @param vn
@@ -29,11 +30,11 @@ public class BackupNode {
    *          isShared
    */
   public BackupNode(SubstrateNetwork sn, VirtualNetwork vn, boolean isShared) {
+    // backup node number;
     boolean[] isUsedNode = new boolean[sn.nodeSize];
     for (int i = 0; i < vn.nodeSize; i++) {
       isUsedNode[vn.vNode2sNode[i]] = true;
     }
-    // backup node number;
     this.backupNodeSize = 0;
     for (int i = 0; i < sn.nodeSize; i++) {
       if (!isUsedNode[i]) {
@@ -42,7 +43,7 @@ public class BackupNode {
     }
 
     this.bNode2sNode = new int[this.backupNodeSize];
-    this.boolServiceTypeSet = new boolean[this.backupNodeSize][sn.serviceNumber];
+    this.boolServiceTypeSet = new boolean[this.backupNodeSize][sn.serviceNum];
     this.nodeComputationCapacity = new int[this.backupNodeSize];
     this.isHaveSubstrateNodeResource4buNode = new boolean[this.backupNodeSize];
     for (int i = 0, j = 0; i < sn.nodeSize; i++) {
@@ -52,11 +53,12 @@ public class BackupNode {
           isHaveSubstrateNodeResource4buNode[j] = true;
         }
 
-        for (int l = 0; l < sn.serviceNumber; l++) {
+        for (int l = 0; l < sn.serviceNum; l++) {
           boolServiceTypeSet[j][l] = sn.boolServiceTypeSet[i][l];
         }
-        this.nodeComputationCapacity[j] = sn.getSubstrateRemainComputaion4EVN(i, isShared);
+        this.nodeComputationCapacity[j] = sn.getSubstrateRemainComputaion4SurVirNet(i, isShared);
         j++;
+        
       }
     }
   }

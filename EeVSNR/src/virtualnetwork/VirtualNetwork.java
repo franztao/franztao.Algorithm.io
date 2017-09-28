@@ -25,7 +25,7 @@ public class VirtualNetwork {
   public int edgeBandwithDemand[][];
   public Vector<Vector<Vector<Integer>>> vEdge2sPath;
 
-  public int serviceNumber;
+  public int serviceNum;
   public int nodeServiceType[];
 
   public String node2Label[];
@@ -34,31 +34,32 @@ public class VirtualNetwork {
 
   public boolean isSampleInit;
 
-  public EnhancedVirtualNetwork EVN;
+  public SurvivalVirtualNetwork surVirNet;
 
   /**
-   * @param vnp
+   * VirtualNetwork.
+   * @param vnp vnp
    */
   public VirtualNetwork(VirtualNetworkParameter vnp) {
     this.nodeSize = (int) (vnp.nodeSizeMinimum
         + Math.random() * (vnp.nodeSizeMaximum - vnp.nodeSizeMinimum));
-    this.serviceNumber = vnp.serviceNumber;
+    this.serviceNum = vnp.serviceNumber;
     instantiation();
 
   }
 
   /**
-   * @param vnp
-   * @param sameVN
+   * VirtualNetwork.
+   * @param sameVirNet sameVirNet
    */
-  public VirtualNetwork(VirtualNetworkParameter vnp, VirtualNetwork sameVN) {
-    this.nodeSize = sameVN.nodeSize;
-    this.serviceNumber = sameVN.serviceNumber;
+  public VirtualNetwork(VirtualNetwork sameVirNet) {
+    this.nodeSize = sameVirNet.nodeSize;
+    this.serviceNum = sameVirNet.serviceNum;
     instantiation();
   }
 
   /**
-   * 
+   * instantiation.
    */
   private void instantiation() {
     this.vNode2sNode = new int[nodeSize];
@@ -193,7 +194,7 @@ public class VirtualNetwork {
    * @return the serviceNumber
    */
   public int getServiceNumber() {
-    return serviceNumber;
+    return serviceNum;
   }
 
   /**
@@ -201,7 +202,7 @@ public class VirtualNetwork {
    *          the serviceNumber to set
    */
   public void setServiceNumber(int serviceNumber) {
-    this.serviceNumber = serviceNumber;
+    this.serviceNum = serviceNumber;
   }
 
   /**
