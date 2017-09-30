@@ -14,7 +14,7 @@ import virtualnetwork.VirtualNetworkParameter;
 public class BackupNode {
 
   public int backupNodeSize;
-  public int[] bNode2sNode;
+  public int[] backNode2subNode;
   public boolean[][] boolServiceTypeSet;
   public int[] nodeComputationCapacity;
 
@@ -33,7 +33,7 @@ public class BackupNode {
     // backup node number;
     boolean[] isUsedNode = new boolean[sn.nodeSize];
     for (int i = 0; i < vn.nodeSize; i++) {
-      isUsedNode[vn.vNode2sNode[i]] = true;
+      isUsedNode[vn.virNode2subNode[i]] = true;
     }
     this.backupNodeSize = 0;
     for (int i = 0; i < sn.nodeSize; i++) {
@@ -42,13 +42,13 @@ public class BackupNode {
       }
     }
 
-    this.bNode2sNode = new int[this.backupNodeSize];
+    this.backNode2subNode = new int[this.backupNodeSize];
     this.boolServiceTypeSet = new boolean[this.backupNodeSize][sn.serviceNum];
     this.nodeComputationCapacity = new int[this.backupNodeSize];
     this.isHaveSubstrateNodeResource4buNode = new boolean[this.backupNodeSize];
     for (int i = 0, j = 0; i < sn.nodeSize; i++) {
       if (!isUsedNode[i]) {
-        this.bNode2sNode[j] = i;
+        this.backNode2subNode[j] = i;
         if (sn.nodeComputationCapacity[i] == sn.getSubstrateRemainComputaion4VirNet(i, isShared)) {
           isHaveSubstrateNodeResource4buNode[j] = true;
         }

@@ -29,10 +29,16 @@ public class ShortestPath {
    *          nodeSize2
    */
   public ShortestPath(int nodeSize2) {
-    // TODO Auto-generated constructor stub
     this.nodeSize = nodeSize2;
   }
 
+  /**
+   * dijkstra.
+   * @param source source
+   * @param end end
+   * @param topo topo
+   * @return int
+   */
   public List<Integer> dijkstra(int source, int end, int[][] topo) {
     SimpleWeightedGraph<Integer, DefaultEdge> graph = new SimpleWeightedGraph<>(DefaultEdge.class);
     for (int i = 0; i < this.nodeSize; i++) {

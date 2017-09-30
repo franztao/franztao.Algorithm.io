@@ -4,6 +4,7 @@
 
 package virtualnetwork;
 
+import evsnr.Algorithm;
 import evsnr.Parameter;
 import gurobi.GRB;
 import gurobi.GRBEnv;
@@ -50,7 +51,7 @@ public class SurvivalVirtualNetwork {
   // edgeBandwithCapacity-usedEdgeCurrentBandwithCapacity
   public int[][] edgeBandwith4Comsume;
   public int[][] edgeBandwith4Backup;
-  public Vector<Vector<Vector<Integer>>> eEdge2sPath;
+  public Vector<Vector<Vector<Integer>>> surEdge2SubPath;
 
   public int serviceNum;
   public boolean[][] boolServiceTypeSet;
@@ -59,6 +60,7 @@ public class SurvivalVirtualNetwork {
   public Map<String, Integer> label2Node;
 
   public int[] virNode2surNode;
+  public int[] surNode2virNode;
   public int[] surNode2subNode;
 
   public VirtualNetwork virNet;
@@ -84,6 +86,8 @@ public class SurvivalVirtualNetwork {
     int starNodeServiceType;
     int starNodeComputation;
     int starNodeSurVirNetInd;
+
+    boolean[] nodeServiceTypeSet;
     Vector<StarEdgeStructure> neighborEdge;
     // Vector<Integer> neighborEnhancedVNID;
     // Vector<Integer> neighborEnhancedVNType;
@@ -131,11 +135,11 @@ public class SurvivalVirtualNetwork {
     this.topology = new boolean[this.nodeSize][this.nodeSize];
     this.edgeBandwith4Comsume = new int[this.nodeSize][this.nodeSize];
     this.edgeBandwith4Backup = new int[this.nodeSize][this.nodeSize];
-    eEdge2sPath = new Vector<Vector<Vector<Integer>>>();
+    surEdge2SubPath = new Vector<Vector<Vector<Integer>>>();
     for (int i = 0; i < this.nodeSize; i++) {
-      eEdge2sPath.addElement(new Vector<Vector<Integer>>());
+      surEdge2SubPath.addElement(new Vector<Vector<Integer>>());
       for (int j = 0; j < this.nodeSize; j++) {
-        eEdge2sPath.get(i).addElement(new Vector<Integer>());
+        surEdge2SubPath.get(i).addElement(new Vector<Integer>());
       }
     }
     // service
@@ -146,6 +150,7 @@ public class SurvivalVirtualNetwork {
     this.label2Node = new HashMap<String, Integer>();
     // embed function
     this.virNode2surNode = new int[this.virNet.nodeSize];
+    this.surNode2virNode = new int[this.virNet.nodeSize];
     this.surNode2subNode = new int[this.nodeSize];
 
     // knapsack problem
@@ -156,6 +161,8 @@ public class SurvivalVirtualNetwork {
   }
 
   /**
+   * nodeSize.
+   * 
    * @return the nodeSize
    */
   public int getNodeSize() {
@@ -163,6 +170,8 @@ public class SurvivalVirtualNetwork {
   }
 
   /**
+   * setNodeSize.
+   * 
    * @param nodeSize
    *          the nodeSize to set
    */
@@ -184,12 +193,12 @@ public class SurvivalVirtualNetwork {
       if (i < this.nodeSize4Failure) {
         this.nodeComputationCapacity[i] = vn.nodeComputationCapacity[i];
         this.nodeComputationConsume[i] = vn.nodeComputationDemand[i];
-        this.surNode2subNode[i] = vn.vNode2sNode[i];
+        this.surNode2subNode[i] = vn.virNode2subNode[i];
 
       } else {
         this.nodeComputationCapacity[i] = bn.nodeComputationCapacity[i - this.nodeSize4Failure];
         this.nodeComputationConsume[i] = 0;
-        this.surNode2subNode[i] = bn.bNode2sNode[i - this.nodeSize4Failure];
+        this.surNode2subNode[i] = bn.backNode2subNode[i - this.nodeSize4Failure];
         if (bn.isHaveSubstrateNodeResource4buNode[i - this.nodeSize4Failure]) {
           this.isSubNodeComEmpty[i] = true;
         }
@@ -197,6 +206,7 @@ public class SurvivalVirtualNetwork {
     }
     for (int i = 0; i < this.nodeSize4Failure; i++) {
       this.virNode2surNode[i] = i;
+      this.surNode2virNode[i] = i;
     }
     // edge
     for (int i = 0; i < this.nodeSize; i++) {
@@ -213,12 +223,13 @@ public class SurvivalVirtualNetwork {
     for (int i = 0; i < this.nodeSize; i++) {
       for (int j = 0; j < this.serviceNum; j++) {
         if (i < this.nodeSize4Failure) {
-          this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[vn.vNode2sNode[i]][j];
+          this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[vn.virNode2subNode[i]][j];
         } else {
-          this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[bn.bNode2sNode[i
+          this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[bn.backNode2subNode[i
               - this.nodeSize4Failure]][j];
         }
       }
+
     }
 
     // label
@@ -245,188 +256,20 @@ public class SurvivalVirtualNetwork {
     }
 
     for (int i = 0; i < this.nodeSize; i++) {
-      for (int j = 0; j < this.nodeSize; j++) {
+      for (int j = 0; j < i; j++) {
         consumedResource.consumeEdgeBandwith += this.edgeBandwith4Comsume[i][j];
         consumedResource.initEdgeBandwith += this.edgeBandwith4Comsume[i][j];
       }
     }
-    consumedResource.consumeEdgeBandwith /= 2;
-    consumedResource.initEdgeBandwith /= 2;
-
-  }
-
-  public void initSample1() {
-    nodeComputationCapacity[0] = 5;
-    nodeComputationCapacity[1] = 7;
-    nodeComputationCapacity[2] = 7;
-    nodeComputationCapacity[3] = 10;
-    nodeComputationCapacity[4] = 6;
-    nodeComputationCapacity[5] = 9;
-    nodeComputationCapacity[6] = 8;
-
-    nodeComputationConsume[0] = 2;
-    nodeComputationConsume[1] = 3;
-    nodeComputationConsume[2] = 5;
-    nodeComputationConsume[3] = 6;
-
-    edgeBandwith4Comsume[0][1] = 4;
-    edgeBandwith4Comsume[0][2] = 5;
-    edgeBandwith4Comsume[0][3] = 3;
-    edgeBandwith4Comsume[1][2] = 6;
-    edgeBandwith4Comsume[1][0] = 4;
-    edgeBandwith4Comsume[2][0] = 5;
-    edgeBandwith4Comsume[3][0] = 3;
-    edgeBandwith4Comsume[2][1] = 6;
-
-    for (int i = 0; i < nodeSize; i++) {
-      for (int j = 0; j < nodeSize; j++) {
-        if (0 != edgeBandwith4Comsume[i][j]) {
-          topology[i][j] = true;
-        }
-      }
-    }
-
-    boolServiceTypeSet[0][0] = true;
-    boolServiceTypeSet[1][1] = true;
-    boolServiceTypeSet[1][2] = true;
-    boolServiceTypeSet[2][2] = true;
-    boolServiceTypeSet[3][3] = true;
-    boolServiceTypeSet[4][0] = true;
-    boolServiceTypeSet[4][1] = true;
-    boolServiceTypeSet[5][0] = true;
-    boolServiceTypeSet[5][3] = true;
-    boolServiceTypeSet[6][1] = true;
-    boolServiceTypeSet[6][2] = true;
-
-    node2Label[0] = "E1";
-    node2Label[1] = "E2";
-    node2Label[2] = "E3";
-    node2Label[3] = "E4";
-    node2Label[4] = "B1";
-    node2Label[5] = "B2";
-    node2Label[6] = "B3";
-
-    label2Node.put("E1", 0);
-    label2Node.put("E2", 1);
-    label2Node.put("E3", 2);
-    label2Node.put("E4", 3);
-    label2Node.put("B1", 4);
-    label2Node.put("B2", 5);
-    label2Node.put("B3", 6);
-
-    // there may be some virtual node located into the same enhanced node
-    virNode2surNode[0] = 0;
-    virNode2surNode[1] = 1;
-    virNode2surNode[2] = 2;
-    virNode2surNode[3] = 3;
-
-    nodeSize4Backup = 3;
-    nodeSize4Failure = 4;
-
-    consumedResource.initEdgeBandwith = 18;
-    consumedResource.initNodeComputation = 16;
-    consumedResource.initNodeNumber = 4;
-
-    consumedResource.consumeEdgeBandwith = 18;
-    consumedResource.consumedNodeComputation = 16;
-    consumedResource.consumedNodeNumber = 4;
 
   }
 
   /**
-   * 
+   * obtainItems.
    */
-  public void initSample2() {
-    nodeComputationCapacity[0] = 7;
-    nodeComputationCapacity[1] = 5;
-    nodeComputationCapacity[2] = 3;
-    nodeComputationCapacity[3] = 7;
-
-    edgeBandwith4Comsume[0][1] = 3;
-    edgeBandwith4Comsume[1][0] = 3;
-
-    for (int i = 0; i < nodeSize; i++) {
-      for (int j = 0; j < nodeSize; j++) {
-        if (0 != edgeBandwith4Comsume[i][j]) {
-          topology[i][j] = true;
-        }
-      }
-    }
-
-    nodeComputationConsume[0] = 3;
-    nodeComputationConsume[1] = 4;
-
-    boolServiceTypeSet[0][0] = true;
-    boolServiceTypeSet[0][1] = true;
-    boolServiceTypeSet[1][1] = true;
-    boolServiceTypeSet[2][0] = true;
-    boolServiceTypeSet[3][0] = true;
-    boolServiceTypeSet[3][1] = true;
-
-    node2Label[0] = "E1";
-    node2Label[1] = "E2";
-    node2Label[2] = "B1";
-    node2Label[3] = "B2";
-
-    label2Node.put("E1", 0);
-    label2Node.put("E2", 1);
-    label2Node.put("B1", 2);
-    label2Node.put("B2", 3);
-
-    // there may be some virtual node located into the same enhanced node
-    virNode2surNode[0] = 0;
-    virNode2surNode[1] = 1;
-
-    nodeSize4Backup = 2;
-    nodeSize4Failure = 2;
-
-    consumedResource.initEdgeBandwith = 3;
-    consumedResource.initNodeComputation = 7;
-    consumedResource.initNodeNumber = 2;
-
-    consumedResource.consumeEdgeBandwith = 3;
-    consumedResource.consumedNodeComputation = 7;
-    consumedResource.consumedNodeNumber = 2;
-  }
-
-  /**
-   * 
-   */
-  public void initSample3() {
-    nodeComputationCapacity[0] = 5;
-    nodeComputationCapacity[1] = 5;
-
-    nodeComputationConsume[0] = 3;
-
-    boolServiceTypeSet[0][0] = true;
-    boolServiceTypeSet[1][0] = true;
-    boolServiceTypeSet[1][1] = true;
-
-    node2Label[0] = "E1";
-    node2Label[1] = "E2";
-
-    label2Node.put("E1", 0);
-    label2Node.put("B1", 1);
-
-    // there may be some virtual node located into the same enhanced node
-    virNode2surNode[0] = 0;
-
-    nodeSize4Backup = 1;
-    nodeSize4Failure = 1;
-
-    consumedResource.initEdgeBandwith = 0;
-    consumedResource.initNodeComputation = 3;
-    consumedResource.initNodeNumber = 1;
-
-    consumedResource.consumeEdgeBandwith = 0;
-    consumedResource.consumedNodeComputation = 3;
-    consumedResource.consumedNodeNumber = 1;
-  }
-
   public void obtainItems() {
     for (int i = 0; i < this.virNet.nodeSize; i++) {
       items[i] = new StarStructure();
-      // Items[i].starNodeVNID = i;
       items[i].starNodeSurVirNetInd = this.virNode2surNode[i];
       items[i].starNodeComputation = this.virNet.nodeComputationDemand[i];
       items[i].starNodeServiceType = this.virNet.nodeServiceType[i];
@@ -453,42 +296,38 @@ public class SurvivalVirtualNetwork {
   void constructKnapsacks(int failSurNode) {
     knapsacks = new Vector<StarStructure>();
     for (int i = 0; i < this.nodeSize; i++) {
-      if (i != failSurNode) {
-        if ((i < this.nodeSize4Failure)
-            && (this.surNode2subNode[this.virNode2surNode[i]] 
-                != this.surNode2subNode[this.virNode2surNode[failSurNode]])) {
-          continue;
-        }
+      if (this.surNode2subNode[i] != this.surNode2subNode[failSurNode]) {
+
+        StarStructure star = new StarStructure();
+        star.starNodeServiceType = -1;
+        star.nodeServiceTypeSet = new boolean[this.serviceNum];
         for (int j = 0; j < this.serviceNum; j++) {
-          if (this.boolServiceTypeSet[i][j]) {
-            
-            StarStructure star = new StarStructure();
-            star.starNodeServiceType = j;
-            star.starNodeSurVirNetInd = i;
-            star.starNodeComputation = this.nodeComputationConsume[i];
-            // ineffective value could be erased
-            star.neighborEdge = new Vector<StarEdgeStructure>();
-            
-            for (int k = 0; k < this.virNet.nodeSize; k++) {
-              int surNode = this.virNode2surNode[k];
-              
-              if (failSurNode != surNode) {
-                StarEdgeStructure edge = new StarEdgeStructure();
-                edge.neighborNode4VirNetInd = k;
-                edge.neighborNode4SurVirNetInd = surNode;
-                if (i == this.virNode2surNode[k]) {
-                  edge.neighborEdgeBandwithCapacity = Integer.MAX_VALUE;
-                } else {
-                  edge.neighborEdgeBandwithCapacity = this.edgeBandwith4Comsume[i][surNode];
-                }
-                edge.neighborNodeType = this.virNet.nodeServiceType[k];
-                star.neighborEdge.addElement(edge);
-              }
-              
-            }
-            knapsacks.addElement(star);
-          }
+          star.nodeServiceTypeSet[j] = this.boolServiceTypeSet[i][j];
         }
+        star.starNodeSurVirNetInd = i;
+        star.starNodeComputation = this.nodeComputationConsume[i];
+        // ineffective value could be erased
+        star.neighborEdge = new Vector<StarEdgeStructure>();
+
+        for (int k = 0; k < this.virNet.nodeSize; k++) {
+          int surNode = this.virNode2surNode[k];
+
+          if (failSurNode != surNode) {
+            StarEdgeStructure edge = new StarEdgeStructure();
+            edge.neighborNode4VirNetInd = k;
+            edge.neighborNode4SurVirNetInd = surNode;
+            if (i == this.virNode2surNode[k]) {
+              edge.neighborEdgeBandwithCapacity = Integer.MAX_VALUE;
+            } else {
+              edge.neighborEdgeBandwithCapacity = this.edgeBandwith4Comsume[i][surNode];
+            }
+            edge.neighborNodeType = this.virNet.nodeServiceType[k];
+            star.neighborEdge.addElement(edge);
+          }
+
+        }
+        knapsacks.addElement(star);
+
       }
     }
   }
@@ -500,20 +339,21 @@ public class SurvivalVirtualNetwork {
    *          failureNodeID
    * @param isFailDep
    *          failurtype
-   * @param solution
+   * @param ithItem2ithKnapsack
    *          solution
    * @return int
    * @throws GRBException
    *           GRBException
    */
-  public int failIthNode(int failSurNode, boolean isFailDep, int[] solution) throws GRBException {
+  public int failIthNode(int failSurNode, boolean isFailDep, int[] ithItem2ithKnapsack)
+      throws GRBException {
     constructKnapsacks(failSurNode);
     MulitpleKnapsack mkp = new MulitpleKnapsack(this.virNet.nodeSize, knapsacks.size(),
         this.nodeSize);
     constructMultipleKnapsackProbem(mkp, isFailDep);
     int optimalResult = -1;
     if (this.matchMethod == Parameter.MatchMethodDP) {
-      optimalResult = mkp.optimalSoutionDP(solution);
+      optimalResult = mkp.optimalSoutionDP(ithItem2ithKnapsack);
       if (optimalResult == -1) {
         loggerEnhancedVirtualNetwork
             .warn("Failure node: " + failSurNode + ", there is not solution");
@@ -521,8 +361,8 @@ public class SurvivalVirtualNetwork {
       }
     }
 
-    if (this.matchMethod == Parameter.MatchMethodILP) {
-      optimalResult = mkp.optimalSoutionILP(solution);
+    if (this.matchMethod == Parameter.MatchMethodIP) {
+      optimalResult = mkp.optimalSoutionIntegerPrograming(ithItem2ithKnapsack);
       if (optimalResult == -1) {
         loggerEnhancedVirtualNetwork
             .warn("Failure node: " + failSurNode + ", there is not solution");
@@ -535,46 +375,62 @@ public class SurvivalVirtualNetwork {
   }
 
   /**
+   * augmentNodeEdge.
+   * 
    * @param solution
+   *          solution
+   * @param failNode
+   *          failurenodeID
+   * @param matchMehtod
+   *          Method
    */
-  private void augmentNodeEdge(int[] solution, int failurenodeID, int Method) {
+  private void augmentNodeEdge(int[] solution, int failNode, int matchMehtod) {
 
-    int virutialNode2NewEnhancedVirtualNode[] = new int[this.virNet.nodeSize];
-    if (Method == Parameter.MatchMethodILP) {
+    int[] virutialNode2NewSurvivalVirtualNode = new int[this.virNet.nodeSize];
+    if (matchMehtod == Parameter.MatchMethodIP) {
       for (int i = 0; i < this.virNet.nodeSize; i++) {
-        virutialNode2NewEnhancedVirtualNode[i] = knapsacks
+        virutialNode2NewSurvivalVirtualNode[i] = knapsacks
             .elementAt(solution[i]).starNodeSurVirNetInd;
       }
     }
-    if (Method == Parameter.MatchMethodDP) {
+    if (matchMehtod == Parameter.MatchMethodDP) {
       for (int i = 0; i < this.virNet.nodeSize; i++) {
-        virutialNode2NewEnhancedVirtualNode[i] = solution[i];
+        virutialNode2NewSurvivalVirtualNode[i] = solution[i];
         // System.out.println(virutialNode2NewVirtualNode[i] + 1);
       }
     }
 
     for (int i = 0; i < this.virNet.nodeSize; i++) {
+      int ithVirNode2ithSurNode = virutialNode2NewSurvivalVirtualNode[i];
       // add node computation
-      if (this.nodeComputationConsume[virutialNode2NewEnhancedVirtualNode[i]] < items[i].starNodeComputation)
-        this.nodeComputationConsume[virutialNode2NewEnhancedVirtualNode[i]] = items[i].starNodeComputation;
+      if (this.nodeComputationConsume[ithVirNode2ithSurNode] < items[i].starNodeComputation) {
+        this.nodeComputationConsume[ithVirNode2ithSurNode] = items[i].starNodeComputation;
+      }
       for (int j = 0; j < items[i].neighborEdge.size(); j++) {
-        int neighborVNNode = items[i].neighborEdge.elementAt(j).neighborNode4VirNetInd;
-        // if (failurenodeID !=
-        // virutialNode2NewVirtualNode[neighborVNNode]) {
-        if (virutialNode2NewEnhancedVirtualNode[i] != virutialNode2NewEnhancedVirtualNode[neighborVNNode])
-          if (this.edgeBandwith4Comsume[virutialNode2NewEnhancedVirtualNode[i]][virutialNode2NewEnhancedVirtualNode[neighborVNNode]] < items[i].neighborEdge
-              .elementAt(j).neighborEdgeBandwithCapacity) {
-            this.edgeBandwith4Comsume[virutialNode2NewEnhancedVirtualNode[i]][virutialNode2NewEnhancedVirtualNode[neighborVNNode]] = items[i].neighborEdge
-                .elementAt(j).neighborEdgeBandwithCapacity;
-            this.edgeBandwith4Comsume[virutialNode2NewEnhancedVirtualNode[neighborVNNode]][virutialNode2NewEnhancedVirtualNode[i]] = items[i].neighborEdge
-                .elementAt(j).neighborEdgeBandwithCapacity;
-            this.topology[virutialNode2NewEnhancedVirtualNode[i]][virutialNode2NewEnhancedVirtualNode[neighborVNNode]] = this.topology[virutialNode2NewEnhancedVirtualNode[neighborVNNode]][virutialNode2NewEnhancedVirtualNode[i]] = true;
-            // }
+        int neighborVirNetNode = items[i].neighborEdge.elementAt(j).neighborNode4VirNetInd;
+        int neighborVirNetNode2ithSurNode = virutialNode2NewSurvivalVirtualNode[neighborVirNetNode];
+        if (ithVirNode2ithSurNode != neighborVirNetNode2ithSurNode) {
+          int cap = items[i].neighborEdge.elementAt(j).neighborEdgeBandwithCapacity;
+          if (this.edgeBandwith4Comsume[ithVirNode2ithSurNode][neighborVirNetNode2ithSurNode] < cap) {
+            this.edgeBandwith4Comsume[ithVirNode2ithSurNode][neighborVirNetNode2ithSurNode] = cap;
+            this.edgeBandwith4Comsume[neighborVirNetNode2ithSurNode][ithVirNode2ithSurNode] = cap;
+            this.topology[ithVirNode2ithSurNode][neighborVirNetNode2ithSurNode] = true;
+            this.topology[neighborVirNetNode2ithSurNode][ithVirNode2ithSurNode] = true;
           }
+        }
       }
     }
   }
 
+  /**
+   * constructMultipleKnapsackProbem.
+   * 
+   * @param multKnaP
+   *          multKnaP
+   * @param isFailDep
+   *          isFailDep
+   * @return boolean
+   */
   boolean constructMultipleKnapsackProbem(MulitpleKnapsack multKnaP, boolean isFailDep) {
     for (int i = 0; i < this.virNet.nodeSize; i++) {
       for (int j = 0; j < knapsacks.size(); j++) {
@@ -584,10 +440,15 @@ public class SurvivalVirtualNetwork {
             && (knapsacks.elementAt(j).starNodeSurVirNetInd != items[i].starNodeSurVirNetInd)) {
           continue;
         }
-        if (items[i].starNodeServiceType == knapsacks.elementAt(j).starNodeServiceType) {
+        // if (knapsacks.elementAt(j).starNodeSurVirNetInd ==
+        // items[i].starNodeSurVirNetInd) {
+        // System.out.println("fff");
+        // }
+        if (knapsacks.elementAt(j).nodeServiceTypeSet[items[i].starNodeServiceType]) {
           if (items[i].starNodeComputation <= this.nodeComputationCapacity[knapsacks
               .elementAt(j).starNodeSurVirNetInd]) {
             multKnaP.matchMatrix[i][j] = 0;
+
             if (this.isSubNodeComEmpty[knapsacks.elementAt(j).starNodeSurVirNetInd]) {
               multKnaP.matchMatrix[i][j] += Parameter.addNewVirNodeNewSubNodeCost;
             }
@@ -595,15 +456,18 @@ public class SurvivalVirtualNetwork {
             if (0 == this.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd]) {
               multKnaP.matchMatrix[i][j] += Parameter.addNewVirNodeCost;
             }
+
             if (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd) {
               multKnaP.matchMatrix[i][j] += Parameter.transformExistedNodeCost;
             }
+
             if (items[i].starNodeComputation > this.nodeComputationConsume[knapsacks
                 .elementAt(j).starNodeSurVirNetInd]) {
               multKnaP.matchMatrix[i][j] += (Parameter.addNodeComputaionCost
                   * (items[i].starNodeComputation
                       - this.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd]));
             }
+
             for (int k = 0; k < items[i].neighborEdge.size(); k++) {
               boolean isExistedEdge = true;
               for (int l = 0; l < knapsacks.elementAt(j).neighborEdge.size(); l++) {
@@ -614,10 +478,10 @@ public class SurvivalVirtualNetwork {
                   if (items[i].neighborEdge.elementAt(
                       k).neighborEdgeBandwithCapacity > knapsacks.elementAt(j).neighborEdge
                           .elementAt(l).neighborEdgeBandwithCapacity) {
-                    multKnaP.matchMatrix[i][j] += (items[i].neighborEdge
-                        .elementAt(k).neighborEdgeBandwithCapacity
-                        - knapsacks.elementAt(j).neighborEdge
-                            .elementAt(l).neighborEdgeBandwithCapacity);
+                    multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
+                        * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwithCapacity
+                            - knapsacks.elementAt(j).neighborEdge
+                                .elementAt(l).neighborEdgeBandwithCapacity));
                   }
                 }
               }
@@ -625,6 +489,7 @@ public class SurvivalVirtualNetwork {
                 multKnaP.matchMatrix[i][j] += items[i].neighborEdge
                     .elementAt(k).neighborEdgeBandwithCapacity;
               }
+
             }
 
           }
@@ -632,22 +497,30 @@ public class SurvivalVirtualNetwork {
 
       }
     }
+
+    // System.out.println();
+    // System.out.println();
+    // for (int i = 0; i < this.virNet.nodeSize; i++) {
+    // for (int j = 0; j < knapsacks.size(); j++) {
+    // // multKnaP.matchMatrix[i][j] = Integer.MAX_VALUE;
+    // if (multKnaP.matchMatrix[i][j] != Integer.MAX_VALUE) {
+    // System.out.print(multKnaP.matchMatrix[i][j] + " ");
+    // } else
+    // System.out.print("oo ");
+    // }
+    // System.out.println();
+    // }
+    // System.out.println();
+    // System.out.println();
     for (int i = 0; i < knapsacks.size(); i++) {
       multKnaP.ithKapsack2ithUnionKnapsack[i] = knapsacks.elementAt(i).starNodeSurVirNetInd;
-      // System.out.print((mKP.ithKapsack2ithUnionKnapsack[i] + 1) + "\t
-      // ");
     }
     for (int i = 0; i < this.nodeSize; i++) {
       multKnaP.unionKnapsackCapacity[i] = this.nodeComputationCapacity[i];
-      // System.out.print((i + 1) + ":" + mKP.unionKnapsackCapacity[i] +
-      // "\t ");
     }
-    // System.out.println();
     for (int i = 0; i < this.virNet.nodeSize; i++) {
       multKnaP.capacityItem[i] = this.virNet.nodeComputationDemand[i];
-      // System.out.print(mKP.capacityItem[i] + "\t ");
     }
-    // System.out.println();
 
     // for (int i = 0; i < this.VN.nodeSize; i++) {
     // for (int j = 0; j < Knapsacks.size(); j++) {
@@ -681,81 +554,93 @@ public class SurvivalVirtualNetwork {
 
   /**
    * computeUsedResource.
+   * 
+   * @param alg
+   *          alg
    */
-  public void computeConsumedResource() {
-    int nodenumber = 0;
-    int nodecomputaiton = 0;
+  public void computeConsumedResource(Algorithm alg) {
+    int nodeNum = 0;
+    int nodeComputaiton = 0;
     for (int i = 0; i < this.nodeSize; i++) {
       if (this.nodeComputationConsume[i] > 0) {
-        nodecomputaiton += this.nodeComputationConsume[i];
-        nodenumber++;
+        nodeComputaiton += this.nodeComputationConsume[i];
+        nodeNum++;
       }
     }
 
-    int edgebandwith = 0;
+    int edgeBandwith = 0;
     for (int i = 0; i < this.nodeSize; i++) {
       for (int j = 0; j < i; j++) {
-        edgebandwith += this.edgeBandwith4Comsume[i][j];
+        edgeBandwith += this.edgeBandwith4Comsume[i][j];
       }
     }
+    alg.consumedNodeNum += nodeNum - this.consumedResource.consumedNodeNumber;
+    alg.consumedNodeComputation += nodeComputaiton - this.consumedResource.consumedNodeComputation;
+    alg.consumedEdgeBandwith += edgeBandwith - this.consumedResource.consumeEdgeBandwith;
     loggerEnhancedVirtualNetwork
-        .info((nodenumber - this.consumedResource.consumedNodeNumber) + " Node + "
-            + (nodecomputaiton - this.consumedResource.consumedNodeComputation) + " Computation + "
-            + (edgebandwith - this.consumedResource.consumeEdgeBandwith) + " Bandwith ");
-    this.consumedResource.consumedNodeNumber = nodenumber;
-    this.consumedResource.consumedNodeComputation = nodecomputaiton;
-    this.consumedResource.consumeEdgeBandwith = edgebandwith;
+        .info((nodeNum - this.consumedResource.consumedNodeNumber) + " Node + "
+            + (nodeComputaiton - this.consumedResource.consumedNodeComputation) + " Computation + "
+            + (edgeBandwith - this.consumedResource.consumeEdgeBandwith) + " Bandwith ");
+
+    this.consumedResource.consumedNodeNumber = nodeNum;
+    this.consumedResource.consumedNodeComputation = nodeComputaiton;
+    this.consumedResource.consumeEdgeBandwith = edgeBandwith;
   }
 
   /**
    * heursitcAlgorithm4Survivability.
    */
-  public boolean heursitcAlgorithm4Survivability(boolean isFailDep, int sequence)
-      throws GRBException {
+  public boolean heursitcAlgorithm4Survivability(Algorithm alg) throws GRBException {
     // 1 node+2 node computaion+12 bandwidth
     // 0 node+1 node computaion+5 bandwidth
     // 0 node+2 node computaion+3 bandwidth
     // 1 node+6 node computaion+3 bandwidth
     // =2 node+11 node computaion+23 bandwidth
 
-    if (sequence == Parameter.Ran) {
+    if (alg.sequence == Parameter.Ran) {
       for (int i = 0; i < this.nodeSize4Failure; i++) {
-        int[] solution = new int[this.nodeSize4Failure];
-        if (failIthNode(i, isFailDep, solution) == -1) {
+        int[] ithItem2ithKnapsack = new int[this.nodeSize4Failure];
+        if (failIthNode(i, alg.isFailDep, ithItem2ithKnapsack) == -1) {
           return false;
         } else {
-          augmentNodeEdge(solution, i, matchMethod);
+          augmentNodeEdge(ithItem2ithKnapsack, i, matchMethod);
         }
       }
     }
-    if (sequence == Parameter.Min) {
+    if (alg.sequence == Parameter.Min) {
       boolean[] isFailed = new boolean[this.nodeSize4Failure];
       for (int i = 0; i < this.nodeSize4Failure; i++) {
         int[][] solution = new int[this.nodeSize4Failure][this.nodeSize4Failure];
         int[] solutionCost = new int[this.nodeSize4Failure];
         for (int j = 0; j < this.nodeSize4Failure; j++) {
           if (!isFailed[j]) {
-            solutionCost[j] = failIthNode(j, isFailDep, solution[j]);
+            solutionCost[j] = failIthNode(j, alg.isFailDep, solution[j]);
             if (solutionCost[j] == -1) {
               return false;
             }
           }
         }
-        int optimalSolutionNode = -1;
+
+        int nextOptimalFailNode = -1;
         int optimalSolutionVal = Integer.MAX_VALUE;
         for (int j = 0; j < this.nodeSize4Failure; j++) {
           if (!isFailed[j]) {
             if (solutionCost[j] < optimalSolutionVal) {
-              optimalSolutionNode = j;
+//               if (nextOptimalFailNode == -1)
+              nextOptimalFailNode = j;
               optimalSolutionVal = solutionCost[j];
+              // System.out.println(j+ " : "+solutionCost[j]);
+
             }
           }
         }
-        augmentNodeEdge(solution[optimalSolutionNode], optimalSolutionNode, matchMethod);
-        isFailed[optimalSolutionNode] = true;
+        // System.out.println(nextOptimalFailNode+ " ++++
+        // "+solutionCost[nextOptimalFailNode]);
+        augmentNodeEdge(solution[nextOptimalFailNode], nextOptimalFailNode, matchMethod);
+        isFailed[nextOptimalFailNode] = true;
       }
     }
-    computeConsumedResource();
+    computeConsumedResource(alg);
     return true;
 
   }
@@ -763,10 +648,12 @@ public class SurvivalVirtualNetwork {
   /**
    * exactAlgorithmIP4SeVirNet.
    * 
+   * @param alg
+   * 
    * @return
    * 
    */
-  public boolean exactAlgorithmIP4SeVirNet() {
+  public boolean exactAlgorithmIP4SeVirNet(Algorithm alg) {
     try {
       GRBEnv env = new GRBEnv();
       GRBModel model = new GRBModel(env);
@@ -925,8 +812,9 @@ public class SurvivalVirtualNetwork {
           for (int l = 0; l < this.serviceNum; l++) {
             GRBLinExpr conexpr = new GRBLinExpr();
             for (int k = 0; k < this.nodeSize; k++) {
-              if (this.boolServiceTypeSet[k][l])
+              if (this.boolServiceTypeSet[k][l]) {
                 conexpr.addTerm(1.0, transformMatrix[i][j][k]);
+              }
             }
             if (this.virNet.nodeServiceType[j] == (l)) {
               model.addConstr(conexpr, GRB.GREATER_EQUAL, 1.0,
@@ -989,9 +877,8 @@ public class SurvivalVirtualNetwork {
         }
       }
       loggerEnhancedVirtualNetwork.info("ILP method Succed");
-      computeConsumedResource();
+      computeConsumedResource(alg);
     } catch (GRBException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return true;
@@ -1001,28 +888,21 @@ public class SurvivalVirtualNetwork {
   /**
    * startSurvivalVirtualNetwork.
    * 
-   * @param sequence
-   *          sequence
-   * @param isFailDep
-   *          isFD
-   * @param isExact
-   *          isExact
-   * @return
-   * 
    */
-  public boolean startSurvivalVirtualNetwork(boolean isExact, boolean isFailDep, int sequence) {
-    boolean issvnAlgorithmSuccess = false;
-    if (isExact) {
-      issvnAlgorithmSuccess = exactAlgorithmIP4SeVirNet();
+  public boolean startSurvivalVirtualNetwork(Algorithm alg) {
+    boolean isSvnAlgorithmSuccess = false;
+    if (alg.isExact) {
+      isSvnAlgorithmSuccess = exactAlgorithmIP4SeVirNet(alg);
+
     } else {
       this.obtainItems();
       try {
-        issvnAlgorithmSuccess = this.heursitcAlgorithm4Survivability(isFailDep, sequence);
+        isSvnAlgorithmSuccess = this.heursitcAlgorithm4Survivability(alg);
       } catch (GRBException e) {
         e.printStackTrace();
       }
     }
-    return issvnAlgorithmSuccess;
+    return isSvnAlgorithmSuccess;
   }
 
   /**
@@ -1031,11 +911,11 @@ public class SurvivalVirtualNetwork {
   public void destructerResource() {
     for (int i = 0; i < this.nodeSize; i++) {
       for (int j = 0; j < this.nodeSize; j++) {
-        eEdge2sPath.get(i).get(j).clear();
+        surEdge2SubPath.get(i).get(j).clear();
       }
-      eEdge2sPath.get(i).clear();
+      surEdge2SubPath.get(i).clear();
     }
-    eEdge2sPath.clear();
+    surEdge2SubPath.clear();
     label2Node.clear();
     for (int i = 0; i < knapsacks.size(); i++) {
       knapsacks.get(i).neighborEdge.clear();
