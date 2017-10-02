@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
+import virtualnetwork.VirtualNetwork;
+
 /**
  * Result.
  * 
@@ -21,112 +23,188 @@ public class Result {
   String dataFilePathString = "/Data/";
   String prefix = "\\newcommand{\\";
 
-  double[] arrayAcceptionRatioEvn;
+  double[] arrayAcceptionRatioSvn;
   double[] arrayAcceptionRatioVn;
   int acceptionRatioDataLength;
 
-  public int[] subNetMapEdgeCost;
-  public int[] subNetMapNodeCost;
-  public int[] subNetMapUsedNodeCost;
-  public int subNetMapDataLength;
+  public int[] arrayCostEdgeBwSum;
+  public int[] arrayCostNodeCpSum;
+  public int[] arrayCostUsedNodeSum;
 
-  public int[] virNetMapNodeCost;
-  public int[] virNetMapEdgeCost;
-  public int[] virNetMapUsedNodeCost;
-  public int virNetMapCostDataLength;
+  private int[] arrayCostUsedNode;
+  private int[] arrayCostNodeCp;
+  private int[] arrayCostEdgeBw;
+
+  private int[] arrayCostUsedEdgeSum;
+  private int[] arrayCostUsedEdge;
+
+  public int costDataLength;
+
+  public int[] arrayRevenueUsedNodeSum;
+  public int[] arrayRevenueEdgeBwSum;
+  public int[] arrayRevenueNodeCpSum;
+  private int[] arrayRevenueNodeCp;
+  private int[] varrayRevenueEdgeBw;
+  private int[] arrayRevenueUsedNode;
+
+  public int revenueDataLength;
+  private int[] arrayRevenueUsedEdgeSum;
+  private int[] arrayRevenueUsedEdge;
+
+  private int[] arrayRevenueVirNetNumSum;
+  private int[] arrayRevenueSurNetNumSum;
+  private int[] arrayRevenueVirNetNum;
+  private int[] arrayRevenueSurNetNum;
+
+  public int revenueUsedNode;
+  public int revenueUsedEdge;
+  public int revenueNodeComputation;
+  public int revenueEdgeBandwith;
+  public int revenueVirNetNum;
+  public int revenueSubNetNum;
+
+  public int costUsedNode;
+  public int costUsedEdge;
+  public int costNodeComputation;
+  public int costEdgeBandwith;
+
+  public int revenueUsedNodeSum;
+  public int revenueUsedEdgeSum;
+  public int revenueNodeComputationSum;
+  public int revenueEdgeBandwithSum;
+  public int revenueVirNetNumSum;
+  public int revenueSubNetNumSum;
+
+  public int costUsedNodeSum;
+  public int costUsedEdgeSum;
+  public int costNodeComputationSum;
+  public int costEdgeBandwithSum;
 
   /**
    * Result.
    */
   public Result() {
-    arrayAcceptionRatioEvn = new double[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayAcceptionRatioSvn = new double[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
     arrayAcceptionRatioVn = new double[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
-    subNetMapEdgeCost = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayCostEdgeBwSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    subNetMapNodeCost = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayCostNodeCpSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    subNetMapUsedNodeCost = new int[(Parameter.ExperimentPicturePlotNumber + 1)
-        * Parameter.ExperimentTimes];
-
-    virNetMapNodeCost = new int[(Parameter.ExperimentPicturePlotNumber + 1)
-        * Parameter.ExperimentTimes];
-    virNetMapEdgeCost = new int[(Parameter.ExperimentPicturePlotNumber + 1)
-        * Parameter.ExperimentTimes];
-    virNetMapUsedNodeCost = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayCostUsedNodeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
+    arrayCostEdgeBw = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayCostNodeCp = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayCostUsedNode = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+
+    arrayCostUsedEdgeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayCostUsedEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+
+    arrayRevenueUsedNodeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueEdgeBwSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueNodeCpSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+
+    arrayRevenueNodeCp = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    varrayRevenueEdgeBw = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueUsedNode = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+
+    arrayRevenueVirNetNumSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueSurNetNumSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueVirNetNum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueSurNetNum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueUsedEdgeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
+    arrayRevenueUsedEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+        * Parameter.ExperimentTimes];
     acceptionRatioDataLength = 0;
-    subNetMapDataLength = 0;
+    costDataLength = 0;
   }
 
   void recordTexParameter() {
     try {
-      File f_TexFileWriter = new File(fileAbsolutePath + dataFilePathString + "number.tex");
+      File flTexFileWriter = new File(fileAbsolutePath + dataFilePathString + "number.tex");
 
-      if (!f_TexFileWriter.exists()) {
+      if (!flTexFileWriter.exists()) {
         try {
-          f_TexFileWriter.createNewFile();
+          flTexFileWriter.createNewFile();
         } catch (IOException e) {
           e.printStackTrace();
         }
       }
-      FileWriter TexFileWriter = new FileWriter(f_TexFileWriter);
-      TexFileWriter.write(prefix + "addNewNodeCost" + "}{" + Parameter.addNewVirNodeCost + "}\n");
-      TexFileWriter.write(
+      FileWriter fwTexFileWriter = new FileWriter(flTexFileWriter);
+      fwTexFileWriter.write(prefix + "addNewNodeCost" + "}{" + Parameter.addNewVirNodeCost + "}\n");
+      fwTexFileWriter.write(
           prefix + "transformExistedNodeCost" + "}{" + Parameter.transformExistedNodeCost + "}\n");
-      TexFileWriter
+      fwTexFileWriter
           .write(prefix + "addNodeComputaionCost" + "}{" + Parameter.addNodeComputaionCost + "}\n");
-      TexFileWriter
+      fwTexFileWriter
           .write(prefix + "addEdgeBandwithCost" + "}{" + Parameter.addEdgeBandwithCost + "}\n");
-      TexFileWriter.write(prefix + "RelativeCostbetweenComputingBandwidth" + "}{"
+      fwTexFileWriter.write(prefix + "RelativeCostbetweenComputingBandwidth" + "}{"
           + Parameter.RelativeCostbetweenComputingBandwidth + "}\n");
 
-      TexFileWriter.write(prefix + "SubstrateNewtorkRunTimeInterval" + "}{"
+      fwTexFileWriter.write(prefix + "SubstrateNewtorkRunTimeInterval" + "}{"
           + Parameter.SubstrateNewtorkRunTimeInterval + "}\n");
-      TexFileWriter.write(prefix + "unitTimeInterval" + "}{" + Parameter.unitTimeInterval + "}\n");
-      TexFileWriter.write(
+      fwTexFileWriter
+          .write(prefix + "unitTimeInterval" + "}{" + Parameter.unitTimeInterval + "}\n");
+      fwTexFileWriter.write(
           prefix + "requestAppearProbability" + "}{" + Parameter.RequestAppearProbability + "}\n");
-      TexFileWriter.write(prefix + "VNRequestsDuration" + "}{" + Parameter.VirNetDuration + "}\n");
-      TexFileWriter.write(prefix + "VNRequestsContinueTimeMinimum" + "}{"
+      fwTexFileWriter
+          .write(prefix + "VNRequestsDuration" + "}{" + Parameter.VirNetDuration + "}\n");
+      fwTexFileWriter.write(prefix + "VNRequestsContinueTimeMinimum" + "}{"
           + Parameter.VNRequestsContinueTimeMinimum + "}\n");
-      TexFileWriter.write(prefix + "VNRequestsContinueTimeMaximum" + "}{"
+      fwTexFileWriter.write(prefix + "VNRequestsContinueTimeMaximum" + "}{"
           + Parameter.VNRequestsContinueTimeMaximum + "}\n");
 
-      TexFileWriter
+      fwTexFileWriter
           .write(prefix + "SubStrateNodeSize" + "}{" + Parameter.SubStrateNodeSize + "}\n");
-      TexFileWriter.write(prefix + "SubStrateNodeComputationMinimum" + "}{"
+      fwTexFileWriter.write(prefix + "SubStrateNodeComputationMinimum" + "}{"
           + Parameter.SubStrateNodeComputationMinimum + "}\n");
-      TexFileWriter.write(prefix + "SubStrateNodeComputationMaximum" + "}{"
+      fwTexFileWriter.write(prefix + "SubStrateNodeComputationMaximum" + "}{"
           + Parameter.SubStrateNodeComputationMaximum + "}\n");
-      TexFileWriter.write(prefix + "SubStrateNodenodeProbability" + "}{"
+      fwTexFileWriter.write(prefix + "SubStrateNodenodeProbability" + "}{"
           + Parameter.SubStrateNodenodeProbability + "}\n");
-      TexFileWriter.write(prefix + "SubStrateEdgeBandwithMinimum" + "}{"
+      fwTexFileWriter.write(prefix + "SubStrateEdgeBandwithMinimum" + "}{"
           + Parameter.SubStrateEdgeBandwithMinimum + "}\n");
-      TexFileWriter.write(prefix + "SubStrateEdgeBandwithMaximum" + "}{"
+      fwTexFileWriter.write(prefix + "SubStrateEdgeBandwithMaximum" + "}{"
           + Parameter.SubStrateEdgeBandwithMaximum + "}\n");
 
-      TexFileWriter.write(
+      fwTexFileWriter.write(
           prefix + "VirtualNodeSizeMinimum" + "}{" + Parameter.VirtualNodeSizeMinimum + "}\n");
-      TexFileWriter.write(
+      fwTexFileWriter.write(
           prefix + "VirtualNodeSizeMaximum" + "}{" + Parameter.VirtualNodeSizeMaximum + "}\n");
-      TexFileWriter.write(prefix + "VirtualNodeComputationMinimum" + "}{"
+      fwTexFileWriter.write(prefix + "VirtualNodeComputationMinimum" + "}{"
           + Parameter.VirtualNodeComputationMinimum + "}\n");
-      TexFileWriter.write(prefix + "VirtualNodeComputationMaximum" + "}{"
+      fwTexFileWriter.write(prefix + "VirtualNodeComputationMaximum" + "}{"
           + Parameter.VirtualNodeComputationMaximum + "}\n");
-      TexFileWriter.write(prefix + "VirtualNodenodeProbability" + "}{"
+      fwTexFileWriter.write(prefix + "VirtualNodenodeProbability" + "}{"
           + Parameter.VirtualNodenodeProbability + "}\n");
-      TexFileWriter.write(prefix + "VirtualEdgeBandwithMinimum" + "}{"
+      fwTexFileWriter.write(prefix + "VirtualEdgeBandwithMinimum" + "}{"
           + Parameter.VirtualEdgeBandwithMinimum + "}\n");
-      TexFileWriter.write(prefix + "VirtualEdgeBandwithMaximum" + "}{"
+      fwTexFileWriter.write(prefix + "VirtualEdgeBandwithMaximum" + "}{"
           + Parameter.VirtualEdgeBandwithMaximum + "}\n");
-      TexFileWriter.write(prefix + "SubStrateFacilityNodeFailDuration" + "}{"
+      fwTexFileWriter.write(prefix + "SubStrateFacilityNodeFailDuration" + "}{"
           + Parameter.SubStrateFacilityNodeFailDuration + "}\n");
 
-      TexFileWriter.flush();
-      TexFileWriter.close();
+      fwTexFileWriter.flush();
+      fwTexFileWriter.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -145,7 +223,7 @@ public class Result {
   public void recordExperimentData(int experimentTimes, Algorithm algorithm, int time) {
     recordExperimentData4AcceptionRatio(experimentTimes, algorithm, time);
     recordExperimentData4SubNetworkMapCost(experimentTimes, algorithm, time);
-    recordExperimentData4VirNetworkMapCost(experimentTimes, algorithm, time);
+    recordExperimentData4VirNetworkMapRevenue(experimentTimes, algorithm, time);
     // recordExperimentData4MigrationFrequence(experimentTimes, algorithm,
     // time);
   }
@@ -160,20 +238,38 @@ public class Result {
    * @param time
    *          time
    */
-  private void recordExperimentData4VirNetworkMapCost(int experimentTimes,
-      Algorithm algorithm, int time) {
+  private void recordExperimentData4VirNetworkMapRevenue(int experimentTimes, Algorithm algorithm,
+      int time) {
 
-    virNetMapNodeCost[virNetMapCostDataLength] = algorithm.consumedNodeNum;
-    virNetMapEdgeCost[virNetMapCostDataLength] = algorithm.consumedEdgeBandwith;
-    virNetMapUsedNodeCost[virNetMapCostDataLength] = algorithm.consumedNodeNum;
-    virNetMapCostDataLength++;
+    arrayRevenueUsedNodeSum[revenueDataLength] = this.revenueUsedNodeSum;
+    arrayRevenueUsedEdgeSum[revenueDataLength] = this.revenueUsedEdgeSum;
+    arrayRevenueNodeCpSum[revenueDataLength] = this.revenueNodeComputationSum;
+    arrayRevenueEdgeBwSum[revenueDataLength] = this.revenueEdgeBandwithSum;
+
+    arrayRevenueVirNetNumSum[revenueDataLength] = this.revenueVirNetNumSum;
+    arrayRevenueSurNetNumSum[revenueDataLength] = this.revenueSubNetNumSum;
+
+    arrayRevenueUsedNode[revenueDataLength] = this.revenueUsedNode;
+    arrayRevenueUsedEdge[revenueDataLength] = this.revenueUsedEdge;
+    arrayRevenueNodeCp[revenueDataLength] = this.revenueNodeComputation;
+    varrayRevenueEdgeBw[revenueDataLength] = this.revenueEdgeBandwith;
+
+    arrayRevenueVirNetNum[revenueDataLength] = this.revenueVirNetNum;
+    arrayRevenueSurNetNum[revenueDataLength] = this.revenueSubNetNum;
+
+    revenueDataLength++;
 
   }
 
   /**
+   * recordExperimentData4MigrationFrequence.
+   * 
    * @param experimentTimes
+   *          experimentTimes
    * @param algorithm
+   *          algorithm
    * @param time
+   *          time
    */
   private void recordExperimentData4MigrationFrequence(int experimentTimes, Algorithm algorithm,
       int time) {
@@ -239,71 +335,87 @@ public class Result {
   }
 
   /**
+   * writeExperimentData4AcceptionRatio.
+   * 
    * @param experimentTimes
+   *          experimentTimes
    * @param algorithm
+   *          algorithm
    */
   private void writeExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm) {
-    File f_AcceptionRatio_evn = new File(fileAbsolutePath + dataFilePathString
-        + "AcceptionRatio_EVN_" + algorithm.algorithmName + ".txt");
-    File f_AcceptionRatio_vn = new File(fileAbsolutePath + dataFilePathString + "AcceptionRatio_VN_"
-        + algorithm.algorithmName + ".txt");
-    FileWriter fw_AcceptionRatio_evn;
-    FileWriter fw_AcceptionRatio_vn;
 
-    if (!f_AcceptionRatio_evn.exists()) {
-      try {
-        f_AcceptionRatio_evn.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    if (!f_AcceptionRatio_vn.exists()) {
-      try {
-        f_AcceptionRatio_vn.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+    writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_",
+        this.arrayAcceptionRatioVn, acceptionRatioDataLength);
+    writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_EVN_",
+        this.arrayAcceptionRatioSvn, acceptionRatioDataLength);
+    acceptionRatioDataLength = 0;
 
-    try {
-      if (experimentTimes == 0) {
-        fw_AcceptionRatio_evn = new FileWriter(f_AcceptionRatio_evn);
-        fw_AcceptionRatio_vn = new FileWriter(f_AcceptionRatio_vn);
-      } else {
-        fw_AcceptionRatio_evn = new FileWriter(f_AcceptionRatio_evn, true);
-        fw_AcceptionRatio_vn = new FileWriter(f_AcceptionRatio_vn, true);
-      }
-      for (int i = 0; i < acceptionRatioDataLength; i++) {
-        fw_AcceptionRatio_vn.write(arrayAcceptionRatioVn[i] + "\n");
-        fw_AcceptionRatio_evn.write(arrayAcceptionRatioEvn[i] + "\n");
-
-      }
-      acceptionRatioDataLength = 0;
-      fw_AcceptionRatio_vn.flush();
-      fw_AcceptionRatio_evn.flush();
-
-      fw_AcceptionRatio_vn.close();
-      fw_AcceptionRatio_evn.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   /**
+   * writeExperimentData.
+   * 
    * @param experimentTimes
-   * @param time
+   *          experimentTimes
    * @param algorithm
+   *          algorithm
+   * @param filename
+   *          filename
+   * @param recordData
+   *          recordData
+   * @param dataLength
+   *          dataLength
+   */
+  private void writeExperimentData(int experimentTimes, Algorithm algorithm, String filename,
+      double[] recordData, int dataLength) {
+    File fl = new File(
+        fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
+    FileWriter fw;
+    if (!fl.exists()) {
+      try {
+        fl.createNewFile();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    try {
+      if (experimentTimes == 0) {
+        fw = new FileWriter(fl);
+      } else {
+        fw = new FileWriter(fl, true);
+      }
+      for (int i = 0; i < dataLength; i++) {
+        fw.write(recordData[i] + "\n");
+      }
+      fw.flush();
+
+      fw.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  /**
+   * recordExperimentData4AcceptionRatio.
+   * 
+   * @param experimentTimes
+   *          experimentTimes
+   * @param time
+   *          time
+   * @param algorithm
+   *          algorithm
    * 
    */
   private void recordExperimentData4AcceptionRatio(int experimentTimes, Algorithm algorithm,
       int time) {
 
     if (0 == algorithm.getSn().virNetCollection.size()) {
-      arrayAcceptionRatioEvn[acceptionRatioDataLength] = 1.0;
+      arrayAcceptionRatioSvn[acceptionRatioDataLength] = 1.0;
       arrayAcceptionRatioVn[acceptionRatioDataLength] = 1.0;
 
     } else {
-      arrayAcceptionRatioEvn[acceptionRatioDataLength] = (1.0
+      arrayAcceptionRatioSvn[acceptionRatioDataLength] = (1.0
           * algorithm.getSn().surVirNetSuceedEmbedSum / algorithm.getSn().virNetSum);
       arrayAcceptionRatioVn[acceptionRatioDataLength] = (1.0
           * algorithm.getSn().virNetSuceedEmbedSum / algorithm.getSn().virNetSum);
@@ -361,34 +473,49 @@ public class Result {
    * @param time
    *          time
    */
-  private void recordExperimentData4SubNetworkMapCost(int experimentTimes,
-      Algorithm algorithm, int time) {
+  private void recordExperimentData4SubNetworkMapCost(int experimentTimes, Algorithm algorithm,
+      int time) {
 
-    int nodeCompution = 0;
-    int nodeUsed = 0;
-    for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
-      int compution = (algorithm.getSn().nodeComputationCapacity[i]
-          - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared()));
-      if (compution > 0) {
-        nodeCompution += compution;
-        nodeUsed++;
+    arrayCostUsedNodeSum[costDataLength] = this.costUsedNodeSum;
+    arrayCostUsedEdgeSum[costDataLength] = this.costUsedEdgeSum;
+    arrayCostNodeCpSum[costDataLength] = this.costNodeComputationSum;
+    arrayCostEdgeBwSum[costDataLength] = this.costEdgeBandwithSum;
+
+    arrayCostUsedNode[costDataLength] = this.costUsedNode;
+    arrayCostUsedEdge[costDataLength] = this.costUsedEdge;
+    arrayCostNodeCp[costDataLength] = this.costNodeComputation;
+    arrayCostEdgeBw[costDataLength] = this.costEdgeBandwith;
+    costDataLength++;
+
+  }
+
+  void writeExperimentData(int experimentTimes, Algorithm algorithm, String filename,
+      int[] recordData, int datalength) {
+    File fl = new File(
+        fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
+    FileWriter fw;
+    if (!fl.exists()) {
+      try {
+        fl.createNewFile();
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-
     }
-
-    int edgeBandwith = 0;
-    for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
-      for (int j = 0; j < i; j++) {
-        edgeBandwith += (algorithm.getSn().edgeBandwithCapacity[i][j]
-            - algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared()));
+    try {
+      if (experimentTimes == 0) {
+        fw = new FileWriter(fl);
+      } else {
+        fw = new FileWriter(fl, true);
       }
+      for (int i = 0; i < datalength; i++) {
+        fw.write(recordData[i] + "\n");
+      }
+      fw.flush();
+
+      fw.close();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-
-    subNetMapNodeCost[subNetMapDataLength] = nodeCompution;
-    subNetMapEdgeCost[subNetMapDataLength] = edgeBandwith;
-    subNetMapUsedNodeCost[subNetMapDataLength] = nodeUsed;
-    subNetMapDataLength++;
-
   }
 
   /**
@@ -400,68 +527,25 @@ public class Result {
    *          algorithm
    */
   public void writeExperimentData4SubNetworkMapCost(int experimentTimes, Algorithm algorithm) {
-    File flMapCostNode = new File(fileAbsolutePath + dataFilePathString + "MappingCost_node_"
-        + algorithm.algorithmName + ".txt");
-    File flMapCostNodeNumUsed = new File(fileAbsolutePath + dataFilePathString
-        + "MappingCost_nodeUsed_" + algorithm.algorithmName + ".txt");
-    File flMapCostEdge = new File(fileAbsolutePath + dataFilePathString + "MappingCost_edge_"
-        + algorithm.algorithmName + ".txt");
-    FileWriter fwMapCostNode;
-    FileWriter fwMapCostEdge;
-    FileWriter fwMapCostNodeNumUsed;
 
-    if (!flMapCostNode.exists()) {
-      try {
-        flMapCostNode.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    if (!flMapCostNodeNumUsed.exists()) {
-      try {
-        flMapCostNodeNumUsed.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    if (!flMapCostEdge.exists()) {
-      try {
-        flMapCostEdge.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+    writeExperimentData(experimentTimes, algorithm, "MapCost_usedNode_", this.arrayCostUsedNode,
+        costDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapCost_usedEdge_", this.arrayCostUsedEdge,
+        costDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapCost_nodeCp_", this.arrayCostNodeCp,
+        costDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapCost_edgeBw_", this.arrayCostEdgeBw,
+        costDataLength);
 
-    try {
-      if (experimentTimes == 0) {
-        fwMapCostNode = new FileWriter(flMapCostNode);
-        fwMapCostNodeNumUsed = new FileWriter(flMapCostNodeNumUsed);
-
-        fwMapCostEdge = new FileWriter(flMapCostEdge);
-      } else {
-        fwMapCostNode = new FileWriter(flMapCostNode, true);
-        fwMapCostEdge = new FileWriter(flMapCostEdge, true);
-        fwMapCostNodeNumUsed = new FileWriter(flMapCostNodeNumUsed, true);
-      }
-      for (int i = 0; i < subNetMapDataLength; i++) {
-        fwMapCostEdge.write(subNetMapEdgeCost[i] + "\n");
-        fwMapCostNode.write(subNetMapNodeCost[i] + "\n");
-        fwMapCostNodeNumUsed.write(subNetMapUsedNodeCost[i] + "\n");
-
-      }
-      subNetMapDataLength = 0;
-
-      fwMapCostEdge.flush();
-      fwMapCostNode.flush();
-      fwMapCostNodeNumUsed.flush();
-
-      fwMapCostEdge.close();
-      fwMapCostNode.close();
-      fwMapCostNodeNumUsed.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
+    writeExperimentData(experimentTimes, algorithm, "MapCost_usedNode_Sum_",
+        this.arrayCostUsedNodeSum, costDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapCost_usedEdge_Sum_",
+        this.arrayCostUsedEdgeSum, costDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapCost_nodeCp_Sum_", this.arrayCostNodeCpSum,
+        costDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapCost_edgeBw_Sum_", this.arrayCostEdgeBwSum,
+        costDataLength);
+    costDataLength = 0;
   }
 
   /**
@@ -472,67 +556,36 @@ public class Result {
    * @param algorithm
    *          algorithm
    */
-  public void writeExperimentData4VirNetworkMapCost(int experimentTimes, Algorithm algorithm) {
-    File flMapCostNode = new File(fileAbsolutePath + dataFilePathString
-        + "VirNetworkMapCost_node_" + algorithm.algorithmName + ".txt");
-    File flMapCostNodeNumUsed = new File(fileAbsolutePath + dataFilePathString
-        + "VirNetworkMapCost_nodeUsed_" + algorithm.algorithmName + ".txt");
-    File flMapCostEdge = new File(fileAbsolutePath + dataFilePathString
-        + "VirNetworkMapCost_edge_" + algorithm.algorithmName + ".txt");
-    FileWriter fwMapCostNode;
-    FileWriter fwMapCostEdge;
-    FileWriter fwMapCostNodeNumUsed;
+  public void writeExperimentData4VirNetworkMapRevenue(int experimentTimes, Algorithm algorithm) {
 
-    if (!flMapCostNode.exists()) {
-      try {
-        flMapCostNode.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    if (!flMapCostNodeNumUsed.exists()) {
-      try {
-        flMapCostNodeNumUsed.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    if (!flMapCostEdge.exists()) {
-      try {
-        flMapCostEdge.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedNode_",
+        this.arrayRevenueUsedNode, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedEdge_",
+        this.arrayRevenueUsedEdge, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_nodeCp_", this.arrayRevenueNodeCp,
+        revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_edgeBw_", this.varrayRevenueEdgeBw,
+        revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_virnet_",
+        this.arrayRevenueVirNetNum, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_subnet_",
+        this.arrayRevenueSurNetNum, revenueDataLength);
 
-    try {
-      if (experimentTimes == 0) {
-        fwMapCostNode = new FileWriter(flMapCostNode);
-        fwMapCostNodeNumUsed = new FileWriter(flMapCostNodeNumUsed);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedNode_Sum_",
+        this.arrayRevenueUsedNodeSum, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedEdge_Sum_",
+        this.arrayRevenueUsedEdgeSum, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_nodeCp_Sum_",
+        this.arrayRevenueNodeCpSum, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_edgeBw_Sum_",
+        this.arrayRevenueEdgeBwSum, revenueDataLength);
 
-        fwMapCostEdge = new FileWriter(flMapCostEdge);
-      } else {
-        fwMapCostNode = new FileWriter(flMapCostNode, true);
-        fwMapCostEdge = new FileWriter(flMapCostEdge, true);
-        fwMapCostNodeNumUsed = new FileWriter(flMapCostNodeNumUsed, true);
-      }
-      for (int i = 0; i < virNetMapCostDataLength; i++) {
-        fwMapCostEdge.write(virNetMapEdgeCost[i] + "\n");
-        fwMapCostNode.write(virNetMapNodeCost[i] + "\n");
-        fwMapCostNodeNumUsed.write(virNetMapUsedNodeCost[i] + "\n");
-      }
-      virNetMapCostDataLength = 0;
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_virnet_Sum_",
+        this.arrayRevenueVirNetNumSum, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "MapRevenue_subnet_Sum_",
+        this.arrayRevenueSurNetNumSum, revenueDataLength);
 
-      fwMapCostEdge.flush();
-      fwMapCostNode.flush();
-      fwMapCostNodeNumUsed.flush();
-
-      fwMapCostEdge.close();
-      fwMapCostNode.close();
-      fwMapCostNodeNumUsed.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    revenueDataLength = 0;
 
   }
 
@@ -544,10 +597,210 @@ public class Result {
    * @param algorithm
    *          algorithm
    */
-  public void writeExperimentData(int experimentTimes, Algorithm algorithm) {
-    writeExperimentData4SubNetworkMapCost(experimentTimes, algorithm);
-    writeExperimentData4VirNetworkMapCost(experimentTimes, algorithm);
+  public void writeExperimentDatatoFile(int experimentTimes, Algorithm algorithm) {
     writeExperimentData4AcceptionRatio(experimentTimes, algorithm);
+    writeExperimentData4SubNetworkMapCost(experimentTimes, algorithm);
+    writeExperimentData4VirNetworkMapRevenue(experimentTimes, algorithm);
+
+  }
+
+  /**
+   * updateExperimentData.
+   * 
+   * @param algorithm
+   *          algorithm
+   */
+  public void updateExperimentData(Algorithm algorithm) {
+    // node
+    int usedNode = 0;
+    int usedEdge = 0;
+    int nodeComputation = 0;
+    int edgeBandwith = 0;
+    for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
+      int nc = algorithm.getSn().nodeComputationCapacity[i]
+          - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
+      if (nc != 0) {
+        usedNode++;
+      }
+      if (nc > 0) {
+        nodeComputation += nc;
+      }
+
+      if (nc < 0) {
+        System.out.println("Error nc");
+      }
+      for (int j = 0; j < i; j++) {
+        int bc = algorithm.getSn().edgeBandwithCapacity[i][j]
+            - algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared());
+        if (bc != 0) {
+          usedEdge++;
+        }
+        if (bc > 0) {
+          edgeBandwith += bc;
+        }
+        if (bc < 0) {
+          System.out.println("Error bc");
+        }
+      }
+    }
+
+    this.costEdgeBandwith = edgeBandwith;
+    this.costUsedEdge = usedEdge;
+    this.costNodeComputation = nodeComputation;
+    this.costUsedNode = usedNode;
+
+    usedNode = 0;
+    usedEdge = 0;
+    nodeComputation = 0;
+    edgeBandwith = 0;
+    int vnNum = 0;
+    int svnNum = 0;
+    for (int i = 0; i < algorithm.getSn().virNetCollection.size(); i++) {
+      VirtualNetwork vn = algorithm.getSn().virNetCollection.get(i);
+      if (vn.getIsRunning()) {
+        vnNum++;
+        for (int j = 0; j < vn.nodeSize; j++) {
+          if (vn.nodeComputationDemand[j] > 0) {
+            usedNode++;
+            nodeComputation += vn.nodeComputationDemand[j];
+          }
+          for (int k = 0; k < j; k++) {
+            if (vn.edgeBandwithDemand[j][k] > 0) {
+              usedEdge++;
+              edgeBandwith += vn.edgeBandwithDemand[j][k];
+            }
+          }
+        }
+      }
+      if (vn.getIsRunning() && vn.surVirNet.isSucceedEmbed) {
+        svnNum++;
+        for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++) {
+          if (vn.surVirNet.nodeComputation4Backup[j] > 0) {
+            usedNode++;
+            nodeComputation += vn.surVirNet.nodeComputation4Backup[j];
+          }
+          for (int k = 0; k < j; k++) {
+            if (vn.surVirNet.edgeBandwith4Backup[j][k] > 0) {
+              usedEdge++;
+              edgeBandwith += vn.surVirNet.edgeBandwith4Backup[j][k];
+            }
+          }
+        }
+      }
+    }
+
+    this.revenueEdgeBandwith = edgeBandwith;
+    this.revenueUsedEdge = usedEdge;
+    this.revenueNodeComputation = nodeComputation;
+    this.revenueUsedNode = usedNode;
+    this.revenueSubNetNum = svnNum;
+    this.revenueVirNetNum = vnNum;
+  }
+
+  /**
+   * updateExperimentDataAccumulate.
+   * 
+   * @param algorithm
+   *          algorithm
+   */
+  public void updateExperimentDataAccumulate(Algorithm algorithm) {
+    // node
+    int usedNode = 0;
+    int usedEdge = 0;
+    int nodeComputation = 0;
+    int edgeBandwith = 0;
+    for (int i = 0; i < algorithm.getSn().nodeSize; i++) {
+      int nc = algorithm.getSn().nodeComputationCapacity[i]
+          - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
+      if (nc != 0) {
+        usedNode++;
+      }
+      if (nc > 0) {
+        nodeComputation += nc;
+      }
+
+      if (nc < 0) {
+        System.out.println("Error nc");
+      }
+      for (int j = 0; j < i; j++) {
+        int bc = algorithm.getSn().edgeBandwithCapacity[i][j]
+            - algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared());
+        if (bc != 0) {
+          usedEdge++;
+        }
+        if (bc > 0) {
+          edgeBandwith += bc;
+        }
+        if (bc < 0) {
+          System.out.println("Error bc");
+        }
+      }
+    }
+
+    this.costEdgeBandwithSum += (edgeBandwith - this.costEdgeBandwith);
+    this.costUsedEdgeSum += (usedEdge - this.costUsedEdge);
+    this.costNodeComputationSum += (nodeComputation - this.costNodeComputation);
+    this.costUsedNodeSum += (usedNode - this.costUsedNode);
+
+    this.costEdgeBandwith = edgeBandwith;
+    this.costUsedEdge = usedEdge;
+    this.costNodeComputation = nodeComputation;
+    this.costUsedNode = usedNode;
+
+    usedNode = 0;
+    usedEdge = 0;
+    nodeComputation = 0;
+    edgeBandwith = 0;
+    int vnNum = 0;
+    int svnNum = 0;
+    for (int i = 0; i < algorithm.getSn().virNetCollection.size(); i++) {
+      VirtualNetwork vn = algorithm.getSn().virNetCollection.get(i);
+      if (vn.getIsRunning()) {
+        vnNum++;
+        for (int j = 0; j < vn.nodeSize; j++) {
+          if (vn.nodeComputationDemand[j] > 0) {
+            usedNode++;
+            nodeComputation += vn.nodeComputationDemand[j];
+          }
+          for (int k = 0; k < j; k++) {
+            if (vn.edgeBandwithDemand[j][k] > 0) {
+              usedEdge++;
+              edgeBandwith += vn.edgeBandwithDemand[j][k];
+            }
+          }
+        }
+      }
+      if (vn.getIsRunning() && vn.surVirNet.isSucceedEmbed) {
+        svnNum++;
+        for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++) {
+          if (vn.surVirNet.nodeComputation4Backup[j] > 0) {
+            usedNode++;
+            nodeComputation += vn.surVirNet.nodeComputation4Backup[j];
+          }
+          for (int k = 0; k < j; k++) {
+            if (vn.surVirNet.edgeBandwith4Backup[j][k] > 0) {
+              usedEdge++;
+              edgeBandwith += vn.surVirNet.edgeBandwith4Backup[j][k];
+            }
+          }
+        }
+      }
+    }
+
+    this.revenueEdgeBandwithSum += (edgeBandwith - this.revenueEdgeBandwith);
+
+    this.revenueUsedEdgeSum += (usedEdge - this.revenueUsedEdge);
+    this.revenueNodeComputationSum += (nodeComputation - this.revenueNodeComputation);
+    this.revenueUsedNodeSum += (usedNode - this.revenueUsedNode);
+    this.revenueSubNetNumSum += (svnNum - this.revenueSubNetNum);
+    this.revenueVirNetNumSum += (vnNum - this.revenueSubNetNum);
+
+    this.revenueEdgeBandwith = edgeBandwith;
+    this.revenueUsedEdge = usedEdge;
+    this.revenueNodeComputation = nodeComputation;
+    this.revenueUsedNode = usedNode;
+    this.revenueSubNetNum = svnNum;
+    this.revenueVirNetNum = vnNum;
   }
 
 }

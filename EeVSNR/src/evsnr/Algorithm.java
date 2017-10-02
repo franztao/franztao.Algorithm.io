@@ -40,10 +40,6 @@ public class Algorithm {
   // 0 Ran 1 Min
   public int sequence;
 
-  public int consumedNodeNum;
-  public int consumedNodeComputation;
-  public int consumedEdgeBandwith;
-
   public Algorithm() {
     PropertyConfigurator.configure("log4j.properties");
   }
@@ -280,12 +276,16 @@ public class Algorithm {
 
     // modify node and edge new value
     for (int i = 0; i < sn.nodeSize; i++) {
-      this.sn.nodeComputation4Former[i] += this.sn.nodeComputation4Temp[i];
-      this.sn.nodeComputation4Temp[i] = 0;
+      if (this.sn.nodeComputation4Temp[i] > 0) {
+        this.sn.nodeComputation4Former[i] += this.sn.nodeComputation4Temp[i];
+
+        this.sn.nodeComputation4Temp[i] = 0;
+      }
       for (int j = 0; j < i; j++) {
         if (i != j) {
           this.sn.edgeBandwith4Former[i][j] += this.sn.edgeBandwith4Temp[i][j];
           this.sn.edgeBandwith4Former[j][i] = this.sn.edgeBandwith4Former[i][j];
+
           this.sn.edgeBandwith4Temp[i][j] = this.sn.edgeBandwith4Temp[j][i] = 0;
         }
       }
@@ -299,14 +299,6 @@ public class Algorithm {
               .get(vn.virEdge2subPath.get(i).get(j).get(k + 1))
               .addElement(this.sn.virNetCollection.size());
         }
-      }
-    }
-    for (int i = 0; i < vn.nodeSize; i++) {
-      this.consumedNodeNum++;
-      this.consumedNodeComputation += vn.nodeComputationDemand[i];
-
-      for (int j = 0; j < i; j++) {
-        this.consumedEdgeBandwith += vn.edgeBandwithDemand[i][j];
       }
     }
     return true;
@@ -393,24 +385,24 @@ public class Algorithm {
   /**
    * distributeResource4EVN.
    * 
-   * @param evn
+   * @param svn
    *          evn
    * @return boolean
    */
-  private boolean distributeResource4SurVirNet(SurvivalVirtualNetwork evn) {
+  private boolean distributeResource4SurVirNet(SurvivalVirtualNetwork svn) {
     for (int i = 0; i < this.sn.nodeSize; i++) {
       int nodeResource = 0;
-      for (int j = 0; j < evn.nodeSize; j++) {
-        if (i == evn.surNode2subNode[j]) {
-          if (j < evn.virNet.nodeSize) {
-            if (evn.nodeComputationConsume[j]
-                - evn.virNet.nodeComputationDemand[evn.surNode2virNode[j]] > 0) {
-              nodeResource += evn.nodeComputationConsume[j]
-                  - evn.virNet.nodeComputationDemand[evn.surNode2virNode[j]];
+      for (int j = 0; j < svn.nodeSize; j++) {
+        if (i == svn.surNode2subNode[j]) {
+          if (j < svn.virNet.nodeSize) {
+            if (svn.nodeComputationConsume[j]
+                - svn.virNet.nodeComputationDemand[svn.surNode2virNode[j]] > 0) {
+              nodeResource += svn.nodeComputationConsume[j]
+                  - svn.virNet.nodeComputationDemand[svn.surNode2virNode[j]];
             }
           } else {
-            if (evn.nodeComputationConsume[j] > 0) {
-              nodeResource += evn.nodeComputationConsume[j];
+            if (svn.nodeComputationConsume[j] > 0) {
+              nodeResource += svn.nodeComputationConsume[j];
             }
           }
         }
@@ -431,27 +423,27 @@ public class Algorithm {
 
     }
 
-    for (int i = 0; i < evn.nodeSize; i++) {
-      for (int j = 0; j < evn.nodeSize; j++) {
-        if (i < evn.nodeSize4Failure && j < evn.nodeSize4Failure) {
+    for (int i = 0; i < svn.nodeSize; i++) {
+      for (int j = 0; j < svn.nodeSize; j++) {
+        if (i < svn.nodeSize4Failure && j < svn.nodeSize4Failure) {
 
-          evn.edgeBandwith4Backup[i][j] = evn.edgeBandwith4Comsume[i][j]
-              - evn.virNet.edgeBandwithDemand[i][j];
+          svn.edgeBandwith4Backup[i][j] = svn.edgeBandwith4Comsume[i][j]
+              - svn.virNet.edgeBandwithDemand[svn.surNode2virNode[i]][svn.surNode2virNode[j]];
         } else {
-          evn.edgeBandwith4Backup[i][j] = evn.edgeBandwith4Comsume[i][j];
+          svn.edgeBandwith4Backup[i][j] = svn.edgeBandwith4Comsume[i][j];
         }
       }
     }
     // edge
-    for (int i = 0; i < evn.nodeSize; i++) {
+    for (int i = 0; i < svn.nodeSize; i++) {
       for (int j = 0; j < i; j++) {
-        if (evn.edgeBandwith4Backup[i][j] > 0) {
+        if (svn.edgeBandwith4Backup[i][j] > 0) {
           int[][] tempTopology;
           tempTopology = new int[this.sn.nodeSize][this.sn.nodeSize];
           for (int k = 0; k < this.sn.nodeSize; k++) {
             for (int l = 0; l < this.sn.nodeSize; l++) {
               int bd = this.sn.getSubStrateRemainBandwith4SurVirNet(k, l, this.isShared);
-              if (bd > evn.edgeBandwith4Backup[i][j]) {
+              if (bd > svn.edgeBandwith4Backup[i][j]) {
                 tempTopology[k][l] = tempTopology[l][k] = 1;
               }
             }
@@ -461,7 +453,7 @@ public class Algorithm {
           List<Integer> pathList = new LinkedList<Integer>();
 
           // do not split shortest path
-          pathList = shortestPath.dijkstra(evn.surNode2subNode[i], evn.surNode2subNode[j],
+          pathList = shortestPath.dijkstra(svn.surNode2subNode[i], svn.surNode2subNode[j],
               tempTopology);
           if (pathList == null) {
             algorithmLog.warn("Fail to embedd enhanced network (" + i + "--" + j
@@ -476,20 +468,20 @@ public class Algorithm {
 
           // set virtual network's edge bandwith
           for (int k = 0; k < pathList.size(); k++) {
-            evn.surEdge2SubPath.get(i).get(j).addElement(pathList.get(k));
+            svn.surEdge2SubPath.get(i).get(j).addElement(pathList.get(k));
           }
           for (int k = pathList.size() - 1; k >= 0; k--) {
-            evn.surEdge2SubPath.get(j).get(i).addElement(pathList.get(k));
+            svn.surEdge2SubPath.get(j).get(i).addElement(pathList.get(k));
           }
 
           for (int s = pathList.get(0), k = 1; k < pathList.size(); k++) {
             int e = pathList.get(k);
-            this.sn.edgeBandwith4Temp[s][e] += evn.edgeBandwith4Backup[i][j];
+            this.sn.edgeBandwith4Temp[s][e] += svn.edgeBandwith4Backup[i][j];
             this.sn.edgeBandwith4Temp[e][s] = this.sn.edgeBandwith4Temp[s][e];
             s = e;
           }
         } else {
-          if (evn.edgeBandwith4Backup[i][j] < 0) {
+          if (svn.edgeBandwith4Backup[i][j] < 0) {
             algorithmLog.error("distributeResource4EVN edgeResource less than zero ");
             return false;
           }
@@ -497,26 +489,27 @@ public class Algorithm {
       }
     }
 
-    for (int i = 0; i < evn.nodeSize; i++) {
-      this.sn.surVirNetIndexSet4sNode.get(evn.surNode2subNode[i])
+    for (int i = 0; i < svn.nodeSize; i++) {
+      this.sn.surVirNetIndexSet4sNode.get(svn.surNode2subNode[i])
           .addElement(this.sn.surVirNetSet.size());
-      for (int j = 0; j < evn.nodeSize; j++) {
-        for (int k = 0; k < evn.surEdge2SubPath.get(i).get(j).size() - 1; k++) {
-          this.sn.surVirNetIndexSet4Edge.get(evn.surEdge2SubPath.get(i).get(j).get(k))
-              .get(evn.surEdge2SubPath.get(i).get(j).get(k + 1))
+      for (int j = 0; j < svn.nodeSize; j++) {
+        for (int k = 0; k < svn.surEdge2SubPath.get(i).get(j).size() - 1; k++) {
+          this.sn.surVirNetIndexSet4Edge.get(svn.surEdge2SubPath.get(i).get(j).get(k))
+              .get(svn.surEdge2SubPath.get(i).get(j).get(k + 1))
               .addElement(this.sn.surVirNetSet.size());
         }
       }
     }
 
     // set node and edge new value
-    for (int i = 0; i < evn.nodeSize; i++) {
-      if (i < evn.virNet.nodeSize) {
-        evn.nodeComputation4Backup[i] = evn.nodeComputationConsume[i]
-            - evn.virNet.nodeComputationDemand[i];
+    for (int i = 0; i < svn.nodeSize; i++) {
+      if (i < svn.virNet.nodeSize) {
+        svn.nodeComputation4Backup[i] = svn.nodeComputationConsume[i]
+            - svn.virNet.nodeComputationDemand[i];
       } else {
-        evn.nodeComputation4Backup[i] = evn.nodeComputationConsume[i];
+        svn.nodeComputation4Backup[i] = svn.nodeComputationConsume[i];
       }
+
     }
 
     for (int i = 0; i < sn.nodeSize; i++) {

@@ -72,6 +72,8 @@ public class Experiment {
     for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++) {
       VirtualNetwork sameVirNet = new VirtualNetwork(this.vnp);
       constructSameVirNet(sameVirNet);
+      logger.info("###################### Time/Total Time: " + time + "/"
+          + Parameter.SubstrateNewtorkRunTimeInterval);
       for (int alg = 0; alg < algorithms.size(); alg++) {
 
         if ((time % (Parameter.SubstrateNewtorkRunTimeInterval
@@ -81,21 +83,22 @@ public class Experiment {
         }
 
         algorithms.get(alg).releaseResource(false);
-
+        this.algorithmResult[alg].updateExperimentData(algorithms.get(alg));
         if ((0 == (time % Parameter.VirNetDuration))) {
           if ((Math.random() < Parameter.RequestAppearProbability)) {
             logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             algorithms.get(alg).generateAndProtectVirNet(sameVirNet);
+            this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
           }
         }
       }
-      logger.info("-----------------------------------------------------------------");
+      logger.info("-----------------------------------------------------------------\n");
     }
 
     for (int alg = 0; alg < algorithms.size(); alg++) {
       algorithms.get(alg).releaseResource(true);
       algorithms.get(alg).isClearAllResource();
-      this.algorithmResult[alg].writeExperimentData(experimentTimes, algorithms.get(alg));
+      this.algorithmResult[alg].writeExperimentDatatoFile(experimentTimes, algorithms.get(alg));
     }
 
   }
@@ -172,7 +175,7 @@ public class Experiment {
       }
       algorithms.get(alg).releaseResource(true);
       algorithms.get(alg).isClearAllResource();
-      this.result.writeExperimentData(experimentTimes, algorithms.get(alg));
+      this.result.writeExperimentDatatoFile(experimentTimes, algorithms.get(alg));
       logger.info("----------" + algorithms.get(alg).algorithmName + " End -----------\n\n");
     }
 
@@ -247,17 +250,20 @@ public class Experiment {
           Parameter.FailureIndependent, false, Parameter.Ran);
       this.algorithms.addElement(alg);
 
-//      SubstrateNetwork FD_ILP_Shared_Exact = (SubstrateNetwork) this.basicSubstrateNework.clone();
-//      alg = new Algorithm();
-//      alg.setParameter("sn_FD_ILP_Shared", FD_ILP_Shared_Exact, true, Parameter.FailureDependent,
-//          true, -1);
-//      this.algorithms.addElement(alg);
-//
-//      SubstrateNetwork FD_ILP_NoShared_Exact = (SubstrateNetwork) this.basicSubstrateNework.clone();
-//      alg = new Algorithm();
-//      alg.setParameter("sn_FD_ILP_NoShared", FD_ILP_NoShared_Exact, true,
-//          Parameter.FailureDependent, false, -1);
-//      this.algorithms.addElement(alg);
+      // SubstrateNetwork FD_ILP_Shared_Exact = (SubstrateNetwork)
+      // this.basicSubstrateNework.clone();
+      // alg = new Algorithm();
+      // alg.setParameter("sn_FD_ILP_Shared", FD_ILP_Shared_Exact, true,
+      // Parameter.FailureDependent,
+      // true, -1);
+      // this.algorithms.addElement(alg);
+      //
+      // SubstrateNetwork FD_ILP_NoShared_Exact = (SubstrateNetwork)
+      // this.basicSubstrateNework.clone();
+      // alg = new Algorithm();
+      // alg.setParameter("sn_FD_ILP_NoShared", FD_ILP_NoShared_Exact, true,
+      // Parameter.FailureDependent, false, -1);
+      // this.algorithms.addElement(alg);
     } catch (CloneNotSupportedException e) {
       logger.error("Fail to construct various algorithms");
       e.printStackTrace();

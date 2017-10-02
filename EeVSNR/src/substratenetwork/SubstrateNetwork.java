@@ -345,7 +345,6 @@ public class SubstrateNetwork implements Cloneable {
     return sn;
   }
 
-
   /**
    * clearTempResource.
    */
