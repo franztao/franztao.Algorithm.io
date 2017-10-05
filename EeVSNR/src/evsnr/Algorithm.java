@@ -343,7 +343,8 @@ public class Algorithm {
     SurvivalVirtualNetwork svn = new SurvivalVirtualNetwork(this.sn, vn, bn);
     vn.surVirNet = svn;
 
-    if (generateSurvivalVirtualNetwork(svn)) {
+    //VirNet directly return, not process survival procedure. 
+    if (this.algorithmName.equals("VirNet") || generateSurvivalVirtualNetwork(svn)) {
       this.sn.surVirNetSuceedEmbedSum++;
       algorithmLog.info("Alg: " + this.algorithmName + " Succeed to construct EVN and embed EVN");
     } else {

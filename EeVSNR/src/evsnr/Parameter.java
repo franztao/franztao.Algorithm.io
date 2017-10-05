@@ -6,15 +6,6 @@ package evsnr;
 
 public class Parameter {
 
-  // Parameter
-  public static final int addNewVirNodeNewSubNodeCost = 10000000;
-  public static final int addNewVirNodeCost = 100000;
-  public static final int transformExistedNodeCost = 0;
-  public static final int addNodeComputaionCost = 1000;
-  public static final int addEdgeBandwithCost = 1;
-  public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost
-      / addEdgeBandwithCost;
-
   public static final boolean FailureDependent = true;
   public static final boolean FailureIndependent = false;
 
@@ -28,17 +19,28 @@ public class Parameter {
   // /home/franz/franzDocuments/eclipse4cworkspace/EeVSNR
   public static final String FileAbsolutePath = "C:\\Users\\Taoheng\\Desktop\\SeVN";
 
+  // Parameter
+  public static final int addNewVirNodeNewSubNodeCost = 10000000;
+  public static final int addNewVirNodeCost = 100000;
+  public static final int transformExistedNodeCost = 1000;
+  public static final int addNodeComputaionCost = 3;
+  public static final int addEdgeBandwithCost = 1;
+  public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost
+      / addEdgeBandwithCost;
+
   public static final boolean IsSameVirNet4EveryTime = true;
   public static final boolean IsReleaseVNafterEVNFailure = false;
   public static final boolean IsMultopleNodeMapOneNode = true;
   public static final int ExperimentTimes = 20;
 
-  public static final long SubstrateNewtorkRunTimeInterval = 1000;// 30000
+  public static final long SubstrateNewtorkRunTimeInterval = 3000;// 30000
   public static final long unitTimeInterval = 1;
   public static final double RequestAppearProbability = 1;// 0.1
+  public static final double RequestPerTimeAppearNum = 1;// 0.1
   public static final long VirNetDuration = 1;
-  public static final long VNRequestsContinueTimeMinimum = 50;
-  public static final long VNRequestsContinueTimeMaximum = 500;
+  public static final long VNRequestsContinueTimeMinimum = 1;
+  public static final long VNRequestsContinueTimeMaximum = 100;
+  public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
   // ExperimentPicture
   public static final int ExperimentPicturePlotNumber = 15;
 
@@ -53,8 +55,8 @@ public class Parameter {
   public static final int SubStrateNodeComputationMaximum = 28;// 100
   // edge parameter
   public static final double SubStrateNodenodeProbability = 0.75;
-  public static final int SubStrateEdgeBandwithMinimum = 1000;
-  public static final int SubStrateEdgeBandwithMaximum = 2000;
+  public static final int SubStrateEdgeBandwithMinimum = 100;
+  public static final int SubStrateEdgeBandwithMaximum = 200;
 
   // Virtual Network
   // node parameter //2-5 5-8 5-10
@@ -64,8 +66,8 @@ public class Parameter {
   public static final int VirtualNodeComputationMaximum = 9;// 5
   // edge parameter
   public static final double VirtualNodenodeProbability = 0.8;// 0.5
-  public static final int VirtualEdgeBandwithMinimum = 5;// 10
-  public static final int VirtualEdgeBandwithMaximum = 10;// 20
+  public static final int VirtualEdgeBandwithMinimum = 10;// 10
+  public static final int VirtualEdgeBandwithMaximum = 20;// 20
 
   public static final int SubStrateFacilityNodeFailDuration = 2000;
 

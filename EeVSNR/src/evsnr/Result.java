@@ -166,13 +166,16 @@ public class Result {
           .write(prefix + "unitTimeInterval" + "}{" + Parameter.unitTimeInterval + "}\n");
       fwTexFileWriter.write(
           prefix + "requestAppearProbability" + "}{" + Parameter.RequestAppearProbability + "}\n");
+      fwTexFileWriter.write(
+          prefix + "RequestPerTimeAppearNum" + "}{" + Parameter.RequestPerTimeAppearNum + "}\n");
       fwTexFileWriter
           .write(prefix + "VNRequestsDuration" + "}{" + Parameter.VirNetDuration + "}\n");
       fwTexFileWriter.write(prefix + "VNRequestsContinueTimeMinimum" + "}{"
           + Parameter.VNRequestsContinueTimeMinimum + "}\n");
       fwTexFileWriter.write(prefix + "VNRequestsContinueTimeMaximum" + "}{"
           + Parameter.VNRequestsContinueTimeMaximum + "}\n");
-
+      fwTexFileWriter.write(prefix + "VNRequestsContinueTimeAverage" + "}{"
+          + Parameter.VNRequestsContinueTimeAverage + "}\n");
       fwTexFileWriter
           .write(prefix + "SubStrateNodeSize" + "}{" + Parameter.SubStrateNodeSize + "}\n");
       fwTexFileWriter.write(prefix + "SubStrateNodeComputationMinimum" + "}{"
@@ -792,8 +795,13 @@ public class Result {
     this.revenueUsedEdgeSum += (usedEdge - this.revenueUsedEdge);
     this.revenueNodeComputationSum += (nodeComputation - this.revenueNodeComputation);
     this.revenueUsedNodeSum += (usedNode - this.revenueUsedNode);
-    this.revenueSubNetNumSum += (svnNum - this.revenueSubNetNum);
+
     this.revenueVirNetNumSum += (vnNum - this.revenueSubNetNum);
+    if (algorithm.algorithmName.equals("VirNet")) {
+      this.revenueSubNetNumSum = this.revenueVirNetNumSum;
+    } else {
+      this.revenueSubNetNumSum += (svnNum - this.revenueSubNetNum);
+    }
 
     this.revenueEdgeBandwith = edgeBandwith;
     this.revenueUsedEdge = usedEdge;

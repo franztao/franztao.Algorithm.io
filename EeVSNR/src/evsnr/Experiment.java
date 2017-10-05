@@ -85,10 +85,12 @@ public class Experiment {
         algorithms.get(alg).releaseResource(false);
         this.algorithmResult[alg].updateExperimentData(algorithms.get(alg));
         if ((0 == (time % Parameter.VirNetDuration))) {
-          if ((Math.random() < Parameter.RequestAppearProbability)) {
-            logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            algorithms.get(alg).generateAndProtectVirNet(sameVirNet);
-            this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
+          for (int r = 0; r < Parameter.RequestPerTimeAppearNum; r++) {
+            if ((Math.random() < Parameter.RequestAppearProbability)) {
+              logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+              algorithms.get(alg).generateAndProtectVirNet(sameVirNet);
+              this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
+            }
           }
         }
       }
@@ -194,60 +196,57 @@ public class Experiment {
     Algorithm alg;
     this.algorithms.clear();
     try {
-      SubstrateNetwork FD_Min_Shared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FD_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FD_Min_Shared_Heuristic", FD_Min_Shared_Heuristic, false,
-          Parameter.FailureDependent, true, Parameter.Min);
+      alg.setParameter("FD_Min_Shared_Heuristic", FD_Min_Shared, false, Parameter.FailureDependent,
+          true, Parameter.Min);
       this.algorithms.addElement(alg);
 
-      SubstrateNetwork FD_Min_NoShared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FD_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FD_Min_NoShared_Heuristic", FD_Min_NoShared_Heuristic, false,
+      alg.setParameter("FD_Min_NoShared_Heuristic", FD_Min_NoShared, false,
           Parameter.FailureDependent, false, Parameter.Min);
       this.algorithms.addElement(alg);
 
-      SubstrateNetwork FD_Ran_Shared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FD_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared_Heuristic, false,
-          Parameter.FailureDependent, true, Parameter.Ran);
+      alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent,
+          true, Parameter.Ran);
       this.algorithms.addElement(alg);
 
-      SubstrateNetwork FD_Ran_NoShared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FD_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared_Heuristic, false,
+      alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false,
           Parameter.FailureDependent, false, Parameter.Ran);
       this.algorithms.addElement(alg);
 
-      SubstrateNetwork FI_Min_Shared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FI_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FI_Min_Shared_Heuristic", FI_Min_Shared_Heuristic, false,
+      alg.setParameter("FI_Min_Shared_Heuristic", FI_Min_Shared, false,
           Parameter.FailureIndependent, true, Parameter.Min);
       this.algorithms.addElement(alg);
 
-      SubstrateNetwork FI_Min_NoShared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FI_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FI_Min_NoShared_Heuristic", FI_Min_NoShared_Heuristic, false,
+      alg.setParameter("FI_Min_NoShared_Heuristic", FI_Min_NoShared, false,
           Parameter.FailureIndependent, false, Parameter.Min);
       this.algorithms.addElement(alg);
 
-      SubstrateNetwork FI_Ran_Shared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FI_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared_Heuristic, false,
+      alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false,
           Parameter.FailureIndependent, true, Parameter.Ran);
       this.algorithms.addElement(alg);
 
-      SubstrateNetwork FI_Ran_NoShared_Heuristic = (SubstrateNetwork) this.basicSubstrateNework
-          .clone();
+      SubstrateNetwork FI_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
       alg = new Algorithm();
-      alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared_Heuristic, false,
+      alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false,
           Parameter.FailureIndependent, false, Parameter.Ran);
+      this.algorithms.addElement(alg);
+
+      SubstrateNetwork virNet = (SubstrateNetwork) this.basicSubstrateNework.clone();
+      alg = new Algorithm();
+      alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
       this.algorithms.addElement(alg);
 
       // SubstrateNetwork FD_ILP_Shared_Exact = (SubstrateNetwork)
