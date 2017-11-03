@@ -11,6 +11,7 @@ import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
+import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
 
 import java.util.HashMap;
@@ -691,27 +692,29 @@ public class SurvivalVirtualNetwork {
       survivalGraphBandwithMatrix = new GRBVar[this.nodeSize][this.nodeSize];
       for (int j = 0; j < this.nodeSize; j++) {
         for (int k = 0; k < this.nodeSize; k++) {
-          survivalGraphBandwithMatrix[j][k] = model.addVar(0.0, Integer.MAX_VALUE, 0.0,
-              GRB.CONTINUOUS, "MBG" + " r:" + j + " c:" + k);
+          survivalGraphBandwithMatrix[j][k] = model.addVar(0.0,
+              Parameter.SubStrateEdgeBandwithMaximum, 0.0, GRB.INTEGER,
+              "GB" + " r:" + j + " c:" + k);
         }
       }
 
+      // 2
       GRBVar[] survivalGraphComputationMatrix;
       survivalGraphComputationMatrix = new GRBVar[this.nodeSize];
       for (int j = 0; j < this.nodeSize; j++) {
         survivalGraphComputationMatrix[j] = model.addVar(0.0, this.nodeComputationCapacity[j], 0.0,
-            GRB.CONTINUOUS, "MBC" + " r:" + j);
+            GRB.INTEGER, "GC" + " r:" + j);
       }
 
-      GRBVar[] usedNodeVector;
-      usedNodeVector = new GRBVar[this.nodeSize];
+      GRBVar[] activeNodeVector;
+      activeNodeVector = new GRBVar[this.nodeSize];
       for (int j = 0; j < this.nodeSize; j++) {
         if (j < this.nodeSize4Failure) {
-          usedNodeVector[j] = model.addVar(1.0, 1.0, 0.0, GRB.CONTINUOUS,
-              "usedNodeVector" + ": " + j);
+          activeNodeVector[j] = model.addVar(1.0, 1.0, 0.0, GRB.CONTINUOUS,
+              "activeNode" + ": " + j);
         } else {
-          usedNodeVector[j] = model.addVar(0.0, 1.0, 0.0, GRB.CONTINUOUS,
-              "usedNodeVector" + ": " + j);
+          activeNodeVector[j] = model.addVar(0.0, 1.0, 0.0, GRB.CONTINUOUS,
+              "activeNode" + ": " + j);
         }
       }
 
@@ -720,80 +723,15 @@ public class SurvivalVirtualNetwork {
       // set objecion function
       GRBLinExpr objexpr = new GRBLinExpr();
       for (int i = 0; i < this.nodeSize; i++) {
-        objexpr.addTerm(Parameter.addNewVirNodeCost, usedNodeVector[i]);
+        objexpr.addTerm(Parameter.addNewVirNodeCost, activeNodeVector[i]);
         objexpr.addTerm(Parameter.addNodeComputaionCost, survivalGraphComputationMatrix[i]);
         for (int j = 0; j < this.nodeSize; j++) {
-          objexpr.addTerm(1.0, survivalGraphBandwithMatrix[i][j]);
+          objexpr.addTerm(Parameter.addEdgeBandwithCost, survivalGraphBandwithMatrix[i][j]);
         }
       }
       model.setObjective(objexpr, GRB.MINIMIZE);
 
-      // Add constraint 7
-      // regulate the TransfromMatrix
-      for (int k = 0; k < this.nodeSize; k++) {
-        for (int i = 0; i <= this.nodeSize4Failure; i++) {
-          for (int j = 0; j < this.virNet.nodeSize; j++) {
-            GRBLinExpr conexpr = new GRBLinExpr();
-            conexpr.addTerm(1.0, transformMatrix[i][j][k]);
-            model.addConstr(conexpr, GRB.LESS_EQUAL, usedNodeVector[k],
-                "Con usedNode:" + k + " " + i + " " + j);
-          }
-        }
-
-      }
-
-      // 2
-      for (int i = 0; i <= this.nodeSize4Failure; i++) {
-        for (int j = 0; j < this.virNet.nodeSize; j++) {
-          GRBLinExpr conexpr = new GRBLinExpr();
-          for (int k = 0; k < this.nodeSize; k++) {
-            conexpr.addTerm(1.0, transformMatrix[i][j][k]);
-          }
-          model.addConstr(conexpr, GRB.EQUAL, 1.0, "Con Tiv=1: " + i + " " + j);
-        }
-      }
-
-      for (int i = 0; i <= this.nodeSize4Failure; i++) {
-        for (int k = 0; k < this.nodeSize; k++) {
-          GRBLinExpr conexpr = new GRBLinExpr();
-          for (int j = 0; j < this.virNet.nodeSize; j++) {
-            conexpr.addTerm(1.0, transformMatrix[i][j][k]);
-          }
-          model.addConstr(conexpr, GRB.LESS_EQUAL, 1.0, "Con Tuj<=1:" + i + " " + k);
-        }
-      }
-
-      for (int i = 0; i <= this.nodeSize4Failure; i++) {
-        GRBLinExpr conexpr = new GRBLinExpr();
-        for (int j = 0; j < this.virNet.nodeSize; j++) {
-          for (int k = 0; k < this.nodeSize; k++) {
-            conexpr.addTerm(1.0, transformMatrix[i][j][k]);
-          }
-        }
-        model.addConstr(conexpr, GRB.EQUAL, this.nodeSize4Failure, "Con Tuv=n:" + i);
-      }
-
-      // 3
-      for (int i = 1; i <= this.nodeSize4Failure; i++) {
-        GRBLinExpr conexpr = new GRBLinExpr();
-        for (int j = 0; j < this.virNet.nodeSize; j++) {
-          conexpr.addTerm(1.0, transformMatrix[i][j][i - 1]);
-        }
-        model.addConstr(conexpr, GRB.EQUAL, 0.0, "Con Tuk=0:");
-      }
-
-      // 4 MAG<=MBG
-      for (int i = 0; i < this.nodeSize4Failure; i++) {
-        for (int j = 0; j < this.nodeSize4Failure; j++) {
-          GRBLinExpr conexpr = new GRBLinExpr();
-          conexpr.addTerm(1.0, survivalGraphBandwithMatrix[i][j]);
-          model.addConstr(conexpr, GRB.GREATER_EQUAL, this.virNet.edgeBandwithDemand[i][j],
-              "con MAB<=MBB");
-        }
-      }
-
-      // 8
-      // MAC*T<MBC
+      // 1
       for (int i = 0; i <= this.nodeSize4Failure; i++) {
         for (int j = 0; j < this.nodeSize; j++) {
           GRBLinExpr conexpr = new GRBLinExpr();
@@ -805,8 +743,113 @@ public class SurvivalVirtualNetwork {
         }
       }
 
+      // (MAG*T)'*T<MBG
+      //
+      for (int l = 0; l <= this.nodeSize4Failure; l++) {
+        for (int i = 0; i < this.nodeSize4Failure; i++) {
+          for (int j = 0; j < this.nodeSize; j++) {
+            GRBQuadExpr conexprL = new GRBQuadExpr();
+            for (int k = 0; k < this.nodeSize; k++) {
+              if (k < j) {
+                conexprL.addTerm(1.0, transformMatrix[l][i][k], survivalGraphBandwithMatrix[j][k]);
+              } else {
+                conexprL.addTerm(1.0, transformMatrix[l][i][k], survivalGraphBandwithMatrix[k][j]);
+
+              }
+            }
+            GRBQuadExpr conexprR = new GRBQuadExpr();
+            for (int t = 0; t < this.virNet.nodeSize; t++) {
+              conexprR.addTerm(this.virNet.edgeBandwithDemand[t][i], transformMatrix[l][t][j]);
+            }
+            model.addQConstr(conexprR, GRB.LESS_EQUAL, conexprL,
+                "T " + l + "T'*MAG'*T" + "r " + i + " c " + j);
+          }
+        }
+      }
+
+      for (int k = 0; k < this.nodeSize; k++) {
+        for (int j = k + 1; j < this.nodeSize; j++) {
+          model.addConstr(survivalGraphBandwithMatrix[j][k], GRB.EQUAL,
+              survivalGraphBandwithMatrix[k][j], "Equl B r:" + k + " j:" + j);
+        }
+      }
+
+      // for (int i = 0; i <= this.nodeSize4Failure; i++) {
+      // // T'*MAG'
+      // GRBQuadExpr[][] tmag = new GRBQuadExpr[this.nodeSize][this.nodeSize];
+      // for (int j = 0; j < this.nodeSize; j++) {
+      // for (int t = 0; t < this.nodeSize; t++) {
+      // tmag[j][t] = new GRBQuadExpr();
+      // for (int k = 0; k < this.virNet.nodeSize; k++) {
+      // for (int l = 0; l < this.virNet.nodeSize; l++) {
+      // // TMAG[j][k].addTerm(this.VNR.edgeBandwithDemand[k][l],
+      // // TransfromMatrix[i][l][j]);
+      // for (int p = 0; p < this.virNet.nodeSize; p++) {
+      // Integer inte = this.virNet.edgeBandwithDemand[k][p];
+      // tmag[j][t].addTerm(inte.doubleValue(), transformMatrix[i][k][j],
+      // transformMatrix[i][p][t]);
+      // }
+      // }
+      // }
+      // model.addQConstr(tmag[j][t], GRB.LESS_EQUAL,
+      // survivalGraphBandwithMatrix[j][t],
+      // "T " + i + "T'*MAG'*T" + "r " + j + " c " + t);
+      // }
+      // }
+      // }
+
+      // 3
+      for (int i = 0; i < this.nodeSize4Failure; i++) {
+        for (int j = 0; j < this.nodeSize4Failure; j++) {
+          GRBLinExpr conexpr = new GRBLinExpr();
+          conexpr.addTerm(1.0, survivalGraphBandwithMatrix[i][j]);
+          model.addConstr(conexpr, GRB.GREATER_EQUAL, this.virNet.edgeBandwithDemand[i][j],
+              "con MAB<=MBB");
+        }
+      }
+
+      // 4
+      for (int i = 0; i <= this.nodeSize4Failure; i++) {
+        for (int j = 0; j < this.virNet.nodeSize; j++) {
+          GRBLinExpr conexpr = new GRBLinExpr();
+          for (int k = 0; k < this.nodeSize; k++) {
+            conexpr.addTerm(1.0, transformMatrix[i][j][k]);
+          }
+          model.addConstr(conexpr, GRB.EQUAL, 1.0, "Con Tiv=1: " + i + " " + j);
+        }
+      }
+
+      // for (int i = 0; i <= this.nodeSize4Failure; i++) {
+      // for (int k = 0; k < this.nodeSize; k++) {
+      // GRBLinExpr conexpr = new GRBLinExpr();
+      // for (int j = 0; j < this.virNet.nodeSize; j++) {
+      // conexpr.addTerm(1.0, transformMatrix[i][j][k]);
+      // }
+      // model.addConstr(conexpr, GRB.LESS_EQUAL, 1.0, "Con Tuj<=1:" + i + " " +
+      // k);
+      // }
+      // }
+
       // 5
-      // T*MBS>MAS
+      for (int i = 0; i <= this.nodeSize4Failure; i++) {
+        GRBLinExpr conexpr = new GRBLinExpr();
+        for (int j = 0; j < this.virNet.nodeSize; j++) {
+          for (int k = 0; k < this.nodeSize; k++) {
+            conexpr.addTerm(1.0, transformMatrix[i][j][k]);
+          }
+        }
+        model.addConstr(conexpr, GRB.EQUAL, this.nodeSize4Failure, "Con Tuv=n:" + i);
+      }
+
+      // 6
+      for (int i = 1; i <= this.nodeSize4Failure; i++) {
+        GRBLinExpr conexpr = new GRBLinExpr();
+        for (int j = 0; j < this.virNet.nodeSize; j++) {
+          conexpr.addTerm(1.0, transformMatrix[i][j][i - 1]);
+        }
+        model.addConstr(conexpr, GRB.EQUAL, 0.0, "Con Tuk=0:");
+      }
+      // 7
       for (int i = 0; i <= this.nodeSize4Failure; i++) {
         for (int j = 0; j < this.virNet.nodeSize; j++) {
           for (int l = 0; l < this.serviceNum; l++) {
@@ -828,31 +871,20 @@ public class SurvivalVirtualNetwork {
         }
       }
 
-      // (MAG*T)'*T<MBG
-      //
-      // for (int i = 0; i <= this.nodeSize4Embeded; i++) {
-      // // T'*MAG'
-      // GRBQuadExpr TMAG[][] = new GRBQuadExpr[this.nodeSize][this.nodeSize];
-      // for (int j = 0; j < this.nodeSize; j++) {
-      // for (int t = 0; t < this.nodeSize; t++) {
-      // TMAG[j][t] = new GRBQuadExpr();
-      // for (int k = 0; k < this.VN.nodeSize; k++) {
-      // for (int l = 0; l < this.VN.nodeSize; l++) {
-      // // TMAG[j][k].addTerm(this.VNR.edgeBandwithDemand[k][l],
-      // // TransfromMatrix[i][l][j]);
-      // for (int p = 0; p < this.VN.nodeSize; p++) {
-      // Integer inte = this.VN.edgeBandwithDemand[k][p];
-      // TMAG[j][t].addTerm(inte.doubleValue(), TransfromMatrix[i][k][j],
-      // TransfromMatrix[i][p][t]);
-      // }
-      // }
-      // }
-      // model.addQConstr(TMAG[j][t], GRB.LESS_EQUAL,
-      // EnhancedGraphBandwithMatrix[j][t],
-      // "T " + i + "T'*MAG'*T" + "r " + j + " c " + t);
-      // }
-      // }
-      // }
+      // Add constraint 8
+      // regulate the TransfromMatrix
+      for (int k = 0; k < this.nodeSize; k++) {
+        for (int i = 0; i <= this.nodeSize4Failure; i++) {
+          for (int j = 0; j < this.virNet.nodeSize; j++) {
+            GRBLinExpr conexpr = new GRBLinExpr();
+            conexpr.addTerm(1.0, transformMatrix[i][j][k]);
+            model.addConstr(conexpr, GRB.LESS_EQUAL, activeNodeVector[k],
+                "Con activeNode:" + k + " " + i + " " + j);
+          }
+        }
+
+      }
+
       model.optimize();
       int optimstatus = model.get(GRB.IntAttr.Status);
       if (optimstatus != GRB.OPTIMAL) {
@@ -860,25 +892,29 @@ public class SurvivalVirtualNetwork {
       }
       for (int i = 0; i < this.nodeSize; i++) {
         if (i >= this.nodeSize4Failure) {
-          this.nodeComputationConsume[i] = (int) survivalGraphComputationMatrix[i]
-              .get(GRB.DoubleAttr.X);
+          this.nodeComputationConsume[i] += ((int) survivalGraphComputationMatrix[i]
+              .get(GRB.DoubleAttr.X));
         } else {
-          this.nodeComputationConsume[i] = (int) survivalGraphComputationMatrix[i]
-              .get(GRB.DoubleAttr.X) - this.virNet.nodeComputationDemand[i];
+          this.nodeComputationConsume[i] += ((int) survivalGraphComputationMatrix[i]
+              .get(GRB.DoubleAttr.X) - this.virNet.nodeComputationDemand[i]);
         }
         for (int j = 0; j < this.nodeSize; j++) {
           if (i < this.nodeSize4Failure && j < this.nodeSize4Failure) {
-            this.edgeBandwith4Comsume[i][j] = (int) (survivalGraphBandwithMatrix[i][j]
-                .get(GRB.DoubleAttr.X) - this.virNet.edgeBandwithDemand[i][j]);
+            this.edgeBandwith4Comsume[i][j] += ((int) (survivalGraphBandwithMatrix[i][j]
+                .get(GRB.DoubleAttr.X) - this.virNet.edgeBandwithDemand[i][j]));
           } else {
-            this.edgeBandwith4Comsume[i][j] = (int) survivalGraphBandwithMatrix[i][j]
-                .get(GRB.DoubleAttr.X);
+            this.edgeBandwith4Comsume[i][j] += ((int) survivalGraphBandwithMatrix[i][j]
+                .get(GRB.DoubleAttr.X));
           }
         }
       }
       loggerEnhancedVirtualNetwork.info("ILP method Succed");
       computeConsumedResource(alg);
-    } catch (GRBException e) {
+    } catch (
+
+    GRBException e)
+
+    {
       e.printStackTrace();
     }
     return true;

@@ -27,34 +27,34 @@ public class Result {
   double[] arrayAcceptionRatioVn;
   int acceptionRatioDataLength;
 
-  public int[] arrayCostEdgeBwSum;
-  public int[] arrayCostNodeCpSum;
-  public int[] arrayCostUsedNodeSum;
+  public int[] arrayarrayCostEdgeBwAcc;
+  public int[] arrayCostNodeCpAcc;
+  public int[] arrayUtilizationNodeAcc;
 
-  private int[] arrayCostUsedNode;
+  private int[] arrayUtilizationSubNode;
   private int[] arrayCostNodeCp;
   private int[] arrayCostEdgeBw;
 
-  private int[] arrayCostUsedEdgeSum;
-  private int[] arrayCostUsedEdge;
+  private int[] arrayUtilizationEdgeAcc;
+  private int[] arrayUtilizationSubEdge;
 
-  public int costDataLength;
+  public int recordDataLength;
 
-  public int[] arrayRevenueUsedNodeSum;
-  public int[] arrayRevenueEdgeBwSum;
-  public int[] arrayRevenueNodeCpSum;
+  public int[] arrayUtilizationVirNodeAcc;
+  public int[] arrayRevenueEdgeBwAcc;
+  public int[] arrayRevenueNodeCpAcc;
   private int[] arrayRevenueNodeCp;
-  private int[] varrayRevenueEdgeBw;
-  private int[] arrayRevenueUsedNode;
+  private int[] arrayRevenueEdgeBw;
+  private int[] arrayUtilizationVirNode;
 
   public int revenueDataLength;
-  private int[] arrayRevenueUsedEdgeSum;
-  private int[] arrayRevenueUsedEdge;
+  private int[] arrayUtilizationVirEdgeAcc;
+  private int[] arrayUtilizationVirEdge;
 
-  private int[] arrayRevenueVirNetNumSum;
-  private int[] arrayRevenueSurNetNumSum;
-  private int[] arrayRevenueVirNetNum;
-  private int[] arrayRevenueSurNetNum;
+  private int[] arrayVirNetReqAcc;
+  private int[] arraySurNetReqAcc;
+  private int[] arrayVirNetReq;
+  private int[] arraySurNetReq;
 
   public int revenueUsedNode;
   public int revenueUsedEdge;
@@ -89,53 +89,53 @@ public class Result {
     arrayAcceptionRatioVn = new double[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
-    arrayCostEdgeBwSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayarrayCostEdgeBwAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayCostNodeCpSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayCostNodeCpAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayCostUsedNodeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationNodeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
     arrayCostEdgeBw = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
     arrayCostNodeCp = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayCostUsedNode = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationSubNode = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
-    arrayCostUsedEdgeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationEdgeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayCostUsedEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationSubEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
-    arrayRevenueUsedNodeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationVirNodeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueEdgeBwSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayRevenueEdgeBwAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueNodeCpSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayRevenueNodeCpAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
     arrayRevenueNodeCp = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    varrayRevenueEdgeBw = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayRevenueEdgeBw = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueUsedNode = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationVirNode = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
 
-    arrayRevenueVirNetNumSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayVirNetReqAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueSurNetNumSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arraySurNetReqAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueVirNetNum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayVirNetReq = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueSurNetNum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arraySurNetReq = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueUsedEdgeSum = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationVirEdgeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
-    arrayRevenueUsedEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1)
+    arrayUtilizationVirEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1)
         * Parameter.ExperimentTimes];
     acceptionRatioDataLength = 0;
-    costDataLength = 0;
+    recordDataLength = 0;
   }
 
   void recordTexParameter() {
@@ -205,7 +205,9 @@ public class Result {
           + Parameter.VirtualEdgeBandwithMaximum + "}\n");
       fwTexFileWriter.write(prefix + "SubStrateFacilityNodeFailDuration" + "}{"
           + Parameter.SubStrateFacilityNodeFailDuration + "}\n");
-
+      fwTexFileWriter.write(prefix + "ExperimentTimes" + "}{"
+          + Parameter.ExperimentTimes + "}\n");
+      
       fwTexFileWriter.flush();
       fwTexFileWriter.close();
     } catch (IOException e) {
@@ -244,21 +246,21 @@ public class Result {
   private void recordExperimentData4VirNetworkMapRevenue(int experimentTimes, Algorithm algorithm,
       int time) {
 
-    arrayRevenueUsedNodeSum[revenueDataLength] = this.revenueUsedNodeSum;
-    arrayRevenueUsedEdgeSum[revenueDataLength] = this.revenueUsedEdgeSum;
-    arrayRevenueNodeCpSum[revenueDataLength] = this.revenueNodeComputationSum;
-    arrayRevenueEdgeBwSum[revenueDataLength] = this.revenueEdgeBandwithSum;
+    arrayUtilizationVirNodeAcc[revenueDataLength] = this.revenueUsedNodeSum;
+    arrayUtilizationVirEdgeAcc[revenueDataLength] = this.revenueUsedEdgeSum;
+    arrayRevenueNodeCpAcc[revenueDataLength] = this.revenueNodeComputationSum;
+    arrayRevenueEdgeBwAcc[revenueDataLength] = this.revenueEdgeBandwithSum;
 
-    arrayRevenueVirNetNumSum[revenueDataLength] = this.revenueVirNetNumSum;
-    arrayRevenueSurNetNumSum[revenueDataLength] = this.revenueSubNetNumSum;
+    arrayVirNetReqAcc[revenueDataLength] = this.revenueVirNetNumSum;
+    arraySurNetReqAcc[revenueDataLength] = this.revenueSubNetNumSum;
 
-    arrayRevenueUsedNode[revenueDataLength] = this.revenueUsedNode;
-    arrayRevenueUsedEdge[revenueDataLength] = this.revenueUsedEdge;
+    arrayUtilizationVirNode[revenueDataLength] = this.revenueUsedNode;
+    arrayUtilizationVirEdge[revenueDataLength] = this.revenueUsedEdge;
     arrayRevenueNodeCp[revenueDataLength] = this.revenueNodeComputation;
-    varrayRevenueEdgeBw[revenueDataLength] = this.revenueEdgeBandwith;
+    arrayRevenueEdgeBw[revenueDataLength] = this.revenueEdgeBandwith;
 
-    arrayRevenueVirNetNum[revenueDataLength] = this.revenueVirNetNum;
-    arrayRevenueSurNetNum[revenueDataLength] = this.revenueSubNetNum;
+    arrayVirNetReq[revenueDataLength] = this.revenueVirNetNum;
+    arraySurNetReq[revenueDataLength] = this.revenueSubNetNum;
 
     revenueDataLength++;
 
@@ -349,7 +351,7 @@ public class Result {
 
     writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_",
         this.arrayAcceptionRatioVn, acceptionRatioDataLength);
-    writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_EVN_",
+    writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_SVN_",
         this.arrayAcceptionRatioSvn, acceptionRatioDataLength);
     acceptionRatioDataLength = 0;
 
@@ -479,16 +481,16 @@ public class Result {
   private void recordExperimentData4SubNetworkMapCost(int experimentTimes, Algorithm algorithm,
       int time) {
 
-    arrayCostUsedNodeSum[costDataLength] = this.costUsedNodeSum;
-    arrayCostUsedEdgeSum[costDataLength] = this.costUsedEdgeSum;
-    arrayCostNodeCpSum[costDataLength] = this.costNodeComputationSum;
-    arrayCostEdgeBwSum[costDataLength] = this.costEdgeBandwithSum;
+    arrayUtilizationNodeAcc[recordDataLength] = this.costUsedNodeSum;
+    arrayUtilizationEdgeAcc[recordDataLength] = this.costUsedEdgeSum;
+    arrayCostNodeCpAcc[recordDataLength] = this.costNodeComputationSum;
+    arrayarrayCostEdgeBwAcc[recordDataLength] = this.costEdgeBandwithSum;
 
-    arrayCostUsedNode[costDataLength] = this.costUsedNode;
-    arrayCostUsedEdge[costDataLength] = this.costUsedEdge;
-    arrayCostNodeCp[costDataLength] = this.costNodeComputation;
-    arrayCostEdgeBw[costDataLength] = this.costEdgeBandwith;
-    costDataLength++;
+    arrayUtilizationSubNode[recordDataLength] = this.costUsedNode;
+    arrayUtilizationSubEdge[recordDataLength] = this.costUsedEdge;
+    arrayCostNodeCp[recordDataLength] = this.costNodeComputation;
+    arrayCostEdgeBw[recordDataLength] = this.costEdgeBandwith;
+    recordDataLength++;
 
   }
 
@@ -529,26 +531,26 @@ public class Result {
    * @param algorithm
    *          algorithm
    */
-  public void writeExperimentData4SubNetworkMapCost(int experimentTimes, Algorithm algorithm) {
+  public void writeExperimentData4SubNetwork(int experimentTimes, Algorithm algorithm) {
 
-    writeExperimentData(experimentTimes, algorithm, "MapCost_usedNode_", this.arrayCostUsedNode,
-        costDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapCost_usedEdge_", this.arrayCostUsedEdge,
-        costDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapCost_nodeCp_", this.arrayCostNodeCp,
-        costDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapCost_edgeBw_", this.arrayCostEdgeBw,
-        costDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Utilization_SubNode_",
+        this.arrayUtilizationSubNode, recordDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Utilization_SubEdge_",
+        this.arrayUtilizationSubEdge, recordDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_", this.arrayCostNodeCp,
+        recordDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Cost_NdgeBw_", this.arrayCostEdgeBw,
+        recordDataLength);
 
-    writeExperimentData(experimentTimes, algorithm, "MapCost_usedNode_Sum_",
-        this.arrayCostUsedNodeSum, costDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapCost_usedEdge_Sum_",
-        this.arrayCostUsedEdgeSum, costDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapCost_nodeCp_Sum_", this.arrayCostNodeCpSum,
-        costDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapCost_edgeBw_Sum_", this.arrayCostEdgeBwSum,
-        costDataLength);
-    costDataLength = 0;
+    writeExperimentData(experimentTimes, algorithm, "Utilization_SubNode_Accumulate",
+        this.arrayUtilizationNodeAcc, recordDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Utilization_SubEdge_Accumulate",
+        this.arrayUtilizationEdgeAcc, recordDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_Accumulate",
+        this.arrayCostNodeCpAcc, recordDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_Accumulate",
+        this.arrayarrayCostEdgeBwAcc, recordDataLength);
+    recordDataLength = 0;
   }
 
   /**
@@ -559,34 +561,37 @@ public class Result {
    * @param algorithm
    *          algorithm
    */
-  public void writeExperimentData4VirNetworkMapRevenue(int experimentTimes, Algorithm algorithm) {
+  public void writeExperimentData4VirNetwork(int experimentTimes, Algorithm algorithm) {
 
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedNode_",
-        this.arrayRevenueUsedNode, revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedEdge_",
-        this.arrayRevenueUsedEdge, revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_nodeCp_", this.arrayRevenueNodeCp,
+    writeExperimentData(experimentTimes, algorithm, "Utilization_VirNode_",
+        this.arrayUtilizationVirNode, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Utilization_VirEdge_",
+        this.arrayUtilizationVirEdge, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_", this.arrayRevenueNodeCp,
         revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_edgeBw_", this.varrayRevenueEdgeBw,
+    writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_", this.arrayRevenueEdgeBw,
         revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_virnet_",
-        this.arrayRevenueVirNetNum, revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_subnet_",
-        this.arrayRevenueSurNetNum, revenueDataLength);
+    // Request_VirNet_Accumulate_ MapRevenue_virnet_
+    writeExperimentData(experimentTimes, algorithm, "Request_VirNet_", this.arrayVirNetReq,
+        revenueDataLength);
+    // MapRevenue_subnet_
+    writeExperimentData(experimentTimes, algorithm, "Request_SurNet_", this.arraySurNetReq,
+        revenueDataLength);
 
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedNode_Sum_",
-        this.arrayRevenueUsedNodeSum, revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_usedEdge_Sum_",
-        this.arrayRevenueUsedEdgeSum, revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_nodeCp_Sum_",
-        this.arrayRevenueNodeCpSum, revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_edgeBw_Sum_",
-        this.arrayRevenueEdgeBwSum, revenueDataLength);
-
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_virnet_Sum_",
-        this.arrayRevenueVirNetNumSum, revenueDataLength);
-    writeExperimentData(experimentTimes, algorithm, "MapRevenue_subnet_Sum_",
-        this.arrayRevenueSurNetNumSum, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Utilization_VirNode_Accumulate",
+        this.arrayUtilizationVirNodeAcc, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Utilization_VirEdge_Accumulate",
+        this.arrayUtilizationVirEdgeAcc, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_Accumulate",
+        this.arrayRevenueNodeCpAcc, revenueDataLength);
+    writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_Accumulate",
+        this.arrayRevenueEdgeBwAcc, revenueDataLength);
+    // MapRevenue_virnet_Sum_
+    writeExperimentData(experimentTimes, algorithm, "Request_VirNet_Accumulate_",
+        this.arrayVirNetReqAcc, revenueDataLength);
+    // MapRevenue_subnet_Sum_
+    writeExperimentData(experimentTimes, algorithm, "Request_SurNet_Accumulate_",
+        this.arraySurNetReqAcc, revenueDataLength);
 
     revenueDataLength = 0;
 
@@ -602,8 +607,8 @@ public class Result {
    */
   public void writeExperimentDatatoFile(int experimentTimes, Algorithm algorithm) {
     writeExperimentData4AcceptionRatio(experimentTimes, algorithm);
-    writeExperimentData4SubNetworkMapCost(experimentTimes, algorithm);
-    writeExperimentData4VirNetworkMapRevenue(experimentTimes, algorithm);
+    writeExperimentData4SubNetwork(experimentTimes, algorithm);
+    writeExperimentData4VirNetwork(experimentTimes, algorithm);
 
   }
 
@@ -807,7 +812,11 @@ public class Result {
     this.revenueUsedEdge = usedEdge;
     this.revenueNodeComputation = nodeComputation;
     this.revenueUsedNode = usedNode;
-    this.revenueSubNetNum = svnNum;
+    if (algorithm.algorithmName.equals("VirNet")) {
+      this.revenueSubNetNum = vnNum;
+    } else {
+      this.revenueSubNetNum = svnNum;
+    }
     this.revenueVirNetNum = vnNum;
   }
 

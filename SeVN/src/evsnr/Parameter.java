@@ -22,7 +22,7 @@ public class Parameter {
   // Parameter
   public static final int addNewVirNodeNewSubNodeCost = 10000000;
   public static final int addNewVirNodeCost = 100000;
-  public static final int transformExistedNodeCost = 1000;
+  public static final int transformExistedNodeCost = 3;
   public static final int addNodeComputaionCost = 3;
   public static final int addEdgeBandwithCost = 1;
   public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost
@@ -31,9 +31,9 @@ public class Parameter {
   public static final boolean IsSameVirNet4EveryTime = true;
   public static final boolean IsReleaseVNafterEVNFailure = false;
   public static final boolean IsMultopleNodeMapOneNode = true;
-  public static final int ExperimentTimes = 20;
+  public static final int ExperimentTimes = 1;
 
-  public static final long SubstrateNewtorkRunTimeInterval = 3000;// 30000
+  public static final long SubstrateNewtorkRunTimeInterval = 1200;// 30000
   public static final long unitTimeInterval = 1;
   public static final double RequestAppearProbability = 1;// 0.1
   public static final double RequestPerTimeAppearNum = 1;// 0.1
