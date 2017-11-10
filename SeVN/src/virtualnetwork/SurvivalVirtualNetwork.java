@@ -466,12 +466,12 @@ public class SurvivalVirtualNetwork {
               multKnaP.matchMatrix[i][j] += Parameter.transformExistedNodeCost;
             }
 
-            if (items[i].starNodeComputation > this.nodeComputationConsume[knapsacks
-                .elementAt(j).starNodeSurVirNetInd]) {
-              multKnaP.matchMatrix[i][j] += (Parameter.addNodeComputaionCost
-                  * (items[i].starNodeComputation
-                      - this.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd]));
-            }
+//            if (items[i].starNodeComputation > this.nodeComputationConsume[knapsacks
+//                .elementAt(j).starNodeSurVirNetInd]) {
+//              multKnaP.matchMatrix[i][j] += (Parameter.addNodeComputaionCost
+//                  * (items[i].starNodeComputation
+//                      - this.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd]));
+//            }
 
             for (int k = 0; k < items[i].neighborEdge.size(); k++) {
               boolean isExistedEdge = true;

@@ -205,9 +205,8 @@ public class Result {
           + Parameter.VirtualEdgeBandwithMaximum + "}\n");
       fwTexFileWriter.write(prefix + "SubStrateFacilityNodeFailDuration" + "}{"
           + Parameter.SubStrateFacilityNodeFailDuration + "}\n");
-      fwTexFileWriter.write(prefix + "ExperimentTimes" + "}{"
-          + Parameter.ExperimentTimes + "}\n");
-      
+      fwTexFileWriter.write(prefix + "ExperimentTimes" + "}{" + Parameter.ExperimentTimes + "}\n");
+
       fwTexFileWriter.flush();
       fwTexFileWriter.close();
     } catch (IOException e) {
@@ -229,8 +228,7 @@ public class Result {
     recordExperimentData4AcceptionRatio(experimentTimes, algorithm, time);
     recordExperimentData4SubNetworkMapCost(experimentTimes, algorithm, time);
     recordExperimentData4VirNetworkMapRevenue(experimentTimes, algorithm, time);
-    // recordExperimentData4MigrationFrequence(experimentTimes, algorithm,
-    // time);
+    recordExperimentData4MigrationFrequence(experimentTimes, algorithm, time);
   }
 
   /**
@@ -314,18 +312,34 @@ public class Result {
         fw_MigrationFrequence_edge.write("0\n");
       } else {
 
-        int failnode = (int) (Math.random() * (algorithm.getSn().nodeSize - 1));
-        int migrate = 0;
-        for (int i = 0; i < algorithm.getSn().virNetCollection.size(); i++) {
-          if (algorithm.getSn().virNetCollection.get(i).getIsRunning()) {
-            for (int j = 0; j < algorithm.getSn().virNetCollection.get(i).nodeSize; j++) {
-              if (algorithm.getSn().virNetCollection.get(i).virNode2subNode[j] == failnode) {
-                migrate++;
-              }
+        int embeddedVN4SubstrateNode = 0;
+        int embeddedVN4SubstrateEdge = 0;
+        int vnRequestInSubstrateEdge = 0;
+        for (int i = 0; i < algorithm.getSn().getNodeSize(); i++) {
+          if (algorithm.getSn().nodeComputationCapacity[i] != algorithm.getSn()
+              .getSubstrateRemainComputaion4VirNet(i, algorithm.isShared())) {
+            embeddedVN4SubstrateNode++;
+          }
+
+          for (int j = 0; j < algorithm.getSn().getNodeSize(); j++) {
+            if (algorithm.getSn().edgeBandwithCapacity[i][j] != algorithm.getSn()
+                .getSubStrateRemainBandwith4VN(i, j, algorithm.isShared())) {
+              embeddedVN4SubstrateEdge++;
+
             }
           }
         }
-        fw_MigrationFrequence_node.write(migrate + "\n");
+
+        for (int i = 0; i < algorithm.getSn().getNodeSize(); i++) {
+          for (int j = 0; j < algorithm.getSn().getNodeSize(); j++) {
+            vnRequestInSubstrateEdge += algorithm.getSn().virNetIndexSet4Edge.get(i).get(j).size();
+          }
+        }
+
+        fw_MigrationFrequence_node
+            .write((1.0 * embeddedVN4SubstrateNode / algorithm.getSn().virNetSum) + "\n");
+        fw_MigrationFrequence_edge
+            .write((1.0 * embeddedVN4SubstrateEdge / embeddedVN4SubstrateNode) + "\n");
       }
 
       fw_MigrationFrequence_node.flush();
