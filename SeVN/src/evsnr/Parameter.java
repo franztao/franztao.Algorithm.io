@@ -31,7 +31,7 @@ public class Parameter {
   public static final boolean IsSameVirNet4EveryTime = true;
   public static final boolean IsReleaseVNafterEVNFailure = false;
   public static final boolean IsMultopleNodeMapOneNode = true;
-  public static final int ExperimentTimes = 1;
+  public static final int ExperimentTimes = 10;
 
   public static final long SubstrateNewtorkRunTimeInterval = 1200;// 30000
   public static final long unitTimeInterval = 1;
