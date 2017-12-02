@@ -345,7 +345,7 @@ public class Algorithm {
 
     // VirNet directly return, not process survival procedure.
     if (this.algorithmName.equals("VirNet") || generateSurvivalVirtualNetwork(svn)) {
-      this.sn.surVirNetSuceedEmbedSum++;
+      this.sn.surNetSuceedEmbedSum++;
       algorithmLog.info("Alg: " + this.algorithmName + " Succeed to construct EVN and embed EVN");
     } else {
       this.sn.clearTempResource();

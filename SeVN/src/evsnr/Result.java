@@ -60,8 +60,8 @@ public class Result {
   public int revenueUsedEdge;
   public int revenueNodeComputation;
   public int revenueEdgeBandwith;
-  public int revenueVirNetNum;
-  public int revenueSubNetNum;
+  public int virNetReq;
+  public int subNetReq;
 
   public int costUsedNode;
   public int costUsedEdge;
@@ -72,8 +72,8 @@ public class Result {
   public int revenueUsedEdgeSum;
   public int revenueNodeComputationSum;
   public int revenueEdgeBandwithSum;
-  public int revenueVirNetNumSum;
-  public int revenueSubNetNumSum;
+  public int virNetReqAcc;
+  public int subNetReqAcc;
 
   public int costUsedNodeSum;
   public int costUsedEdgeSum;
@@ -249,16 +249,16 @@ public class Result {
     arrayRevenueNodeCpAcc[revenueDataLength] = this.revenueNodeComputationSum;
     arrayRevenueEdgeBwAcc[revenueDataLength] = this.revenueEdgeBandwithSum;
 
-    arrayVirNetReqAcc[revenueDataLength] = this.revenueVirNetNumSum;
-    arraySurNetReqAcc[revenueDataLength] = this.revenueSubNetNumSum;
+    arrayVirNetReqAcc[revenueDataLength] = this.virNetReqAcc;
+    arraySurNetReqAcc[revenueDataLength] = this.subNetReqAcc;
 
     arrayUtilizationVirNode[revenueDataLength] = this.revenueUsedNode;
     arrayUtilizationVirEdge[revenueDataLength] = this.revenueUsedEdge;
     arrayRevenueNodeCp[revenueDataLength] = this.revenueNodeComputation;
     arrayRevenueEdgeBw[revenueDataLength] = this.revenueEdgeBandwith;
 
-    arrayVirNetReq[revenueDataLength] = this.revenueVirNetNum;
-    arraySurNetReq[revenueDataLength] = this.revenueSubNetNum;
+    arrayVirNetReq[revenueDataLength] = this.virNetReq;
+    arraySurNetReq[revenueDataLength] = this.subNetReq;
 
     revenueDataLength++;
 
@@ -435,7 +435,7 @@ public class Result {
 
     } else {
       arrayAcceptionRatioSvn[acceptionRatioDataLength] = (1.0
-          * algorithm.getSn().surVirNetSuceedEmbedSum / algorithm.getSn().virNetSum);
+          * algorithm.getSn().surNetSuceedEmbedSum / algorithm.getSn().virNetSum);
       arrayAcceptionRatioVn[acceptionRatioDataLength] = (1.0
           * algorithm.getSn().virNetSuceedEmbedSum / algorithm.getSn().virNetSum);
 
@@ -715,8 +715,8 @@ public class Result {
     this.revenueUsedEdge = usedEdge;
     this.revenueNodeComputation = nodeComputation;
     this.revenueUsedNode = usedNode;
-    this.revenueSubNetNum = svnNum;
-    this.revenueVirNetNum = vnNum;
+    this.subNetReq = svnNum;
+    this.virNetReq = vnNum;
   }
 
   /**
@@ -815,23 +815,24 @@ public class Result {
     this.revenueNodeComputationSum += (nodeComputation - this.revenueNodeComputation);
     this.revenueUsedNodeSum += (usedNode - this.revenueUsedNode);
 
-    this.revenueVirNetNumSum += (vnNum - this.revenueSubNetNum);
+    this.virNetReqAcc = algorithm.getSn().virNetSuceedEmbedSum;
     if (algorithm.algorithmName.equals("VirNet")) {
-      this.revenueSubNetNumSum = this.revenueVirNetNumSum;
+      this.subNetReqAcc = this.virNetReqAcc;
     } else {
-      this.revenueSubNetNumSum += (svnNum - this.revenueSubNetNum);
+      this.subNetReqAcc = algorithm.getSn().surNetSuceedEmbedSum;
     }
 
     this.revenueEdgeBandwith = edgeBandwith;
     this.revenueUsedEdge = usedEdge;
     this.revenueNodeComputation = nodeComputation;
     this.revenueUsedNode = usedNode;
+
+    this.virNetReq = vnNum;
     if (algorithm.algorithmName.equals("VirNet")) {
-      this.revenueSubNetNum = vnNum;
+      this.subNetReq = vnNum;
     } else {
-      this.revenueSubNetNum = svnNum;
+      this.subNetReq = svnNum;
     }
-    this.revenueVirNetNum = vnNum;
   }
 
 }

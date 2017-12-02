@@ -37,7 +37,7 @@ public class SubstrateNetwork implements Cloneable {
 
   // acceptionRatio
   public int virNetSuceedEmbedSum;
-  public int surVirNetSuceedEmbedSum;
+  public int surNetSuceedEmbedSum;
   // EmbeddingCost
   public int virNetSum;
 
@@ -99,7 +99,7 @@ public class SubstrateNetwork implements Cloneable {
     }
 
     this.virNetSuceedEmbedSum = 0;
-    this.surVirNetSuceedEmbedSum = 0;
+    this.surNetSuceedEmbedSum = 0;
     this.virNetSum = 0;
   }
 
