@@ -49,7 +49,7 @@ public class Experiment {
    * @param vnp
    * 
    */
-  public void startExperiment() {
+  public void bootExperiment() {
     for (int i = 0; i < Parameter.ExperimentTimes; i++) {
       generateComparableAlgorithm(this.vnp);
       if (Parameter.IsSameVirNet4EveryTime) {
@@ -72,8 +72,10 @@ public class Experiment {
     for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++) {
       VirtualNetwork sameVirNet = new VirtualNetwork(this.vnp);
       constructSameVirNet(sameVirNet);
+
       logger.info("###################### Time/Total Time: " + time + "/"
           + Parameter.SubstrateNewtorkRunTimeInterval);
+
       for (int alg = 0; alg < algorithms.size(); alg++) {
 
         if ((time % (Parameter.SubstrateNewtorkRunTimeInterval
@@ -249,17 +251,34 @@ public class Experiment {
       alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
       this.algorithms.addElement(alg);
 
-//      SubstrateNetwork FD_ILP_Shared_Exact = (SubstrateNetwork) this.basicSubstrateNework.clone();
-//      alg = new Algorithm();
-//      alg.setParameter("sn_FD_ILP_Shared", FD_ILP_Shared_Exact, true, Parameter.FailureDependent,
-//          true, -1);
-//      this.algorithms.addElement(alg);
-//
-//      SubstrateNetwork FD_ILP_NoShared_Exact = (SubstrateNetwork) this.basicSubstrateNework.clone();
-//      alg = new Algorithm();
-//      alg.setParameter("sn_FD_ILP_NoShared", FD_ILP_NoShared_Exact, true,
-//          Parameter.FailureDependent, false, -1);
-//      this.algorithms.addElement(alg);
+      SubstrateNetwork One2OneProtection_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework
+          .clone();
+      alg = new Algorithm();
+      alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
+          Parameter.One2OneProtection, false, Parameter.Ran);
+      this.algorithms.addElement(alg);
+
+      SubstrateNetwork One2OneProtection_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework
+          .clone();
+      alg = new Algorithm();
+      alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
+          Parameter.One2OneProtection, true, Parameter.Ran);
+      this.algorithms.addElement(alg);
+
+      // SubstrateNetwork FD_ILP_Shared_Exact = (SubstrateNetwork)
+      // this.basicSubstrateNework.clone();
+      // alg = new Algorithm();
+      // alg.setParameter("sn_FD_ILP_Shared", FD_ILP_Shared_Exact, true,
+      // Parameter.FailureDependent,
+      // true, -1);
+      // this.algorithms.addElement(alg);
+      //
+      // SubstrateNetwork FD_ILP_NoShared_Exact = (SubstrateNetwork)
+      // this.basicSubstrateNework.clone();
+      // alg = new Algorithm();
+      // alg.setParameter("sn_FD_ILP_NoShared", FD_ILP_NoShared_Exact, true,
+      // Parameter.FailureDependent, false, -1);
+      // this.algorithms.addElement(alg);
     } catch (CloneNotSupportedException e) {
       logger.error("Fail to construct various algorithms");
       e.printStackTrace();

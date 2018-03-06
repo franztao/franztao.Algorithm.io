@@ -35,7 +35,7 @@ public class Algorithm {
   // FD: ILP EVSNR
   // EVSNR: Min Ran
   private boolean isShared;
-  public boolean isFailDep;
+  public int isFailDep;
   public boolean isExact;
   // 0 Ran 1 Min
   public int sequence;
@@ -564,7 +564,7 @@ public class Algorithm {
   /**
    * @return the isFD
    */
-  public boolean isFD() {
+  public int isFD() {
     return isFailDep;
   }
 
@@ -572,7 +572,7 @@ public class Algorithm {
    * @param isFD
    *          the isFD to set
    */
-  public void setFD(boolean isFD) {
+  public void setFD(int isFD) {
     this.isFailDep = isFD;
   }
 
@@ -672,7 +672,7 @@ public class Algorithm {
    *          isShared
    */
   public void setParameter(String algName, SubstrateNetwork sn, boolean isExact,
-      boolean failureindependent, boolean isShared, int sequence) {
+      int failureindependent, boolean isShared, int sequence) {
     this.algorithmName = algName;
     this.sn = sn;
     this.isExact = isExact;

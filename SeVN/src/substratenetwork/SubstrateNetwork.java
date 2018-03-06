@@ -10,6 +10,7 @@ import virtualnetwork.VirtualNetwork;
 
 public class SubstrateNetwork implements Cloneable {
   public int nodeSize;
+
   public int[] nodeComputationCapacity;
   public int[] nodeComputation4Former;
   public int[] nodeComputation4SurvivalUnsharedBackupSum;
@@ -40,6 +41,7 @@ public class SubstrateNetwork implements Cloneable {
   public int surNetSuceedEmbedSum;
   // EmbeddingCost
   public int virNetSum;
+  public int edgeSize;
 
   /**
    * SubstrateNetwork.
@@ -50,6 +52,7 @@ public class SubstrateNetwork implements Cloneable {
   public SubstrateNetwork(SubStrateNetworkParameter snp) {
     // node
     this.nodeSize = snp.getNodeSize();
+    this.edgeSize = 0;
     this.nodeComputationCapacity = new int[nodeSize];
     this.nodeComputation4Former = new int[nodeSize];
     this.nodeComputation4SurvivalUnsharedBackupSum = new int[nodeSize];
@@ -257,6 +260,7 @@ public class SubstrateNetwork implements Cloneable {
     for (int i = 0; i < this.nodeSize; i++) {
       for (int j = 0; j < i; j++) {
         if (this.topology[i][j]) {
+          this.edgeSize++;
           this.edgeBandwithCapacity[i][j] = (int) (snp.getEdgeBandwithMinimum()
               + Math.random() * (snp.getEdgeBandwithMaximum() - snp.getEdgeBandwithMinimum()));
           this.edgeBandwithCapacity[j][i] = this.edgeBandwithCapacity[i][j];

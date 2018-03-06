@@ -350,7 +350,7 @@ public class SurvivalVirtualNetwork {
    * @throws GRBException
    *           GRBException
    */
-  public int failIthNode(int failSurNode, boolean isFailDep, int[] ithItem2ithKnapsack)
+  public int failIthNode(int failSurNode, int isFailDep, int[] ithItem2ithKnapsack)
       throws GRBException {
     constructKnapsacks(failSurNode);
     MulitpleKnapsack mkp = new MulitpleKnapsack(this.virNet.nodeSize, knapsacks.size(),
@@ -436,15 +436,22 @@ public class SurvivalVirtualNetwork {
    *          isFailDep
    * @return boolean
    */
-  boolean constructMultipleKnapsackProbem(MulitpleKnapsack multKnaP, boolean isFailDep) {
+  boolean constructMultipleKnapsackProbem(MulitpleKnapsack multKnaP, int isFailDep) {
     for (int i = 0; i < this.virNet.nodeSize; i++) {
       for (int j = 0; j < knapsacks.size(); j++) {
         multKnaP.matchMatrix[i][j] = Integer.MAX_VALUE;
         if ((isFailDep == Parameter.FailureIndependent)
             && (knapsacks.elementAt(j).starNodeSurVirNetInd < this.nodeSize4Failure)
-            && (knapsacks.elementAt(j).starNodeSurVirNetInd != items[i].starNodeSurVirNetInd)) {
+            && (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd)) {
           continue;
         }
+
+        if ((isFailDep == Parameter.One2OneProtection)
+            && (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd)
+            && (0 != this.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd])) {
+          continue;
+        }
+
         // if (knapsacks.elementAt(j).starNodeSurVirNetInd ==
         // items[i].starNodeSurVirNetInd) {
         // System.out.println("fff");
@@ -466,16 +473,26 @@ public class SurvivalVirtualNetwork {
               multKnaP.matchMatrix[i][j] += Parameter.transformExistedNodeCost;
             }
 
-//            if (items[i].starNodeComputation > this.nodeComputationConsume[knapsacks
-//                .elementAt(j).starNodeSurVirNetInd]) {
-//              multKnaP.matchMatrix[i][j] += (Parameter.addNodeComputaionCost
-//                  * (items[i].starNodeComputation
-//                      - this.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd]));
-//            }
+            if (items[i].starNodeComputation > this.nodeComputationConsume[knapsacks
+                .elementAt(j).starNodeSurVirNetInd]) {
+
+              if (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd) {
+                if (Parameter.isNewCriter) {
+                  multKnaP.matchMatrix[i][j] += (Parameter.addNodeComputaionCost
+                      * (items[i].starNodeComputation));
+                } else {
+                  multKnaP.matchMatrix[i][j] += (Parameter.addNodeComputaionCost
+                      * (items[i].starNodeComputation - this.nodeComputationConsume[knapsacks
+                          .elementAt(j).starNodeSurVirNetInd]));
+                }
+              }
+
+            }
 
             for (int k = 0; k < items[i].neighborEdge.size(); k++) {
               boolean isExistedEdge = true;
               for (int l = 0; l < knapsacks.elementAt(j).neighborEdge.size(); l++) {
+
                 if (items[i].neighborEdge
                     .elementAt(k).neighborNode4VirNetInd == knapsacks.elementAt(j).neighborEdge
                         .elementAt(l).neighborNode4VirNetInd) {
@@ -483,11 +500,28 @@ public class SurvivalVirtualNetwork {
                   if (items[i].neighborEdge
                       .elementAt(k).neighborEdgeBandwith > knapsacks.elementAt(j).neighborEdge
                           .elementAt(l).neighborEdgeBandwith) {
-                    multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
-                        * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwith
-                            - knapsacks.elementAt(j).neighborEdge
-                                .elementAt(l).neighborEdgeBandwith));
+
+                    if (Parameter.isNewCriter) {
+                      if (items[i].starNodeSurVirNetInd != knapsacks
+                          .elementAt(j).starNodeSurVirNetInd) {
+                        multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
+                            * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwith));
+                      } else {
+                        multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
+                            * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwith
+                                - knapsacks.elementAt(j).neighborEdge
+                                    .elementAt(l).neighborEdgeBandwith));
+                      }
+
+                    } else {
+                      multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
+                          * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwith
+                              - knapsacks.elementAt(j).neighborEdge
+                                  .elementAt(l).neighborEdgeBandwith));
+                    }
+
                   }
+
                 }
               }
               if (isExistedEdge) {
@@ -626,6 +660,7 @@ public class SurvivalVirtualNetwork {
         int optimalSolutionVal = Integer.MAX_VALUE;
         for (int j = 0; j < this.nodeSize4Failure; j++) {
           if (!isFailed[j]) {
+
             if (solutionCost[j] < optimalSolutionVal) {
               // if (nextOptimalFailNode == -1)
               nextOptimalFailNode = j;

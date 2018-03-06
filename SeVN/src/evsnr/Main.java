@@ -21,6 +21,7 @@ public class Main {
     Result result = new Result();
     result.recordTexParameter();
 
+    
     SubStrateNetworkParameter snp = new SubStrateNetworkParameter(isSampleInit);
 
     SubstrateNetwork sn = new SubstrateNetwork(snp);
@@ -28,7 +29,7 @@ public class Main {
     VirtualNetworkParameter vnp = new VirtualNetworkParameter(isSampleInit);
 
     Experiment exp = new Experiment(sn, vnp, result);
-    exp.startExperiment();
+    exp.bootExperiment();
 
     return;
   }
