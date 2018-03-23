@@ -23,7 +23,7 @@ class mzitu():
         
         limit=1;
         for a in all_a:
-            if limit<20:
+            if limit<500:
                 limit=limit+1
                 continue
             

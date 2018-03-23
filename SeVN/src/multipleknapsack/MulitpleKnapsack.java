@@ -50,7 +50,9 @@ public class MulitpleKnapsack {
 
   /**
    * optimalSoutionDP.
-   * @param solution solution
+   * 
+   * @param solution
+   *          solution
    * @return int
    */
   public int optimalSoutionDP(int solution[]) {
@@ -215,7 +217,7 @@ public class MulitpleKnapsack {
       model.addConstr(conexpr1, GRB.EQUAL, 1.0, "constraint_row =" + i);
     }
 
-    if (!Parameter.IsMultopleNodeMapOneNode) {
+    if (!Parameter.IsMultipleNodeMapOneNode) {
       for (int j = 0; j < this.knapsackNum; j++) {
         GRBLinExpr conexpr1 = new GRBLinExpr();
         for (int i = 0; i < this.itemNum; i++) {
