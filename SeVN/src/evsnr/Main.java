@@ -4,6 +4,8 @@
 
 package evsnr;
 
+import org.apache.commons.math3.distribution.PoissonDistribution;
+
 import substratenetwork.SubStrateNetworkParameter;
 
 import substratenetwork.SubstrateNetwork;
@@ -13,7 +15,9 @@ public class Main {
 
   /**
    * main.
-   * @param args main parameter
+   * 
+   * @param args
+   *          main parameter
    */
 
   public static void main(String[] args) {
@@ -21,7 +25,6 @@ public class Main {
     Result result = new Result();
     result.recordTexParameter();
 
-    
     SubStrateNetworkParameter snp = new SubStrateNetworkParameter(isSampleInit);
 
     SubstrateNetwork sn = new SubstrateNetwork(snp);
