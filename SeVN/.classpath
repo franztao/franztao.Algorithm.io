@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src" />
+	<classpathentry kind="con"
+		path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre8" />
+	<classpathentry kind="lib" path="G:/gurobi605/win64/lib/gurobi.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/jgrapht-1.0.1/lib/antlr4-runtime-4.5.3.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/jgrapht-1.0.1/lib/jgraph-5.13.0.0.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/jgrapht-1.0.1/lib/jgrapht-core-1.0.1.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/jgrapht-1.0.1/lib/jgrapht-demo-1.0.1.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/jgrapht-1.0.1/lib/jgrapht-ext-1.0.1.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/jgrapht-1.0.1/lib/jgrapht-ext-1.0.1-uber.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/jgrapht-1.0.1/lib/jgraphx-2.0.0.1.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/apache-log4j-2.8.2-bin/log4j-1.2-api-2.8.2.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/apache-log4j-2.8.2-bin/log4j-api-2.8.2.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/apache-log4j-2.8.2-bin/log4j-core-2.8.2.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/commons-math3-3.6.1/commons-math3-3.6.1.jar"
+		sourcepath="F:/workspace/franztao.Algorithm.io/SeVN/lib/commons-math3-3.6.1/commons-math3-3.6.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location"
+				value="jar:file:/F:/workspace/franztao.Algorithm.io/SeVN/lib/commons-math3-3.6.1/commons-math3-3.6.1-javadoc.jar!/" />
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/commons-math3-3.6.1/commons-math3-3.6.1-tests.jar" />
+	<classpathentry kind="lib"
+		path="F:/workspace/franztao.Algorithm.io/SeVN/lib/commons-math3-3.6.1/commons-math3-3.6.1-tools.jar" />
+	<classpathentry kind="output" path="bin" />
+</classpath>
