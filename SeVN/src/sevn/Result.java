@@ -2,7 +2,7 @@
  * 
  */
 
-package evsnr;
+package sevn;
 
 import java.io.File;
 import java.io.FileWriter;

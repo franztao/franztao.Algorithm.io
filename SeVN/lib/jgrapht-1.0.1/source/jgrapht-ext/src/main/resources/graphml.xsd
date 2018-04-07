@@ -13,9 +13,10 @@
 			and GraphML parseinfo.
 		</xs:documentation>
 	</xs:annotation>
-	
-	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
-	
+
+	<xs:import namespace="http://www.w3.org/1999/xlink"
+		schemaLocation="xlink.xsd" />
+
 	<xs:attributeGroup name="common.extra.attrib" />
 
 

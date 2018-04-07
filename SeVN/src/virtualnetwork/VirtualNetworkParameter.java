@@ -3,7 +3,7 @@
  */
 package virtualnetwork;
 
-import evsnr.Parameter;
+import sevn.Parameter;
 
 /**
  * @author franz

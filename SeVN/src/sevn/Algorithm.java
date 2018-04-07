@@ -2,7 +2,7 @@
  * 
  */
 
-package evsnr;
+package sevn;
 
 import java.util.LinkedList;
 import java.util.List;

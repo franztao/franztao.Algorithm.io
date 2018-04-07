@@ -4,8 +4,6 @@
 
 package virtualnetwork;
 
-import evsnr.Algorithm;
-import evsnr.Parameter;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -19,6 +17,8 @@ import java.util.Map;
 import java.util.Vector;
 
 import multipleknapsack.MulitpleKnapsack;
+import sevn.Algorithm;
+import sevn.Parameter;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;

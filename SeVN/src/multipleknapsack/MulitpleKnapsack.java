@@ -6,9 +6,9 @@ package multipleknapsack;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import evsnr.Algorithm;
-import evsnr.Parameter;
 import gurobi.*;
+import sevn.Algorithm;
+import sevn.Parameter;
 
 /**
  * @author franz
