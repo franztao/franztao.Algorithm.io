@@ -22,15 +22,14 @@ public class Main
 
     public static void main(String[] args)
     {
-        boolean isSampleInit = false;
         Result result = new Result();
         result.recordTexParameter();
 
-        SubStrateNetworkParameter snp = new SubStrateNetworkParameter(isSampleInit);
+        SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
 
         SubstrateNetwork sn = new SubstrateNetwork(snp);
 
-        VirtualNetworkParameter vnp = new VirtualNetworkParameter(isSampleInit);
+        VirtualNetworkParameter vnp = new VirtualNetworkParameter();
 
         Experiment exp = new Experiment(sn, vnp, result);
         exp.bootExperiment();

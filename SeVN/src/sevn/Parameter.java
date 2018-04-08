@@ -36,12 +36,12 @@ public class Parameter
     public static final boolean IsReleaseVNafterEVNFailure = false;
     public static final boolean IsMultipleNodeMapOneNode = true;
     public static final boolean IsConsiderEdgeBandwith = true;
-    public static final int ExperimentTimes = 50;
+    public static final int ExperimentTimes = 20;
 
     public static final long SubstrateNewtorkRunTimeInterval = 600;// 30000
     public static final long unitTimeInterval = 1;
     public static final double RequestAppearProbability = 1;// 0.1
-    public static final double RequestPerTimeAppearNum = 1;// 0.1
+    public static final double RequestPerTimeAppearNum = 1;// 1
     public static final long VirNetDuration = 1;
     public static final long VNRequestsContinueTimeMinimum = 1;
     public static final long VNRequestsContinueTimeMaximum = 100;
@@ -76,5 +76,23 @@ public class Parameter
 
     public static final long SubStrateFacilityNodeFailDuration = SubstrateNewtorkRunTimeInterval
             / ExperimentPicturePlotNumber;
+
+    // -1 sample
+    // 0 random
+    // 1 data center
+    public static final int TopologyTypeSample = -1;
+    public static final int TopologyTypeRandom = 1;
+    public static final int TopologyTypeDataCenter = 2;
+
+    public static final int TopologyType = TopologyTypeDataCenter;
+
+    public static final int DataCenterLevel = 4;
+    public static final int DataCenterAry = 4;
+    public static final int DataCenterPMSlots = 5;
+    public static final int DataCenterToR2PM = 10;
+    public static final int DataCenterCore2Aggregation = 100;
+
+    public static final int DataCenterVNSize = 2;
+    public static final int DataCenterVNBandWidth = 2;
 
 }

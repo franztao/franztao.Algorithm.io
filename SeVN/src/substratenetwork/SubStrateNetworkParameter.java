@@ -29,21 +29,27 @@ public class SubStrateNetworkParameter
     private int serviceNumber = Parameter.ServiceNumber;
     private double serivecProbability = Parameter.SerivecProbability;
 
-    private boolean isSampleInit;
+    private int topologyType = Parameter.TopologyType;
 
     /**
      * SubStrateNetworkParameter.
      * 
-     * @param isSampleInit
-     *            isSampleInit
      */
-    public SubStrateNetworkParameter(boolean isSampleInit) {
-        this.isSampleInit = isSampleInit;
-        if (isSampleInit)
+    public SubStrateNetworkParameter()
+    {
+        if (this.topologyType == Parameter.TopologyTypeSample)
         {
             this.nodeSize = 9;
             this.serviceNumber = 4;
         }
+
+        if (this.topologyType == Parameter.TopologyTypeDataCenter)
+        {
+            this.nodeSize = 1 + Parameter.DataCenterAry + Parameter.DataCenterAry * Parameter.DataCenterAry
+                    + Parameter.DataCenterAry * Parameter.DataCenterAry * Parameter.DataCenterAry + 1;
+            this.serviceNumber = 3;
+        }
+
     }
 
     /**
@@ -182,21 +188,14 @@ public class SubStrateNetworkParameter
         this.serivecProbability = serivecProbability;
     }
 
-    /**
-     * @return the sampleInit
-     */
-    public boolean isSampleInit()
+    public int getTopologyType()
     {
-        return isSampleInit;
+        return topologyType;
     }
 
-    /**
-     * @param sampleInit
-     *            the sampleInit to set
-     */
-    public void setSampleInit(boolean sampleInit)
+    public void setTopologyType(int topologyType)
     {
-        this.isSampleInit = sampleInit;
+        this.topologyType = topologyType;
     }
 
 }

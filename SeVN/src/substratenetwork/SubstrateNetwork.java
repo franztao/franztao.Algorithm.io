@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import sevn.Parameter;
 import virtualnetwork.SurvivalVirtualNetwork;
 import virtualnetwork.VirtualNetwork;
 
@@ -54,7 +55,6 @@ public class SubstrateNetwork implements Cloneable
     {
         // node
         this.nodeSize = snp.getNodeSize();
-        this.edgeSize = 0;
         this.nodeComputationCapacity = new int[nodeSize];
         this.nodeComputation4Former = new int[nodeSize];
         this.nodeComputation4SurvivalUnsharedBackupSum = new int[nodeSize];
@@ -68,6 +68,7 @@ public class SubstrateNetwork implements Cloneable
         }
 
         // edge
+        this.edgeSize = 0;
         this.topology = new boolean[nodeSize][nodeSize];
         this.edgeBandwithCapacity = new int[nodeSize][nodeSize];
         edgeBandwith4Former = new int[nodeSize][nodeSize];
@@ -101,17 +102,32 @@ public class SubstrateNetwork implements Cloneable
 
         this.virNetCollection = new Vector<VirtualNetwork>();
         this.surVirNetSet = new Vector<SurvivalVirtualNetwork>();
-        if (snp.isSampleInit())
+        if (snp.getTopologyType() == Parameter.TopologyTypeSample)
         {
             faultSetResourceDistribution();
-        } else
+        }
+        if (snp.getTopologyType() == Parameter.TopologyTypeRandom)
         {
-            setResourceDistribution(snp);
+            setResourceDistribution4RandomTopo(snp);
+        }
+
+        if (snp.getTopologyType() == Parameter.TopologyTypeDataCenter)
+        {
+            setResourceDistribution4DataCenter(snp);
+        }
+
+        // label
+        String str = "SN";
+        for (int i = 0; i < this.nodeSize; i++)
+        {
+            node2Label[i] = (str + (i + 1));
+            label2Node.put((str + (1 + i)), i);
         }
 
         this.virNetSuceedEmbedSum = 0;
         this.surNetSuceedEmbedSum = 0;
         this.virNetSum = 0;
+
     }
 
     /**
@@ -266,14 +282,13 @@ public class SubstrateNetwork implements Cloneable
      * @param snp
      *            snp
      */
-    private void setResourceDistribution(SubStrateNetworkParameter snp)
+    private void setResourceDistribution4RandomTopo(SubStrateNetworkParameter snp)
     {
         // node computation
         for (int i = 0; i < this.nodeSize; i++)
         {
             this.nodeComputationCapacity[i] = (int) (snp.getNodeComputationMinimum()
                     + Math.random() * (snp.getNodeComputationMaximum() - snp.getNodeComputationMinimum()));
-
         }
 
         // edge bandwith
@@ -320,13 +335,106 @@ public class SubstrateNetwork implements Cloneable
             }
         }
 
-        // label
-        String str = "SN";
+    }
+
+    /**
+     * setResourceDistribution.
+     * 
+     * @param snp
+     *            snp
+     */
+    private void setResourceDistribution4DataCenter(SubStrateNetworkParameter snp)
+    {
+        // node computation
         for (int i = 0; i < this.nodeSize; i++)
         {
-            node2Label[i] = (str + (i + 1));
-            label2Node.put((str + (1 + i)), i);
+            // core switch
+            if (i == 0)
+            {
+                this.nodeComputationCapacity[i] = Integer.MAX_VALUE;
+            } else
+            {
+                this.nodeComputationCapacity[i] = Parameter.DataCenterPMSlots;
+            }
+
         }
+
+        // edge bandwith
+        for (int i = 1; i <= Parameter.DataCenterAry; i++)
+        {
+            this.topology[i][0] = this.topology[0][i] = true;
+        }
+
+        int kdouble = Parameter.DataCenterAry * Parameter.DataCenterAry;
+        for (int i = (1 + Parameter.DataCenterAry); i <= (Parameter.DataCenterAry + kdouble); i++)
+        {
+            if ((i % (Parameter.DataCenterAry)) == 0)
+            {
+                this.topology[i][(i / Parameter.DataCenterAry)
+                        - 1] = this.topology[(i / Parameter.DataCenterAry) - 1][i] = true;
+            } else
+            {
+                this.topology[i][i / Parameter.DataCenterAry] = this.topology[i / Parameter.DataCenterAry][i] = true;
+            }
+        }
+
+        int ktriple = Parameter.DataCenterAry * Parameter.DataCenterAry * Parameter.DataCenterAry;
+        for (int i = ( Parameter.DataCenterAry + kdouble+1 ); i <= (Parameter.DataCenterAry + kdouble + ktriple); i++)
+        {
+            if ((i % (kdouble)) == 0)
+            {
+                this.topology[i][(i / kdouble) - 1] = this.topology[(i / kdouble) - 1][i] = true;
+            } else
+            {
+                this.topology[i][i / kdouble] = this.topology[i / kdouble][i] = true;
+            }
+        }
+
+        for (int i = 0; i < this.nodeSize; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                if (this.topology[i][j])
+                {
+                    this.edgeSize++;
+                    if (i >= (1 + Parameter.DataCenterAry + kdouble))
+                    {
+                        this.edgeBandwithCapacity[i][j] = Parameter.DataCenterToR2PM;
+                    } else
+                    {
+                        this.edgeBandwithCapacity[i][j] = Parameter.DataCenterCore2Aggregation;
+                    }
+
+                    this.edgeBandwithCapacity[j][i] = this.edgeBandwithCapacity[i][j];
+                }
+            }
+        }
+
+        // service
+        for (int i = 0; i < this.nodeSize; i++)
+        {
+            // core
+            if (i == 0)
+            {
+                this.boolServiceTypeSet[i][0] = true;
+                vectorServiceTypeSet.get(i).addElement(0);
+            }
+
+            // aggreation,ToR
+            if ((i >= 1) && (i <= (Parameter.DataCenterAry + kdouble)))
+            {
+                this.boolServiceTypeSet[i][1] = true;
+                vectorServiceTypeSet.get(i).addElement(1);
+            }
+
+            // PM
+            if (i >= (1 + Parameter.DataCenterAry + kdouble))
+            {
+                this.boolServiceTypeSet[i][2] = true;
+                vectorServiceTypeSet.get(i).addElement(2);
+            }
+        }
+
     }
 
     @Override

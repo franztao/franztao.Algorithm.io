@@ -14,7 +14,7 @@ public class FileLogger extends AbstractLogger {
 	 */
 
 	public FileLogger(int dEBUG) {
-		this.level = level;
+		this.level = dEBUG;
 	}
 
 	/*
