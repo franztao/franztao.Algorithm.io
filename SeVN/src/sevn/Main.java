@@ -4,7 +4,6 @@
 
 package sevn;
 
-
 import substratenetwork.SubStrateNetworkParameter;
 
 import substratenetwork.SubstrateNetwork;

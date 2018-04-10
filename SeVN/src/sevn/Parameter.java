@@ -36,13 +36,18 @@ public class Parameter
     public static final boolean IsReleaseVNafterEVNFailure = false;
     public static final boolean IsMultipleNodeMapOneNode = true;
     public static final boolean IsConsiderEdgeBandwith = true;
-    public static final int ExperimentTimes = 20;
+    public static final int ExperimentTimes = 30;
 
     public static final long SubstrateNewtorkRunTimeInterval = 600;// 30000
     public static final long unitTimeInterval = 1;
-    public static final double RequestAppearProbability = 1;// 0.1
-    public static final double RequestPerTimeAppearNum = 1;// 1
+    //GeometricDistribution 
+    public static final double RequestAppearProbability = 0.75;// 0.1
+    public static final long RequestPerTimeAppearNum = 1;// 1
     public static final long VirNetDuration = 1;
+    
+    //-1 represent do not use possion distribution
+    public static final long PossionMean=15;
+    
     public static final long VNRequestsContinueTimeMinimum = 1;
     public static final long VNRequestsContinueTimeMaximum = 100;
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
@@ -55,10 +60,12 @@ public class Parameter
 
     // SubStrate Network Parameter
     // node parameter
+    //16
     public static final int SubStrateNodeSize = 30;// 100
     public static final int SubStrateNodeComputationMinimum = 10;// 50
     public static final int SubStrateNodeComputationMaximum = 30;// 100
     // edge parameter
+    //0.1
     public static final double SubStrateNodenodeProbability = 0.75;
     public static final int SubStrateEdgeBandwithMinimum = 100;
     public static final int SubStrateEdgeBandwithMaximum = 200;
@@ -87,12 +94,12 @@ public class Parameter
     public static final int TopologyType = TopologyTypeDataCenter;
 
     public static final int DataCenterLevel = 4;
-    public static final int DataCenterAry = 4;
-    public static final int DataCenterPMSlots = 5;
-    public static final int DataCenterToR2PM = 10;
-    public static final int DataCenterCore2Aggregation = 100;
+    public static final int DataCenterAry = 3;//3
+    public static final int DataCenterPMSlots = 10;//10
+    public static final int DataCenterToR2PM = 20;//20
+    public static final int DataCenterCore2Aggregation = 100;//100
 
-    public static final int DataCenterVNSize = 2;
-    public static final int DataCenterVNBandWidth = 2;
+    public static final int DataCenterVNSize = 4;//4
+    public static final int DataCenterVNBandWidth = 1;
 
 }

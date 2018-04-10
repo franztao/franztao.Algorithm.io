@@ -6,6 +6,7 @@ package sevn;
 
 import java.util.Vector;
 
+import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -83,7 +84,6 @@ public class Experiment
                 constructSameVirNet4DataCenter(sameVirNet);
             }
 
-
             logger.info("###################### Time/Total Time: " + time + "/"
                     + Parameter.SubstrateNewtorkRunTimeInterval);
 
@@ -100,9 +100,18 @@ public class Experiment
 
                 if ((0 == (time % Parameter.VirNetDuration)))
                 {
-                    for (int r = 0; r < Parameter.RequestPerTimeAppearNum; r++)
+                    long AppearNum = Parameter.RequestPerTimeAppearNum;
+                    double AppearProbability = Parameter.RequestAppearProbability;
+                    if (Parameter.PossionMean != -1)
                     {
-                        if ((Math.random() < Parameter.RequestAppearProbability))
+                        PoissonDistribution dist = new PoissonDistribution(Parameter.PossionMean);
+                        AppearNum = dist.sample();
+                        AppearProbability = 1;
+                    }
+
+                    for (int r = 0; r < AppearNum; r++)
+                    {
+                        if ((Math.random() < AppearProbability))
                         {
                             logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                             algorithms.get(alg).generateAndProtectVirNet(sameVirNet);
