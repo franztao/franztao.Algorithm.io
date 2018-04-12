@@ -36,7 +36,7 @@ public class Parameter
     public static final boolean IsReleaseVNafterEVNFailure = false;
     public static final boolean IsMultipleNodeMapOneNode = true;
     public static final boolean IsConsiderEdgeBandwith = true;
-    public static final int ExperimentTimes = 30;
+    public static final int ExperimentTimes = 5;
 
     public static final long SubstrateNewtorkRunTimeInterval = 600;// 30000
     public static final long unitTimeInterval = 1;
