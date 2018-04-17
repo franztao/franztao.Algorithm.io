@@ -85,13 +85,16 @@ public class Parameter
             / ExperimentPicturePlotNumber;
 
     // -1 sample
-    // 0 random
-    // 1 data center
+    // 1 random
+    // 2 data center
+    // 0 SNDLib
     public static final int TopologyTypeSample = -1;
     public static final int TopologyTypeRandom = 1;
     public static final int TopologyTypeDataCenter = 2;
+    public static final String SNDLibFile="F:\\workspace\\franztao.Algorithm.io\\SeVN\\data\\sndlib-networks-native";
+    public static final int TopologyTypeSNDLib = 0;
 
-    public static final int TopologyType = TopologyTypeDataCenter;
+    public static final int TopologyType = TopologyTypeSNDLib;
 
     public static final int DataCenterLevel = 4;
     public static final int DataCenterAry = 3;//3
@@ -101,5 +104,6 @@ public class Parameter
 
     public static final int DataCenterVNSize = 4;//4
     public static final int DataCenterVNBandWidth = 1;
+    
 
 }

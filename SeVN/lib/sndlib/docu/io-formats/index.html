@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML //EN">
+<html>
+  <head>
+    <title>
+      Input and output formats for SNDlib
+    </title>
+      <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+  
+  <body class="body"> 
+         
+      <h1>
+        Input and output formats for SNDlib
+      </h1>
+      <hr/>
+      <br/>
+
+      <p>
+         On this page, you find the necessary formats for specifying network
+         planning instances and their solutions.
+      </p>
+
+      <p>
+         Each SNDlib instance consists of two input files: 
+         <ol>
+            <li>
+               A <em>network file</em> describing the network (nodes, links,
+               demands, and admissible paths), and
+            </li>
+            <li> 
+               a <em>network model</em> file describing the capacity and
+               routing model, whether links are directed or undirected, etc.
+            </li>
+         </ol>
+
+         Furthermore, there is a <em>solution</em> format for specifying
+         feasible solutions.
+
+         For all three file types, two possible formats are provided: a native
+         <em>ASCII</em> format and an <em>XML</em> format. You can choose
+         either of them.  
+      </p>
+
+
+    <br></br>
+
+      <ul>
+         <li>
+            <b>Native ASCII:</b> 
+            <ul>
+               <li>
+                  <a href="native/conventions.html">Format conventions</a>
+               </li>
+               <li>
+                  <b>Network model file:</b> 
+                  <a href="native/model.description.html">format description,</a>
+                  <a href="native/examples/model.txt">example</a>
+               </li>
+
+               <li>
+                  <b>Network file:</b> 
+                  <a href="native/network.description.html">format description,</a>
+                  <a href="native/examples/network.txt">example</a>
+               </li>
+
+               <li>
+                  <b>Solution file:</b> 
+                  <a href="native/solution.description.html">format description,</a>
+                  <a href="native/examples/solution.txt">example</a>
+                  (with detailed cost analysis)
+               </li>
+            </ul>
+        </li>
+
+         <li>
+            <b>XML:</b> 
+             <ul>
+               <li>
+                  <a href="xml/index.html" target="_blank">HTML documentation</a>
+               </li>
+               <li>
+                  <b>Network model file:</b> 
+                  <a href="xml/xml-schemas/model.xsd">XML schema file,</a> 
+                  <a href="xml/examples/model.xml">example</a>
+               </li>
+
+               <li>
+                  <b>Network file:</b> 
+                  <a href="xml/xml-schemas/network.xsd">XML schema file,</a> 
+                  <a href="xml/examples/network.xml">example</a>
+               </li>
+
+               <li>
+                  <b>Solution file:</b> 
+                  <a href="xml/xml-schemas/solution.xsd">XML schema file,</a> 
+                  <a href="xml/examples/solution.xml">example</a>
+               </li>
+            </ul>
+        </li>
+      </ul>
+
+  <br/>
+  <hr/>
+  <center>
+	 <font size=-1 >
+		&copy; 2006 Zuse-Institute Berlin (ZIB)
+		<BR>
+		  <A TARGET="_parent" HREF="http://www.zib.de">
+			 http://www.zib.de
+		  </A>
+	 </font>
+  </center>
+  
+  </body>
+</html>

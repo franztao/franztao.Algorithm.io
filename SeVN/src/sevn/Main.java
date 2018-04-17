@@ -24,14 +24,18 @@ public class Main
         Result result = new Result();
         result.recordTexParameter();
 
-        SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
+        for (int i = 0; i < Parameter.ExperimentTimes; i++)
+        {
+            SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
 
-        SubstrateNetwork sn = new SubstrateNetwork(snp);
+            SubstrateNetwork sn = new SubstrateNetwork(snp, i);
 
-        VirtualNetworkParameter vnp = new VirtualNetworkParameter();
+            VirtualNetworkParameter vnp = new VirtualNetworkParameter();
 
-        Experiment exp = new Experiment(sn, vnp, result);
-        exp.bootExperiment();
+            Experiment exp = new Experiment(sn, vnp, result);
+
+            exp.bootExperiment(i);
+        }
 
         return;
     }

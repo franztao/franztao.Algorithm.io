@@ -1,0 +1,78 @@
+?SNDlib native format; type: network; version: 1.0
+
+# NODE SECTION
+#
+# <node_id> [(<longitude>, <latitude>)]
+
+NODES (
+  A ( 11.49 49.26 )
+  B ( 11.80 48.65 )
+  C ( 12.25 49.10 )
+  D ( 12.40 49.90 )
+  E ( 11.43 49.90 )
+)
+
+# LINK SECTION
+#
+# <link_id> ( <source> <target> ) <pre_installed_capacity> <pre_installed_capacity_cost> <routing_cost> <setup_cost> ( {<module_capacity> <module_cost>}* )
+
+LINKS (
+
+  # Assume that unit 1 corresponds to 2 Mbit/s. Then
+  #   - L_AB has 63 (STM-1) preinstalled at cost 100, 
+  #   - routing cost is 10 per flow unit,
+  #   - fixed-charge setup cost per link (if considered) is 1000,
+  #   - additional capacities 63 (STM-1) and 252 (STM-4) can be 
+  #     installed at cost 1000 and 1200, respectively (on link L_AB).
+  #
+  L_AB ( A B ) 63 100 10 1000 ( 63 1000 252 1200 )
+  L_AC ( A C )  0   0 10 1000 ( 63 1300 252 1800 )
+  L_AD ( A D )  0   0 10 1000 ( 63 2000 252 3000 )
+  L_BC ( B C )  0   0 10 1000 ( 63 1200 252 1900 )
+  L_BD ( B D )  0   0 10 1000 ( 63 1000 252 2000 )
+  L_DC ( D C )  0   0 10 1000 ( 63 1000 252 2000 )
+  L_DE ( D E )  0   0 10 1000 ( 63 1000 252 2000 )
+  L_EC ( E C )  0   0 10 1000 ( 63 1000 252 2000 )
+)
+
+# DEMAND SECTION
+#
+# <demand_id> ( <source> <target> ) <routing_unit> <demand_value> <max_path_length>
+
+DEMANDS (
+  # 2-Mbit/s demands (routing unit 1):
+  D_AC ( A C ) 1  50 UNLIMITED ()
+  D_EC ( E C ) 1  27 UNLIMITED ()
+
+  # STM-1 demands (routing unit 63):
+  # A routing path for this link must have at most 2 links 
+  # if the HOP_LIMIT_MODEL is set to INDIVIDUAL_HOP_LIMITS.
+  D_AB ( A B ) 63 2 2 ()
+)
+
+# ADMISSIBLE PATHS SECTION
+#
+# <demand_id> ( {<path_id> ( <link_id>+ )}+ )
+#
+# If the admissible-path model is EXPLICIT_LIST, at most the 
+# paths listed here are admissible, otherwise all paths. 
+# Both sets of paths may be further restricted by hop limits.
+
+ADMISSIBLE_PATHS (  
+  D_AC (
+    P1 ( L_AB L_BC )
+    P2 ( L_AC )
+    P3 ( L_AB L_BD L_DC )
+  )
+  D_AB (
+    P1 ( L_AB )
+    P2 ( L_AC L_BC)
+  )
+  D_EC (
+    P1 ( L_EC )
+    P2 ( L_DE L_DC )
+    P3 ( L_DE L_BD L_BC )
+    P4 ( L_DE L_BD L_AB L_AC )
+  )
+)
+

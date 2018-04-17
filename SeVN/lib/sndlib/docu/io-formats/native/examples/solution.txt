@@ -1,0 +1,181 @@
+?SNDlib native format; type: solution; version: 1.0
+# solution sol1
+
+# LINK CONFIGURATIONS
+#
+# <link_id> ( {<module_capacity> <install_count>}+ )
+
+LINK-CONFIGURATIONS (
+  # On Link L_AB, one unit of 252 is installed in addition to 
+  # the preinstalled capacity 63.
+  L_AB ( 63 1 252.00 1 )
+  # On Link L_AC, one unit of 252 is installed.
+  L_AC ( 252 1 )
+  # Link L_AD has no capacity and is thus excluded from the solution topology.
+  L_AD ( )
+  L_BC ( 252 1 )
+  L_BD ( )
+  L_DC ( 63 1 )
+  L_DE ( 63 1 )
+  L_EC ( 63 1 )
+)
+
+# ROUTING
+#
+# <demand_id> ( {<flow_path_value> ( <link_id>+ )}+ )
+
+# Routing for the normal operating state (NOS, no failures):
+# Every demand is routed on exactly one path, as required by the 
+# survivability model ONE_PLUS_ONE_PROTECTION.
+
+ROUTINGS NOS ( 
+
+  # 50 units of flow are routed on this path for demand AC.
+  D_AC (
+    50 ( L_AB L_BC )
+  )
+  D_EC (
+    27 ( L_EC )
+  )
+
+  # Flow for a demand is specified in the corresponding routing unit. 
+  # Total flow for demand D_AB in the base unit 1 is 2x63 = 126.
+  D_AB (
+    2 ( L_AB )
+  )
+)
+
+# Link-disjoint backup path for each demand:
+ROUTINGS DEFAULT_BACKUP ( 
+  D_AC (
+    # This backup routing applies to every failure state where demand 
+    # D_AC is affected, i.e., states L_AB and L_BC.
+    50 ( L_AC )
+  )
+  D_EC (
+    27 ( L_DE L_DC )
+  )
+  D_AB (
+    2 ( L_AC L_BC )
+  )
+)
+
+# ALTERNATIVE ROUTING FORMAT:
+# 
+# Alternatively, the backup routing could have been written as follows:
+#
+# 
+# If link L_AB fails, demand AC is routed on L_AC, and demand AB is routed 
+# on the path ( L_AC L_BC ). In each failure state, the total flow given for
+# each affected demand must be at most the demand value:
+#
+# ROUTINGS L_AB (
+#    D_AC (
+#       50 ( L_AC )
+#    )
+#    D_AB ( 
+#       2 ( L_AC L_BC )
+#    )
+# )
+# 
+# ROUTINGS L_BC (
+#    D_AC (
+#       50 ( L_AC )
+#    )
+# )
+# 
+# ROUTINGS L_EC (
+#    D_EC (
+#       27 ( L_DE L_DC )
+#    )
+# )
+#
+#
+# 
+# DETAILED COST ANALYSIS:
+#
+# In general, total cost is composed of 
+#  1. fixed-charge cost
+#  2. preinstalled link capacity cost
+#  3. non-preinstalled link capacity cost
+#  4. routing cost
+#
+# 
+# 1. Fixed-charge cost:
+#
+#    This is ignored here because the model file says
+#
+#        FIXED_CHARGE_MODEL = NO.
+#  
+#    If the FIXED_CHARGE_MODEL were YES, the fixed-charge cost of this solution
+#    would be 1000 for each link with non-zero capacity, i.e., 6000 in total.
+#
+#
+# 2. Preinstalled link capacity cost:
+#
+#    Only link L_AB has preinstalled capacity, and its cost 100 is incurred
+#    in any feasible solution.
+#
+#
+# 3. Non-preinstalled link capacity cost: 
+#
+#
+#    On every link, at most one of the installable link capacities has been
+#    installed because the LINK_CAPACITY_MODEL is EXPLICIT_LINK_CAPACITIES.
+#    The non-zero capacities are:
+#
+#    link        capacity        cost
+#    L_AB:       1 x 252         1200
+#    L_AC:       1 x 252         1800 
+#    L_BC:       1 x 252         1900
+#    L_DC:       1 x  63         1000
+#    L_DE:       1 x  63         1000 
+#    L_EC:       1 x  63         1000
+#   
+#    Hence, the total cost for non-preinstalled link capacity is 7900.
+#
+#
+# 4. Routing cost:
+#
+#    For dedicated 1+1 path protection, the routing cost of a link e is the
+#    total working and backup flow on that link for all demands, i.e., 
+#
+#       \sum_{d \in Demands} \max{s \in States} routingcost(e) flow(e,d,s).
+#
+#    In this example, this amounts to:
+#
+#    link   total link flow     cost per unit   total cost
+#    L_AB:  176 = 1x50 + 63x2        10         1760
+#    L_AC:  176 = 1x50 + 63x2        10         1760
+#    L_BC:  176 = 1x50 + 63x2        10         1760
+#    L_DC:   27 = 1x27               10          270
+#    L_DE:   27 = 1x27               10          270
+#    L_EC:   27 = 1x27               10          270
+#
+#    Hence, total routing cost is 6090.
+#
+# Summary: The total cost of this solution is 100 + 7900 + 6090 = 14090.
+#
+#
+# Note: 
+#
+#    The above solution can also be interpreted as a solution for shared path 
+#    protection or unrestricted flow reconfiguration. With these mechanisms, the
+#    routing cost of a link e is the maximum flow on the link (in the base unit
+#    1) in any network state, multiplied with the routing cost of the link,
+#    i.e., 
+#
+#       \max{s \in States} \sum_{d \in Demands} routingcost(e) flow(e,d,s).
+#
+#    In more detail:
+#
+#    link   max-link-flow      in network state    cost per unit   total cost
+#    L_AB:  176 = 1x50 + 63x2     NOS                     10         1760
+#    L_AC:  176 = 1x50 + 63x2     L_AB                    10         1760
+#    L_BC:  126 = 63x2            L_AB                    10         1260
+#    L_DC:   27 = 1x27            L_EC                    10          270
+#    L_DE:   27 = 1x27            L_EC                    10          270
+#    L_EC:   27 = 1x27            NOS                     10          270
+# 
+#    Thus, the total routing cost would be 5590.
+

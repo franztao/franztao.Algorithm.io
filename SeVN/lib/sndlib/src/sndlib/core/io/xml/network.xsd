@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (c) 2005-2006 by Konrad-Zuse-Zentrum fuer Informationstechnik Berlin. 
+ (http://www.zib.de)  
+  
+ Licensed under the ZIB ACADEMIC LICENSE; you may not use this file except 
+ in compliance with the License. You may obtain a copy of the License at
+ 
+ http://www.zib.de/Optimization/Software/ziblicense.html
+ 
+ as well as in the file LICENSE.txt, contained in the SNDlib distribution 
+ package.
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<xs:schema xmlns="http://sndlib.zib.de/network" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:globals="http://sndlib.zib.de/globalDefs" targetNamespace="http://sndlib.zib.de/network" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="http://sndlib.zib.de/globalDefs" schemaLocation="globalDefs.xsd"/>
+  <xs:simpleType name="coordinatesType">
+    <xs:annotation>
+      <xs:documentation>Defines the allowed coordinate types</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pixel"/>
+      <xs:enumeration value="geographical"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="network">
+    <xs:annotation>
+      <xs:documentation>The root element of a network definition tree.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="meta" minOccurs="0"/>
+        <xs:element ref="networkStructure"/>
+        <xs:element ref="demands"/>
+      </xs:all>
+      <xs:attribute name="version" type="xs:string" use="optional" default="1.0"/>
+    </xs:complexType>
+    <xs:key name="nodeId">
+      <xs:selector xpath="networkStructure/nodes/node"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="linkId">
+      <xs:selector xpath="networkStructure/links/link"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="demandId">
+      <xs:selector xpath="demands/demand"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="sourceNodeIdInLink" refer="nodeId">
+      <xs:selector xpath="networkStructure/links/link"/>
+      <xs:field xpath="source"/>
+    </xs:keyref>
+    <xs:keyref name="targetNodeIdInLink" refer="nodeId">
+      <xs:selector xpath="networkStructure/links/link"/>
+      <xs:field xpath="target"/>
+    </xs:keyref>
+    <xs:keyref name="sourceNodeIdInDemand" refer="nodeId">
+      <xs:annotation>
+        <xs:documentation source="the demands source node must be declared in this network"/>
+      </xs:annotation>
+      <xs:selector xpath="demands/demand"/>
+      <xs:field xpath="source"/>
+    </xs:keyref>
+    <xs:keyref name="targetNodeIdInDemand" refer="nodeId">
+      <xs:annotation>
+        <xs:documentation source="the demand target node must be declared in this network"/>
+      </xs:annotation>
+      <xs:selector xpath="demands/demand"/>
+      <xs:field xpath="target"/>
+    </xs:keyref>
+    <xs:keyref name="linkIdInAdmissiblePath" refer="linkId">
+      <xs:selector xpath="demands/demand/admissiblePaths/admissiblePath/linkId"/>
+      <xs:field xpath="."/>
+    </xs:keyref>
+  </xs:element>
+  <xs:element name="networkStructure">
+    <xs:annotation>
+      <xs:documentation>
+Defines the topology of a network: Nodes and connections between them.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="nodes"/>
+        <xs:element ref="links"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nodes">
+    <xs:annotation>
+      <xs:documentation>Defines all nodes together with their locations and options.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="node"/>
+      </xs:sequence>
+      <xs:attribute name="coordinatesType" type="coordinatesType" use="optional" default="pixel"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="node">
+    <xs:annotation>
+      <xs:documentation>Defines a single node.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element name="coordinates">
+          <xs:annotation>
+            <xs:documentation>Defines the coordinates of the node (only used for visualization purposes).</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="x" type="xs:double">
+                <xs:annotation>
+                  <xs:documentation>
+Pixel coordinates can have any value.
+For geographical coordinates, this is the longitude in (-180,180], 
+where locations west of Greenwich have negative x-coordinates.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="y" type="xs:double">
+                <xs:annotation>
+                  <xs:documentation>
+Pixel coordinates can have any value.
+For geographical coordinates, this is the latitude in [-90,90], 
+where locations south of the equator have negative y-coordinates.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="id" type="globals:identifier" use="required">
+        <xs:annotation>
+          <xs:documentation source="the id of the node">The identifier of the node. The identifier must be unique within all the nodes.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="links">
+    <xs:annotation>
+      <xs:documentation>Defines the links in the network</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="link"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="link">
+    <xs:annotation>
+      <xs:documentation>Defines a single link.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="source" type="globals:identifier">
+          <xs:annotation>
+            <xs:documentation>The identifier of the source node. </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="target" type="globals:identifier">
+          <xs:annotation>
+            <xs:documentation>The identifier of the target node.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="routingCost" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Cost incurred by any unit of flow (in terms of routing unit 1) using the link.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:double">
+              <xs:minInclusive value="0"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="setupCost" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Cost incurred if this link is included in the final solution topology.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:double">
+              <xs:minInclusive value="0"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="preInstalledModule" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+Pre-installed capacity installed on this link, which can be used for 
+expansion planning problems or for allocation problems. This module 
+also includes the cost associated with the pre-installed capacity.
+A link with positive preinstalled capacity must be included in every
+solution with at least that capacity. Additional capacity may be 
+installed as specified by the additional modules.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="capacity">
+                <xs:annotation>
+                  <xs:documentation>
+Defines the pre-installed capacity installed on this link.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:double">
+                    <xs:minInclusive value="0"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="cost">
+                <xs:annotation>
+                  <xs:documentation>
+The cost associated with the pre-installed link capacity.
+Note that this is a constant term included in the cost of every 
+feasible solution, which is only included for the sake of completeness
+to get the total network cost in expansion planning problems.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:double">
+                    <xs:minInclusive value="0"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="additionalModules" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+Defines a set of capacity modules which can be installed on a link
+in addition to the preinstalled capacity.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+              <xs:element name="addModule">
+                <xs:annotation>
+                  <xs:documentation>Defines a single capacity module.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="capacity">
+                      <xs:annotation>
+                        <xs:documentation>
+Defines the capacity of a module which can be installed 
+on the link (in addition to the pre-installed capacity). 
+The interpretation of the capacities (whether multiples 
+are allowed or not) depends on the link-capacity-model.
+                        </xs:documentation>
+                      </xs:annotation>
+                      <xs:simpleType>
+                        <xs:restriction base="xs:double">
+                          <xs:minExclusive value="0"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="cost">
+                      <xs:annotation>
+                        <xs:documentation>The cost associated with each unit of the additional capacity.</xs:documentation>
+                      </xs:annotation>
+                      <xs:simpleType>
+                        <xs:restriction base="xs:double">
+                          <xs:minInclusive value="0"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+          <xs:key name="uniqueModuleCapacity">
+            <xs:selector xpath="addModule"/>
+            <xs:field xpath="capacity"/>
+          </xs:key>
+        </xs:element>
+      </xs:all>
+      <xs:attribute name="id" type="globals:identifier" use="required">
+        <xs:annotation>
+          <xs:documentation>The identifier of the link, which must be unique within all the links.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta">
+    <xs:annotation>
+       <xs:documentation>Collects some top level meta information about  this demand matrix.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+       <xs:annotation>
+           <xs:documentation>Collects some top level meta data  about a demand matrix.</xs:documentation>
+        </xs:annotation>
+        <xs:all>
+
+           <xs:element name="granularity" type="xs:string" minOccurs="0">
+              <xs:annotation> 
+                  <xs:documentation>Specifies over which time horizon the demands have been averaged (optional)</xs:documentation>
+              </xs:annotation>
+           </xs:element>
+           <xs:element name="time"  type="xs:string" minOccurs="0">
+              <xs:annotation> 
+                  <xs:documentation>Specifies the point in time the data has been collected (optional)</xs:documentation>
+              </xs:annotation>
+           </xs:element>
+           <xs:element name="unit"  type="xs:string" minOccurs="0">
+              <xs:annotation> 
+                  <xs:documentation>Specifies the unit of the demand data (optional)</xs:documentation>
+              </xs:annotation>
+           </xs:element>
+           <xs:element name="origin" type="xs:string" minOccurs="0">
+              <xs:annotation> 
+                  <xs:documentation>Specifies the origin of the data (optional)</xs:documentation>
+              </xs:annotation>
+           </xs:element>
+        </xs:all>
+     </xs:complexType>
+  </xs:element>
+  <xs:element name="demands">
+    <xs:annotation>
+      <xs:documentation>Defines the demands which have to be routed through the network.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="demand"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="demand">
+    <xs:annotation>
+      <xs:documentation>Defines a single demand.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="source" type="globals:identifier">
+          <xs:annotation>
+            <xs:documentation>The identifier of the source node.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="target" type="globals:identifier">
+          <xs:annotation>
+            <xs:documentation>The identifier of the source node.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="routingUnit" type="xs:positiveInteger" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+The individual routing unit of this demand. 
+
+The total capacity of any link must be at least the sum of all flows 
+through this link, multiplied with the corresponding routingUnits. 
+With an integer routing model, each demand must be routed in integer 
+units of its routing unit, i.e., in a bifurcated for this demand, 
+the flow on each path of the routing must be an integer multiple of the
+routing unit. Furthermore, with an integer routing, for each demand routed
+over a given link, the link must have enough capacity provided by modules
+whose capacity is at least the routing unit of each demand. If all your
+demands have the same granularity, simply set all routing units to 1.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="demandValue">
+          <xs:annotation>
+            <xs:documentation>
+This parameter value is interpreted for a specific demand such that at least
+routingUnit times demandValue many units must be routed through the network
+during normal operation (where all network components are active).
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:double">
+              <xs:minExclusive value="0"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="admissiblePaths" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Defines the set of admissible paths for a demand.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+              <xs:element name="admissiblePath">
+                <xs:annotation>
+                  <xs:documentation>Defines a single admissible path.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="linkId" type="globals:identifier">
+                      <xs:annotation>
+                        <xs:documentation>Defines a link used in the path.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="globals:identifier" use="required">
+                    <xs:annotation>
+                      <xs:documentation>The identifier of the path. The identifier must be unique within all the paths of a single demand.</xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="maxPathLength" type="xs:positiveInteger" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+The maximum number of links used on a path to route this demand. 
+
+The parameter maxPathLength is interpreted for a specific demand such that
+none of the routing paths of this demand consists of more than
+maxPathLength many links during normal operation.
+If no path length restrictions need to be considered this element is omitted.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:all>
+      <xs:attribute name="id" type="globals:identifier" use="required">
+        <xs:annotation>
+          <xs:documentation>The identifier of the demand, which must be unique within all the demands.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+    <xs:unique name="uniqueAdmissiblePathIdInDemand">
+      <xs:selector xpath="admissiblePaths/admissiblePath"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+  </xs:element>
+</xs:schema>

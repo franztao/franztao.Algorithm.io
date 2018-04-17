@@ -50,16 +50,13 @@ public class Experiment
      * @param vnp
      * 
      */
-    public void bootExperiment()
+    public void bootExperiment(int i)
     {
-        for (int i = 0; i < Parameter.ExperimentTimes; i++)
-        {
 
-            generateComparableAlgorithm(this.vnp);
-            runComparableAlgorithmInSameVirNet(i);
-
-        }
+        generateComparableAlgorithm(this.vnp);
+        runComparableAlgorithmInSameVirNet(i);
         this.result.recordExperimentParameter(0, algorithms);
+        
     }
 
     /**
@@ -74,7 +71,7 @@ public class Experiment
         {
             VirtualNetwork sameVirNet = new VirtualNetwork(this.vnp);
 
-            if (this.vnp.topologyType == Parameter.TopologyTypeRandom)
+            if (this.vnp.topologyType == Parameter.TopologyTypeRandom||this.vnp.topologyType ==Parameter.TopologyTypeSNDLib)
             {
                 constructSameVirNet4RandomTopo(sameVirNet);
             }

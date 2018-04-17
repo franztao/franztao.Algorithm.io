@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (c) 2005-2006 by Konrad-Zuse-Zentrum fuer Informationstechnik Berlin. 
+ (http://www.zib.de)  
+  
+ Licensed under the ZIB ACADEMIC LICENSE; you may not use this file except 
+ in compliance with the License. You may obtain a copy of the License at
+ 
+ http://www.zib.de/Optimization/Software/ziblicense.html
+ 
+ as well as in the file LICENSE.txt, contained in the SNDlib distribution 
+ package.
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<xs:schema xmlns="http://sndlib.zib.de/solution"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:globals="http://sndlib.zib.de/globalDefs"
+  targetNamespace="http://sndlib.zib.de/solution" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <xs:import namespace="http://sndlib.zib.de/globalDefs"
+    schemaLocation="globalDefs.xsd"/>
+  <xs:element name="solution">
+    <xs:annotation>
+      <xs:documentation>Defines a solution for a network problem.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="linkConfigurations"/>
+        <xs:element ref="demandRoutings" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="optional" default="1.0"/>
+    </xs:complexType>
+    <xs:key name="linkIdInConfiguration">
+      <xs:selector xpath="linkConfigurations/linkConfiguration"/>
+      <xs:field xpath="@linkId"/>
+    </xs:key>
+    <xs:key name="demandIdInRouting">
+      <xs:selector xpath="demandRoutings/demandRouting"/>
+      <xs:field xpath="@demandId"/>
+    </xs:key>
+    <xs:keyref name="linkIdInRoutingPath" refer="linkIdInConfiguration">
+      <xs:selector
+        xpath="demandRoutings/demandRouting/flowPath/routingPath/linkId"/>
+      <xs:field xpath="."/>
+    </xs:keyref>
+  </xs:element>
+  <xs:element name="linkConfigurations">
+    <xs:annotation>
+      <xs:documentation>Defines the configuration of all links in the
+        network.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="linkConfiguration"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="linkConfiguration">
+    <xs:annotation>
+      <xs:documentation>Defines the configuration of a single link.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element name="installedModule" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Defines the configuration of a single capacity module
+              installed on a link.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="capacity">
+                <xs:annotation>
+                  <xs:documentation>Defines the capacity of an installed capacity
+                    module.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:double">
+                    <xs:minInclusive value="0"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="installCount">
+                <xs:annotation>
+                  <xs:documentation>Defines how often a capacity module is installed on a
+                    link.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:double">
+                    <xs:minExclusive value="0"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="linkId" type="globals:identifier" use="required">
+        <xs:annotation>
+          <xs:documentation>The id of a link in the corresponding
+            network.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="demandRoutings">
+    <xs:annotation>
+      <xs:documentation>Defines the routings of all demand in the network.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="demandRouting"/>
+      </xs:sequence>
+      <xs:attribute name="state" type="globals:identifier" use="optional" default="NOS">
+       <xs:annotation>
+         <xs:documentation>Either NOS for the normal network state, or the
+         name of a link to indicate a single link failure, or DEFAULT_BACKUP
+         to state that this routing applies to all network states where the
+         working path routing for demand is affected. The latter option is
+         mainly intended for use with 1+1 protection, where the backup path 
+         is independent of the exact failure.</xs:documentation>
+       </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="demandRouting">
+    <xs:annotation>
+      <xs:documentation>
+Defines the routing for a single demand. In a failure state, a complete
+routing, including non-failing working paths, must be given for each demand
+affected by the failure. That is, the total flow value given by such a routing
+must always be at least the demand value.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element name="flowPath">
+          <xs:annotation>
+            <xs:documentation>Defines a single flow path in a demand routing</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="flowPathValue">
+                <xs:annotation>
+                  <xs:documentation>Defines the amount of flow routed by this
+                    path.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:double">
+                    <xs:minExclusive value="0"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="routingPath">
+                <xs:annotation>
+                  <xs:documentation>Defines the routing path.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="linkId" type="globals:identifier">
+                      <xs:annotation>
+                        <xs:documentation>Defines the id of a link in the routing
+                          path.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="demandId" type="globals:identifier" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

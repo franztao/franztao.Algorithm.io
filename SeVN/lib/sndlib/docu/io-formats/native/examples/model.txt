@@ -1,0 +1,30 @@
+?SNDlib native format; type: model; version: 1.0
+
+# no node hardware is considered yet
+NODE_MODEL               = NO_NODE_HARDWARE
+
+# demands and links are undirected
+DEMAND_MODEL             = UNDIRECTED
+LINK_MODEL               = UNDIRECTED
+
+# at most one of the given capacities must be installed on each link in
+# addition to the preinstalled capacity
+LINK_CAPACITY_MODEL      = EXPLICIT_LINK_CAPACITIES
+
+# Ignore any fixed-charge cost.
+FIXED_CHARGE_MODEL       = NO
+
+# Flow must be routed on a single path (due to 1+1 protection).
+ROUTING_MODEL            = SINGLE_PATH
+
+# Only the routing paths given in the admissible paths section are allowed.
+ADMISSIBLE_PATH_MODEL    = EXPLICIT_LIST
+
+# Take hop limits into account
+HOP_LIMIT_MODEL          = INDIVIDUAL_HOP_LIMITS
+
+# Mimize total cost. This is currenly the only valid objective.
+OBJECTIVE_MODEL          = MINIMIZE_TOTAL_COST
+
+# Demands are to be protected by 1+1 protection.
+SURVIVABILITY_MODEL	 = ONE_PLUS_ONE_PROTECTION

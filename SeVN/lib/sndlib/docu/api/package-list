@@ -1,0 +1,12 @@
+sndlib.core
+sndlib.core.io
+sndlib.core.io.sndnative
+sndlib.core.io.xml
+sndlib.core.model
+sndlib.core.network
+sndlib.core.problem
+sndlib.core.solution
+sndlib.core.statistics
+sndlib.core.util
+sndlib.core.validation
+sndlib.ext.generators.gml

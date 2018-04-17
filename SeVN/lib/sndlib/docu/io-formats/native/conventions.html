@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML //EN">
+<html>
+  <head>
+    <title>
+      Format conventions for SNDlib     
+    </title>
+      <link rel="stylesheet" type="text/css" href="../style.css">
+    </head>
+  
+  <body class="body"> 
+ 
+      <h1>
+        Format conventions for SNDlib
+      </h1>
+    <hr/>    
+	<br/>
+    The following rules apply to all ASCII input and output files of SNDlib:
+    <a name="FormatConventions"> </a>
+    <p class="data_first_level">
+      <dl>
+        <dt><b>header</b></dt>
+	     <dd> Each input file has to contain a header line at the beginning:</dd>
+       <pre>
+          ?SNDlib native format; type: &lt;file_type&gt;; version: &lt;version&gt;
+       </pre>     
+        <dd>            
+            The file type can be either <tt>network</tt>, <tt>model</tt> or <tt>solution</tt>.
+            Currently there is only one valid version: <tt>1.0</tt>.
+            Example of a header for a <tt>network</tt> file of version <tt>1.0</tt>:
+        </dd>
+       <pre>
+          ?SNDlib native format; type: network; version: 1.0
+       </pre>     
+       </dd>
+        <dt><b>comment</b></dt>
+	     <dd> 
+                  The comment symbol for all input files is the hashmark
+                  symbol '#'. Everything from this symbol to the end of the
+                  current line is ignored, as well as empty lines.
+             </dd>
+        <dt><b>identifier</b></dt>
+        <dd> Valid identifiers are of the form [a-zA-Z0-9][a-zA-Z0-9-_]*. 
+             In particular, identifiers must not contain whitespace, since
+             the latter is used as delimiter between input tokens.
+        </dd>
+        <dt><b>delimiter</b></dt>
+        <dd> Valid delimiters between input tokens (int, double, string) are the blank and the tabulator. </dd>
+        <dt><b>sections</b></dt>
+        <dd> Sections with a variable number of items in the same format <tt>item_format</tt> 
+             (e.g., the description of the available network nodes), are written in the format </dd>
+         <pre>
+            ( item_format* )
+         </pre>
+        <dd> where the '*' after <tt>item_format</tt> is interpreted as zero or more occurrences of such an item. The notation </dd>
+         <pre>
+            ( item_format+ )
+         </pre>
+        <dd> refers to one or more occurrences of <tt>item_format.</tt></dd>
+      </dl>    
+     </p>
+     <br/>
+  <center>
+    <br/><hr/>
+	 <font size=-1 >
+		&copy; 2006 Zuse-Institute Berlin (ZIB)
+		<br/>
+		  <a target="_parent" href="http://www.zib.de">
+			 http://www.zib.de
+		  </a>
+	 </font>
+  </center>
+  
+  </body>
+</html>

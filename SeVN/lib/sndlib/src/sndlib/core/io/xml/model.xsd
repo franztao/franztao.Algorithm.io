@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (c) 2005-2006 by Konrad-Zuse-Zentrum fuer Informationstechnik Berlin. 
+ (http://www.zib.de)  
+  
+ Licensed under the ZIB ACADEMIC LICENSE; you may not use this file except 
+ in compliance with the License. You may obtain a copy of the License at
+ 
+ http://www.zib.de/Optimization/Software/ziblicense.html
+ 
+ as well as in the file LICENSE.txt, contained in the SNDlib distribution 
+ package.
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<xs:schema xmlns="http://sndlib.zib.de/model" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://sndlib.zib.de/model" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="model">
+    <xs:annotation>
+      <xs:documentation>Defines general properties of a particular network planning instance.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="nodeModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the node model (with or without node hardware). 
+Admissible values of the element are:
+
+NO_NODE_HARDWARE 
+No hardware like multiplexers, cross-connects, line-cards, 
+etc. is considered in the current version.
+
+NODE_HARDWARE 
+Planned for Version 2.0 (multiplexers, cross-connects, line-cards, ports).
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="NO_NODE_HARDWARE"/>
+              <xs:enumeration value="NODE_HARDWARE"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="linkModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the link model (directed / undirected / bidirected). 
+Admissible values of the element are:
+
+UNDIRECTED 
+Links are undirected, that is, the installed routing    
+capacity can be used in both directions to route        
+communication demands. The sum of the flows in     
+both directions must not exceed the installed capacity. 
+
+BIDIRECTED 
+Links are bidirectional, that is, the installed routing         
+capacity can be used in both directions to route       
+communication demands. The maximum of the flows in both
+directions must not exceed the installed capacity. If the 
+link model is bidirected, the demand model should be DIRECTED.
+
+DIRECTED 
+Links are directed, that is, the installed routing capacity  
+can be used in the direction from the source node to the target 
+node. The flow in this direction must not exceed the installed 
+capacity. If the link model is directed, the demand model should 
+be DIRECTED as well.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="DIRECTED"/>
+              <xs:enumeration value="UNDIRECTED"/>
+              <xs:enumeration value="BIDIRECTED"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="linkCapacityModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the link capacity model (linear / modular / explicit link capacities). 
+Admissible values of the element are:
+
+LINEAR_LINK_CAPACITIES 
+Any non-negative (fractional or integer) capacity can be 
+installed on the links.
+
+MODULAR_LINK_CAPACITIES 
+All non-negative integer combinations of the base 
+capacities specified for the link are admissible.
+
+EXPLICIT_LINK_CAPACITIES 
+An explicit list of all admissible capacities on a link is 
+provided. At most one of them may be installed, and only once.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="LINEAR_LINK_CAPACITIES"/>
+              <xs:enumeration value="MODULAR_LINK_CAPACITIES"/>
+              <xs:enumeration value="EXPLICIT_LINK_CAPACITIES"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="fixedChargeModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the fixed charge model (with or without fixed charge cost). 
+Admissible values of the element are:
+
+YES 
+Take the fixed charge cost specification of the links into account.
+
+NO 
+Ignore the fixed charge cost specification of the links 
+(i.e., assume fixed charge cost 0 for all links).
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="YES"/>
+              <xs:enumeration value="NO"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="demandModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the demand model (directed / undirected). 
+Admissible values of the element are:
+
+UNDIRECTED 
+Each demand is routed without direction between its end-nodes.
+In this case, the link model must be UNDIRECTED. This case 
+corresponds to a triangular traffic matrix.
+
+DIRECTED 
+Each demand is routed from source to target.
+In this case, every link model is admissible. 
+The directed links can only be used in their direction. 
+Accordingly, capacity is consumed in this direction. This case 
+corresponds to an unsymmetric traffic matrix. 
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="UNDIRECTED"/>
+              <xs:enumeration value="DIRECTED"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="routingModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the routing model (continuous / integer / single-path). 
+Admissible values of the element are:
+
+CONTINUOUS 
+Any fraction of a demand can be carried on any admissible 
+path for the demand. A bifurcated routing is allowed. 
+
+INTEGER 
+Integer multiples of the routing unit of a demand can 
+be routed on any admissible path for the demand. 
+A bifurcated routing is allowed. 
+
+SINGLE_PATH 
+Each demand must be completely routed over a single admissible path. 
+
+OSPF_SINGLE_PATH 
+Planned for a later version.
+
+OSPF_EQUAL_SPLIT_PATH 
+Planned for a later version.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CONTINUOUS"/>
+              <xs:enumeration value="INTEGER"/>
+              <xs:enumeration value="SINGLE_PATH"/>
+              <xs:enumeration value="OSPF_SINGLE_PATH"/>
+              <xs:enumeration value="OSPF_EQUAL_SPLIT_PATH"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="admissiblePathModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the admissible path model (explicit path list or all paths). 
+Admissible values of the element are:
+
+ALL_PATHS 
+For each demand, all paths satisfying the hop limits
+can be used. Any explicit list of admissible paths is ignored. 
+
+EXPLICIT_LIST 
+For each demand an explicit list of admissible paths must 
+be specified. Only these paths are admissible (provided that they
+satisfy the given hop limits).
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="ALL_PATHS"/>
+              <xs:enumeration value="EXPLICIT_LIST"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="hopLimitModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the hop limit model (with or without hop limits). 
+Admissible values of the element are:
+
+INDIVIDUAL_HOP_LIMITS
+Use only those admissible paths (either given by an explicit list 
+or implicitly) which satisfy the hop limit specified for each demand.
+
+IGNORE_HOP_LIMITS 
+Ignore the hop limit specification of the demands, i.e., 
+routing paths are not length-restricted.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="INDIVIDUAL_HOP_LIMITS"/>
+              <xs:enumeration value="IGNORE_HOP_LIMITS"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="objectiveModel">
+          <xs:annotation>
+            <xs:documentation>
+Defines the objective function model. 
+Admissible values of the element are:
+
+MINIMIZE_TOTAL_COST
+Minimize total network cost, which is the sum of link capacity
+cost, fixed-charge cost, routing cost, and (from Version 2.0 on) 
+hardware cost.
+         </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="MINIMIZE_TOTAL_COST"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+       <xs:element name="survivabilityModel">
+        <xs:annotation>
+         <xs:documentation>
+Defines the surviviability model. 
+Admissible values of the element are:
+
+NO_SURVIVABILITY
+No survivability needs to be ensured in the routing.
+
+ONE_PLUS_ONE_PROTECTION
+The routing of every demand must satisfy the conditions of 1+1 
+dedicated path protection. That is, each demand must be routed on a 
+single working path in the normal operating state, and a single 
+link-disjoint backup path must be provided to protect the demand 
+against single link failures.
+
+SHARED_PATH_PROTECTION
+For each demand, a working path routing for the non-failure state
+and an end-to-end backup path for each single link failure must
+be provided. In each failure state, all non-affected working
+paths must be maintained.  The backup capacity is shared among
+the different demands as well as between the network states,
+i.e., the backup path may depend on the specific link failure.
+The capacity of failing working paths is released and can be
+reused in failure states.
+
+UNRESTRICTED_FLOW_RECONFIGURATION
+For each demand, routings must be provided for the non-failure 
+state as well as for all single link failure states. The 
+routings of a demand in the different states are completely
+independent of each other.
+         </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="NO_SURVIVABILITY"/>
+              <xs:enumeration value="ONE_PLUS_ONE_PROTECTION"/>
+              <xs:enumeration value="SHARED_PATH_PROTECTION"/>
+              <xs:enumeration value="UNRESTRICTED_FLOW_RECONFIGURATION"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:all>
+      <xs:attribute name="version" type="xs:string" use="optional" default="1.0"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

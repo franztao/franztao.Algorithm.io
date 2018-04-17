@@ -55,7 +55,7 @@ public class VirtualNetworkParameter
             this.serviceNumber = 3;
         }
         
-        if (this.topologyType == Parameter.TopologyTypeRandom)
+        if (this.topologyType == Parameter.TopologyTypeRandom||this.topologyType ==Parameter.TopologyTypeSNDLib)
         {
             this.nodeSize = (int) (this.nodeSizeMinimum + Math.random() * (this.nodeSizeMaximum - this.nodeSizeMinimum));
             this.serviceNumber=Parameter.ServiceNumber;

@@ -1,0 +1,339 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML //EN">
+<html>
+  <head>
+    <title>Output file formats for SNDlib</title>
+      <link rel="stylesheet" type="text/css" href="../style.css">
+    </head>
+  
+  <body class="body">
+     
+      <h1>
+        Solution file (simple ASCII) for SNDlib
+      </h1> 
+    
+    <br></br>                    
+
+      This page describes the ASCII file format for the 
+      <b>solution file.</b> 
+      See the 
+         <a href="../index.html" target="_show">format overview page</a>
+      for a description of the other input and output files. 
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Summary                                -->
+    <!-- --------------------------------------------------------- -->
+
+    </br>
+
+    <p class="data_first_level">
+      Summary
+   </p>
+
+      A solution for a particular combination of a network model and
+      a network instance is specified by a
+      <ul>
+         <li>
+            <a href="#SolutionFileLinkConfigurations">Link configurations</a> 
+            section and a 
+         </li>
+
+         <li>
+            <a href="#SolutionFileRoutings">Routing</a> section.
+         </li>
+      </ul>
+
+    <!-- --------------------------------------------------------- -->
+    <!--               LinkConfigurations                          -->
+    <!-- --------------------------------------------------------- -->
+
+
+    <a name="SolutionFileLinkConfigurations"> </a>
+    </br><hr></hr>
+
+    <p class="data_first_level">
+      Link configurations
+   </p>
+
+    The section <tt>LINK_CONFIGURATIONS</tt> has the following format: 
+
+   <pre>
+
+      LINK-CONFIGURATIONS-keyword (
+         LINK-configuration-line*
+      )
+   
+   </pre>
+
+   <dl>
+      <dt><b>LINK-CONFIGURATIONS-keyword</b></dt>
+      <dd>
+         The keyword <tt>LINK_CONFIGURATIONS</tt>. 
+      </dd>
+
+      <dt><b>LINK-configuration-line</b></dt>
+      <dd> 
+         For each link, the complete configuration is specified 
+         by a line of the following format: 
+      </dd>
+
+      <pre>
+
+      link-id  ( module-count-pair* )
+
+      </pre>
+
+      <dl>
+         <dt><b>link_id</b></dt>
+         <dd> The identifier of the link. </dd>
+
+         <dt><b>( module-count-pair* )</b></dt>
+         <dd> 
+            A list of pairs where each pair consists of the module
+            capacity and a number specifying how many times 
+            it is installed on this link (<em>including</em> preinstalled
+            capacity). If the <tt>ROUTING-MODEL</tt> is 
+            <tt>CONTINUOUS</tt>, this value may be fractional, 
+            otherwise it should be integer.
+         </dd>
+      </dl>
+
+      <dt><b><em>Example</em></b></dt>
+      <dd> 
+         <em>A line of the section <tt>LINK_CONFIGURATIONS</tt> in the 
+         output file may have the following appearance:</em> 
+     </dd>
+
+      <pre>
+
+      LinkAB  ( 63 3 )
+
+      </pre>
+
+     <dt><b></b></dt>
+     <dd>
+         <em>This describes that a capacity of 3 times 63 is installed 
+         on the link LinkAB.</em> 
+      </dd>
+   </dl>    
+
+    <!-- --------------------------------------------------------- -->
+    <!--               Routing                                     -->
+    <!-- --------------------------------------------------------- -->
+
+
+      <a name="SolutionFileRoutings"> </a>
+      </br><hr></hr>
+
+    <p class="data_first_level">
+      Routing
+   </p>
+
+      The section <tt>ROUTING</tt> consists of exactly one routing section 
+      for each considered network state, each of these in the following format: 
+
+      <pre>
+
+      ROUTING-keyword state (
+         ROUTING-demand-section*
+      )
+
+      </pre>
+
+   <dl>
+      <dt><b>ROUTING-keyword</b></dt>
+      <dd>
+         The keyword <tt>ROUTING</tt>. 
+      </dd>
+
+      <dt><b>state</b></dt>
+      <dd>
+         Either <tt>NOS</tt> for the normal operating state where nothing fails, 
+         or the name of a failing link to indicate a single link failure
+         state, or <tt>DEFAULT_BACKUP</tt> (see below).
+         
+      </dd>
+
+      <dt><b>ROUTING-demand-section</b></dt>
+      <dd> 
+         The complete routing of a single demand in a given network state is
+         specified by exactly one section of the following format: 
+      </dd>
+
+      <pre>
+
+      demand_id ( 
+         PATH-line+
+      )
+
+      </pre>
+
+      <dt><b>demand_id</b></dt>
+      <dd> 
+         The identifier of the demand. 
+      </dd>
+      <dt><b>PATH-line</b></dt>
+      <dd> 
+         Each path used to route some part of the current demand 
+         is specified by a line of the following format: 
+      </dd>
+
+      <pre>
+
+      path_flow_value ( link_id+ )
+
+      </pre>
+
+      <dl>
+         <dt><b>path_flow_value</b></dt>
+         <dd> 
+            The amount of flow routed by this path, given in terms of the 
+            routing unit for this demand. That is, if the routing unit
+            is 63 (VC-4) and three VC-4 containers are routed on a path,
+            this value should be 3. In failure states, only the rerouted flow
+            value is given here.
+         </dd>
+
+         <dt><b> link_id+ </b></dt>
+         <dd> 
+            The non-empty, whitespace-separated list of identifiers of   
+            the links used by this path.
+         </dd>
+
+      </dl>
+      In failure states, a complete routing including non-failing working
+      paths must be given for all affected demands, i.e., the total flow given
+      in this ROUTING-demand-section must be at least the demand value.
+
+      <dt><b><em>Example</em></b></dt>
+      <dd> 
+         <em>The following example describes a complete routing with working and
+             backup paths for two demands:</em> 
+      </dd>
+
+      <pre>
+
+         ROUTINGS NOS (
+            D_AC (
+               14 ( L_AC )
+               36 ( L_AB L_BC )
+            )
+            D_AB (
+               4  ( L_AB )
+            )
+         )
+
+         ROUTINGS L_AC (
+            D_AC (
+               40 ( L_AB L_BC )
+               10 ( L_AD L_DC )
+            )
+         )
+
+         ROUTINGS L_AB (
+            D_AC (
+               50 ( L_AC )
+            )
+            D_AB (
+               4 ( L_AC L_BC )
+            )
+         )
+
+         ROUTINGS L_BC (
+            D_AC (
+               50 ( L_AC )
+            )
+         )
+      </pre>
+
+      <dt><b></b></dt>
+      <dd> 
+         <em>In this example, the flow for demand D_AC (from node <tt>A</tt> 
+             to node <tt>C</tt>) is split on two paths. The first part of 
+             value 14 is routed on a path consisting of the single link 
+             <tt>L_AC.</tt> The second part of value 36 is routed on the path 
+             consisting of the links <tt>L_AB</tt> and <tt>L_BC.</tt>  
+             In the network state where link <tt>L_AC</tt> fails, 4 units of
+             the failing flow are shifted to the already used path 
+             <tt>(L_AB L_BC)</tt>, whereas the other 10 units are 
+             rerouted on the new backup path <tt>(L_AD L_DC)</tt> 
+             Note that for all demands affected by a failure, the complete
+             routing must be given in the failure routing, i.e., including
+             non-failing working paths.
+         </em> 
+      </dd>
+
+      <dt><b>Simplified notation for 1+1 protection</b></dt>
+      <dd> 
+         With 1+1 protection, every demand has exactly one working path and
+         one backup path which is independent of the considered failure state.
+         To simplify the notation in this case, the keyword
+         <tt>DEFAULT_BACKUP</tt> indicates that the given backup routing is to
+         be used in any failure state affecting the working path routing of
+         the demand. Thus, instead of the cumbersome notation
+
+      <pre>
+
+         ROUTINGS NOS (
+            D_AB (
+               42 ( L_AC L_CD L_BD )
+            )
+         )
+
+         ROUTINGS L_AC (
+            D_AB (
+               42 ( L_AB )
+            )
+         )
+
+         ROUTINGS L_CD (
+            D_AB (
+               42 ( L_AB )
+            )
+         )
+
+         ROUTINGS L_BD (
+            D_AB (
+               42 ( L_AB )
+            )
+         )
+      </pre>
+
+      you can simply write
+
+      <pre>
+
+         ROUTINGS NOS (
+            D_AB (
+               42 ( L_AC L_CD L_BD )
+            )
+         )
+
+         ROUTINGS DEFAULT_BACKUP (
+            D_AB (
+               42 ( L_AB )
+            )
+         )
+      </pre>
+
+      meaning that the backup path <tt>(L_AB)</tt> is to be used in any
+      failure state where the working path fails.
+      </dd>
+
+   </dl>    
+
+         
+    <!-- --------------------------------------------------------- -->
+
+    <br></br><hr></hr>
+  <center>
+         <font size=-1 >
+                &copy; 2006 Zuse-Institute Berlin (ZIB)
+                <br/>
+                  <a target="_parent" href="http://www.zib.de">
+                         http://www.zib.de
+                  </a>
+         </font>
+  </center>
+  
+         </body>
+</html>

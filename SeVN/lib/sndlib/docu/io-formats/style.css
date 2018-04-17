@@ -1,0 +1,69 @@
+/* FILE: style.css */
+
+.body { 
+   background-color: #f7f7f7; 
+   margin : 3.5em 3em 3.5em 3em; /* top right bottom left */
+   padding: 0em;                 /* on all sides */
+   font-family: Arial, sans-serif;
+} 
+
+/** fonts */
+h1,h2,h3,h4,p,ul,ol,li,div,td,th,address,blockquote,nobr,b,i {
+  font-family:  Arial, sans-serif; 
+}
+
+/** different sizes for h-hierachy */
+h1  { font-size:26px; margin-bottom:18px; }
+h2  { font-size:21px; margin-bottom:18px; }
+pre { font-family:Courier New,Courier; font-size:13px; color:#0000C0; }
+
+p.data_first_level { 
+  font-family:  Arial, Helvetica, sans-serif; 
+  font-size:    18px 
+}
+
+span.hint {
+    font-style:italic;
+    font-size:    12px;
+}
+
+span.bigHint {
+    font-style:italic;
+    font-size:    15px;
+}
+
+br              { margin-bottom:1mm }
+br.bigskip      { margin-bottom:3mm }
+
+/* ---------------------------------------------------------------------- */
+/*    Enumerations                                                        */
+/* ---------------------------------------------------------------------- */
+
+/* We need to set also padding-left for ul, for Internet Explorer. */
+ul  { margin:  3mm 0mm 3mm 1.25em; padding-left: 1.25em } /* top right bottom left */
+/*ul  { margin:  3mm 0mm 3mm 0mm; } */ /* top right bottom left */
+li  { margin:  2mm 0mm 2mm 0mm; } /* top right bottom left */
+dl  { margin:  5mm 0mm 0mm 4mm; } /* top right bottom left */
+dd  { margin:  2mm 0mm 5mm 3mm; } /* top right bottom left */
+dt  { margin:  2mm 0mm 2mm 0mm; } /* top right bottom left */
+pre { margin:  2mm 0mm 3mm 3mm; } /* top right bottom left */
+
+/* ---------------------------------------------------------------------- */
+/*    Links                                                               */
+/* ---------------------------------------------------------------------- */
+
+/* Links in general */
+a {
+   font-family:      Arial, Helvetica, sans-serif;
+   font-size:        14px;
+   color:            #333333;
+   text-decoration:  underline;
+   font-style:       normal;
+   line-height:      16px;
+}
+
+/* Links already visited */
+/*a:visited { color:     #111111; }*/
+
+/* Links which focus on them */
+a:focus { color:     #CC3300; }

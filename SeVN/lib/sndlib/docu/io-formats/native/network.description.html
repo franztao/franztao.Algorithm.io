@@ -1,0 +1,564 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML //EN">
+<html>
+  <head>
+    <title>
+      Input file formats for SNDlib
+    </title>
+      <link rel="stylesheet" type="text/css" href="../style.css">
+    </head>
+  
+  <body class="body">
+     
+      <h1>
+        Network input file (simple ASCII) for SNDlib
+      </h1> 
+    
+    <br></br>                    
+
+      This page describes the ASCII file format for the 
+      <b>network file.</b> 
+      See the 
+         <a href="../index.html" target="_show">format overview page</a>
+      for a description of the other input and output files. 
+  
+    <!-- --------------------------------------------------------- -->
+    <!--                    Network file                           -->
+    <!-- --------------------------------------------------------- -->
+
+    </br>
+      <p class="data_first_level">
+         Summary
+      </p>
+
+      The network file describes some general settings, the nodes,    
+      the connections between the nodes, and the communication requirements.       
+      <ul>
+         <li> 
+            <a href="#NetworkFileNodes">Nodes</a>
+            The nodes section specifies all (potential) nodes together with their 
+            locations and options.   
+         </li>
+         <li>
+            <a href="#NetworkFileLogicals">Links</a>
+            The links section describes all (potential) connections between nodes.  
+         </li>
+         <li>
+            <a href="#NetworkFileDemands">Demands</a>
+            The demand section specifies all communication requirements which 
+            have to be satisfied by a feasible routing and flow allocation.       
+         </li>
+         <li>
+            <a href="#NetworkFileAdmissiblePaths">Admissible paths</a>
+            This (optional) path section specifies a list of 
+            admissible paths for each demand.
+         </li>
+      </ul>
+
+
+    <!-- --------------------------------------------------------- -->
+    <!--                     NODES                                 -->
+    <!-- --------------------------------------------------------- -->
+
+   
+      </br><hr></hr>
+      <a name="NetworkFileNodes"> </a>
+      <p class="data_first_level">
+         NODES section
+      </p>
+                
+      The section <tt>NODES</tt> specifies all nodes together with their 
+      locations and options. It has the following format: 
+
+      <pre>
+
+      NODES-keyword (
+        NODE-line*
+      )
+
+      </pre>
+
+      <dl>
+         <dt><b>NODES-keyword</b></dt>
+         <dd> 
+            The literal word <tt>NODES</tt> in uppercase letters 
+            is the section identifier. 
+         </dd>
+
+         <dt><b>NODE-line</b></dt>
+         <dd> 
+            Each node of the network is specified by exactly one 
+            line of the following format: 
+         </dd>
+
+         <pre>
+
+         node_id ( x-coordinate y-coordinate ) ( node_design_ids ) ( node_options )
+
+         </pre>
+
+        <dl>
+           <dt><b>node_id</b></dt>
+           <dd> 
+               The identifier of the node. The identifier <tt>node_id</tt> 
+               must be unique within the section <tt>NODES</tt>. 
+           </dd>
+
+           <dt><b>x-coordinate</b></dt>
+           <dd> 
+               The x-coordinate of the node. If you specify geographical
+               coordinates, this is the geographical longitude in (-180,180], 
+               where locations west of Greenwich have negative x-coordinates.
+           </dd>
+
+           <dt><b>y-coordinate</b></dt>
+           <dd> 
+               The y-coordinate of the node. If you specify geographical
+               coordinates, this is the geographical latitude in [-90,90], 
+               where locations south of the equator have negative y-coordinates.
+           </dd>
+
+           <dt><b>node_design_ids</b></dt>
+           <dd> 
+               In Version 2.0 of SNDlib, the hardware installable at a node 
+               location will be described in this section. It is optional now
+               but should be empty if present.
+           </dd>
+
+           <dt><b>node_options</b></dt>
+           <dd> 
+               In Version 2.0 of SNDlib, there may be optional node parameters
+               which location will be described in this section. It is optional now
+               but should be empty if present.
+           </dd>
+        </dl>
+
+        <dt><b><em>Example</em></b></dt>
+        <dd> 
+            <em>A line of the section <tt>NODES</tt> in the network design 
+            file may have the following appearance:</em> 
+        </dd>
+      
+         <pre>
+
+         Berlin ( 13.4 52.5 ) () ()
+
+         </pre>
+
+        <dt><b></b></dt>
+        <dd>
+            <em>This defines a node <tt>Berlin</tt> which is located at 
+            the geographical position 13.4 E / 52.5 N.</em> 
+        </dd>
+
+        Note that the coordinates are only used for visualization purposes. When
+        specifying geographical coordinates, make sure to give them in degrees
+        and fractions of degrees instead of degrees and minutes, otherwise the
+        nodes will be in slightly wrong positions in the generated pictures.
+      </dl>      
+
+
+    <!-- --------------------------------------------------------- -->
+    <!--                     LOGICALS                              -->
+    <!-- --------------------------------------------------------- -->
+
+   
+      </br><hr></hr>
+      <a name="NetworkFileLogicals"> </a>
+      <p class="data_first_level">
+         LINKS section
+      </p>
+
+      The section <tt>LINKS</tt> has the following format: 
+         <pre>
+
+         LINKS-keyword (
+            LINK-line*
+         )
+
+         </pre>
+
+      <dl>
+        <dt><b>LINKS-keyword</b></dt>
+        <dd>       
+            The literal word <tt>LINKS</tt> in uppercase letters is the 
+            section identifier. 
+        </dd>
+        <dt><b>LINK-line</b></dt>
+        <dd>       
+            Each link of the network is specified by exactly one line 
+            of the following format: 
+      <pre>
+
+      link_id  \
+      ( source_id  target_id ) \
+      preinstalled_cap  
+      preinstalled_cost  \
+      routing_cost  \
+      setup_cost  \
+      ( capacity_cost_list )  \
+      ( link_options )
+      </pre>
+         (broken up into several lines here for readability).
+      </dd>
+
+         <dl>
+            <dt><b>link_id</b></dt>
+            <dd> 
+               The identifier of the link. The <tt>link_id</tt>
+               must be unique within the section <tt>LINKS</tt>. 
+            </dd>
+
+            <dt><b>( source_id  target_id )</b></dt>
+            <dd> 
+               The identifiers of the two end-nodes of the link. 
+               <tt>source_id</tt> and <tt>target_id</tt> must be different 
+               and have to be specified in the <tt>NODES</tt> section. <br> 
+               Whether links are directed, bidirected or undirected depends on 
+               the <tt>LINK_MODEL</tt> specified in the network model file. 
+               Parallel links between the same node pair are allowed.
+            </dd>
+
+            <dt><b>preinstalled_cap</b></dt>
+            <dd> 
+                Pre-installed capacity installed on this link, which can be 
+                used for expansion planning problems or for allocation 
+                problems. If no capacity is pre-installed, 0 has to 
+                be used. A link with preinstalled capacity C &gt; 0 has to
+                be included in any feasible solution, and capacity C is
+                provided on that link at cost <tt>preinstalled_cost</tt>. 
+                Additional capacity may be installed on that link as 
+                specified in the <tt>capacity_cost_list</tt> for that link.
+            </dd>
+
+            <dt><b>preinstalled_cost</b></dt>
+            <dd> 
+               Cost associated with the pre-installed capacity. Note that this
+               is a constant term included in the cost of every feasible
+               solution, which is only included for the sake of completeness
+               to get the total network cost in expansion planning problems.
+            </dd>
+
+            <dt><b>routing_cost</b></dt>
+            <dd> 
+               Cost incurred by each unit of flow using the link (w.r.t. 
+               <tt>routing_unit</tt> 1, see the demand section). 
+            </dd>
+
+            <dt><b>setup_cost</b></dt>
+            <dd>       
+               Fixed cost incurred for including this link in the final 
+               solution topology. In particular, if a link has preinstalled 
+               capacity, its setup cost must be added to the total network cost.
+            </dd>
+
+            <dt><b>capacity_cost_list</b></dt>
+            <dd> 
+               This is a whitespace-separated list of capacity-cost-pairs:
+               ( cap1 cost1 cap2 cost2 ... ) specifying the capacities which 
+               can be installed on the link (in addition to pre-installed 
+               capacity). The cost value is the cost of one capacity unit,
+               i.e., <em>n</em> units of <em>cap2</em> incur a cost of 
+               <em>n * cost2</em>.
+
+               The interpretation of the capacities (whether multiples are 
+               allowed or not) depends on the link capacity model specified in
+               the network model file. If no capacity is installable (in
+               addition to preinstalled capacity), no value need to be specified, 
+               but parentheses have to be present. For pure fixed-charge
+               problems, i.e., a link has either no or unlimited capacity, 
+               the list (UNLIMITED 0) should be used and setup cost
+               should be set accordingly.
+            </dd>
+
+            <dt><b>( link options )</b></dt>
+            <dd> 
+               This is a future-use list for link options in later versions of
+               SNDlib. It is optional now but should be empty if present.
+            </dd>
+        </dl>
+
+        <dt><b><em>Example</em></b></dt>
+        <dd>       
+            <em>A line of the section <tt>LINKS</tt> in the 
+            network design file may have the following appearance:</em> 
+        </dd>
+      
+         <pre>
+
+         L_AB ( A B ) 63 100 10 1000 ( 63 1000 252 1200 ) ()
+
+         </pre>
+
+        <dt><b></b></dt>
+        <dd>
+            <em>
+            For the purpose of the explanation, assume that unit 1 corresponds 
+            to 2 Mbit/s. Then the above line defines the link <tt>L_AB</tt> 
+            between nodes <tt>A</tt> and <tt>B</tt>. Capacity 63 (STM-1) is 
+            preinstalled at cost 100. A cost of 1 is incurred for each flow 
+            unit using this link. In addition to the preinstalled capacity, 
+            modules of capacity 63 (STM-1) and modules of capacity 252 
+            (STM-4) are installable at cost 1000 and 1200 per module,
+            respectively. With an EXPLICIT link capacity model, at most one of
+            these additional modules may be chosen, whereas with a MODULAR
+            link capacity model, several of these modules may be installed.
+            </em> 
+        </dd>
+
+        <dt><b></b></dt>
+        <dd> 
+            <em>Another line of the section <tt>LINKS</tt>
+                may have the following appearance: 
+            </em>
+        </dd>
+
+         <pre>
+
+         LinkCD ( NodeC NodeD ) 0 0 0 2000 ( UNLIMITED 0 ) ()
+
+         </pre>
+
+        <dt><b></b></dt>
+        <dd>
+            <em>
+               This defines the link <tt>LinkCD</tt>
+               between <tt>NodeC</tt> and <tt>NodeD</tt>, 
+               with no preinstalled capacity, with no routing cost, 
+               with a setup cost of 2000, and no capacity-dependent cost. 
+               This corresponds to a fixed-charge problem where an unlimited
+               capacity is available on that link at cost 2000, and the only
+               question is whether to use the link or not.
+            </em> 
+        </dd>
+
+      </dl>      
+
+    <!-- --------------------------------------------------------- -->
+    <!--                     DEMANDS                               -->
+    <!-- --------------------------------------------------------- -->
+
+   
+      </br><hr></hr>
+      <a name="NetworkFileDemands"> </a>
+      <p class="data_first_level">
+         DEMANDS section
+      </p>
+
+      This section consists of a list of demands specified in 
+      the following format: 
+
+      <pre>
+
+            DEMANDS-keyword (
+              DEMAND-line*
+            )
+
+      </pre>
+
+      <dl>
+        <dt><b>DEMANDS-keyword</b></dt>
+        <dd> 
+            The literal word <tt>DEMANDS</tt> in uppercase 
+            letters is the section identifier.  
+        </dd>
+        <dt><b>DEMAND-line</b></dt>
+        <dd> 
+            Each communication demand is specified by exactly one line 
+            of the following format: 
+        </dd>
+      <pre>
+
+         demand_id  ( source_id  target_id )  routing_unit  \
+         demand_value  max_path_length  ( demand_options )
+
+      </pre>
+       (broken up into several lines here for readability).
+
+      <dl>
+         <dt><b>demand_id</b></dt>
+         <dd> 
+            The unique identifier of this demand. 
+         </dd>
+
+         <dt><b>( source_id target_id )</b></dt>
+         <dd> 
+            The identifiers of the two end-nodes of this demand. 
+            <tt>source_id</tt> and <tt>target_id</tt> must be different 
+            and have to be specified in the section <tt>NODES</tt>. 
+            Whether the demands are directed or undirected depends on the
+            <tt>DEMAND_MODEL</tt> specified in the network model file. 
+         </dd>
+
+         <dt><b>routing_unit</b></dt>
+         <dd> 
+            The individual routing unit of this demand. 
+            With an integer <tt>ROUTING_MODEL</tt>, each demand must be routed
+            in integer units of its <tt>routing unit</tt>, i.e., in a
+            bifurcated for this demand, the flow on each path of the 
+            routing must be an integer multiple of the routing unit.
+            Furthermore, with an integer routing, for each demand routed
+            over a given link, the link must have enough capacity provided by modules
+            whose capacity is at least the routing unit of each demand. If all your
+            demands have the same granularity, simply set all routing units to 1.
+         </dd>
+
+         <dt><b>demand_value</b></dt>
+         <dd> 
+            This parameter value is interpreted for a specific demand 
+            such that at least <tt>routing_unit</tt> times <tt>demand_value</tt> 
+            many units must be routed through the network during normal 
+            operation (where all network components are active). 
+         </dd>
+
+         <dt><b>max_path_length</b></dt>
+         <dd> 
+            The maximum number of links allowed in any routing path for 
+            this demand during normal operation. The keyword 
+            <tt>UNLIMITED</tt> specifies that no path length restrictions 
+            need to be considered. 
+         </dd>
+
+         <dt><b>( demand_options )</b></dt>
+         <dd> 
+            This is a future-use list for link options in later versions of
+            SNDlib. It is optional now but should be empty if present.
+         </dd>
+
+        </dl>
+
+        <dt><b><em>Example</em></b></dt>
+        <dd>
+            <em>A demand line in the network design file may have 
+            the following appearance:</em>
+         </dd>
+
+         <pre>
+
+            D_AC ( A C )  1 50 UNLIMITED ()
+            D_AB ( A B ) 63  2 10        ()
+
+         </pre>
+
+         <dd> 
+            <em>
+            These lines define two communication demands 
+            <tt>D_AC</tt> and <tt>D_AB</tt> between the nodes <tt>A</tt> 
+            and <tt>C</tt> and between <tt>A</tt> and <tt>B</tt>, 
+            respectively. For the purpose of the explanation, assume again 
+            that unit 1 corresponds to 2 Mbit/s. Then 50 flow units
+            (routing unit 1) must be routed for demand <tt>D_AC</tt>, 
+            and 2x63 flow units (corresponding to two VC-4 containers) have 
+            to be routed for demand <tt>D_AB</tt>. With an INTEGER routing 
+            model, every routing path for the latter demand must carry either 
+            flow 63 or flow 126 (corresponding to one or two VC-4 containers).
+            Routing paths for demand <tt>D_AC</tt> have no length restriction,
+            whereas routing paths for demand <tt>D_AB</tt> must contain at most
+            10 links.
+            </em> 
+         </dd>
+      </dl>      
+
+    <!-- --------------------------------------------------------- -->
+    <!--                     PATHS                                 -->
+    <!-- --------------------------------------------------------- -->
+
+   
+      </br><hr></hr>
+      <a name="NetworkFileAdmissiblePaths"> </a>
+      <p class="data_first_level">
+         ADMISSIBLE_PATHS section
+      </p>
+         The section <tt>ADMISSIBLE_PATHS</tt> has the following format: 
+      <pre>
+
+         ADMISSIBLE_PATHS-keyword (
+            DEMAND-PATHS*
+         )
+
+      </pre>
+
+         <dl>
+           <dt><b>ADMISSIBLE_PATHS-keyword</b></dt>
+           <dd>The keyword <tt>ADMISSIBLE_PATHS</tt>.</dd>
+
+           <dt><b>DEMAND-PATHS</b></dt>
+           <dd>The admissible paths for a particular demand are specified 
+               by exactly one section of the following format: 
+           </dd>
+
+      <pre>
+  
+         demand_id ( 
+            PATH-line+
+         )
+
+      </pre>
+
+        <dl>
+           <dt><b>demand_id</b></dt>
+           <dd>The identifier of the demand.</dd>
+
+           <dt><b>PATH-line</b></dt>
+           <dd>Each path potentially used to route some part of the demand
+               is specified by a line of the following format: </dd>
+       </dl>
+
+      <pre>
+
+         path_id ( link_id+ )
+
+      </pre>
+
+      <dl>
+         <dt><b>path_id</b></dt>
+         <dd>A unique identifier for the path.</dd>
+
+         <dt><b>link_id+</b></dt>
+         <dd>The links used by this path. These links must establish 
+             a path from the source to the target node of the demand
+             and satisfy the hop restrictions for the demand.
+         </dd>
+     </dl>
+
+        <dt><b><em>Example</em></b></dt>
+        <dd>
+            <em>
+               An example (incomplete since not all demands are covered) 
+               of the section <tt>ADMISSIBLE_PATHS</tt> may have the following 
+               appearance:
+            </em> 
+        </dd>
+
+      <pre>
+
+         ADMISSIBLE_PATHS (
+              D_AC ( L_AB L_BC )
+         )
+
+      </pre>
+
+      <dt><b></b></dt>
+      <dd>
+         <em>In this example, only one path is specified for the demand 
+             <tt>D_AC</tt> from node <tt>A</tt> to node <tt>C</tt> which 
+             consists of the links <tt>L_AB</tt> and <tt>L_BC</tt>.
+         </em> 
+      </dd>
+   </dl>    
+
+                <!-- -------------------------------------------------------- -->
+
+         <br></br>
+<hr></hr>
+  <center>
+         <font size=-1 >
+                &copy; 2006 Zuse-Institute Berlin (ZIB)
+                <BR>
+                  <A TARGET="_parent" HREF="http://www.zib.de">
+                         http://www.zib.de
+                  </A>
+         </font>
+  </center>
+  
+         </body>
+</html>

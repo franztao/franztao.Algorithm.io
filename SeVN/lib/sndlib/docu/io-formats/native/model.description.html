@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML //EN">
+<html>
+  <head>
+    <title>
+      Network models 
+    </title>
+      <link rel="stylesheet" type="text/css" href="../style.css">
+    </head>
+  
+  <body class="body">
+         
+      <h1>
+        Network model input file (simple ASCII) for SNDlib
+      </h1>
+
+      <hr/>
+      <br></br>                    
+
+      This page describes the ASCII file format for the 
+      <b>network model file.</b> 
+      See the 
+         <a href="../index.html" target="_show">format overview page</a>
+      for a description of the other input and output files.
+
+    </br>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Summary                                -->
+    <!-- --------------------------------------------------------- -->
+
+    <p class="data_first_level">
+      Summary
+   </p>
+
+        The general properties of a particular network planning instance are 
+        described by a so-called <b>network model</b>, which comprises a 
+        specification of  
+      <ul>
+
+        <li>
+          <a href="#ModelDemands">
+            Demand model          </a>
+        </li>
+
+        <li>
+          <a href="#ModelLinks">
+            Link model    </a>
+        </li>
+
+        <li>
+          <a href="#ModelLinkCapacityModel">
+            Link capacity model           </a>
+        </li>
+
+        <li>
+          <a href="#FixedChargeModel">
+            Fixed charge model    </a>
+        </li>
+
+        <li>
+          <a href="#ModelRoutings">
+            Routing model         </a>
+        </li>
+
+        <li>
+          <a href="#ModelRoutingAdmissiblePaths">
+            Admissible path model         </a>
+        </li>
+
+        <li>
+          <a href="#ModelRoutingHopLimit">
+            Hop limit model       </a>
+        </li>
+
+        <li>
+          <a href="#ModelNodes">
+            Node model    </a>
+        </li>
+
+        <li>
+          <a href="#ModelObjective">
+            Objective model       </a>
+        </li>
+
+        <li>
+          <a href="#ModelSurvivability">
+            Survivability model       </a>
+        </li>
+
+      </ul>
+
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Demand model                           -->
+    <!-- --------------------------------------------------------- -->
+
+    <a name="ModelDemands"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+      Demand model     </p>
+    <dl>
+        <dt><b>UNDIRECTED</b></dt>
+        <dd> Each demand is routed without direction between its end-nodes.          
+             In this case, the link model must be UNDIRECTED. This case 
+             corresponds to a triangular traffic matrix.    
+        </dd>
+        <dt><b>DIRECTED</b></dt>
+        <dd> 
+            Each demand is routed <em>from source to target</em>.   
+            In this case, every link model is admissible. 
+            The directed links can only be used in their direction. 
+            Accordingly, capacity is consumed in this direction. This case 
+            corresponds to an unsymmetric traffic matrix. 
+         </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Link model                             -->
+    <!-- --------------------------------------------------------- -->
+
+
+    <a name="ModelLinks"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+      Link model     </p>
+    <dl>
+        <dt><b>UNDIRECTED</b></dt>
+        <dd>
+            Links are undirected, that is, the installed routing    
+            capacity can be used in both directions to route        
+            communication demands. The sum of the flows in     
+            both directions must not exceed the installed capacity. 
+         </dd>
+        <dt><b>BIDIRECTED</b></dt>
+        <dd>
+            Links are bidirectional, that is, the installed routing         
+            capacity can be used in both directions to route       
+            communication demands. The maximum of the flows in both
+            directions must not exceed the installed capacity. If the 
+            link model is bidirected, the demand model should be DIRECTED.
+        </dd>
+        <dt><b>DIRECTED</b></dt>
+        <dd>
+            Links are directed, that is, the installed routing capacity  
+            can be used in the direction from the source node to the target 
+            node. The flow in this direction must not exceed the installed 
+            capacity. If the link model is directed, the demand model should 
+            be DIRECTED as well.
+        </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Link capacity model                    -->
+    <!-- --------------------------------------------------------- -->
+
+    <a name="ModelLinkCapacityModel"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+      Link capacity model     </p>
+    <dl>
+        <dt><b>LINEAR_LINK_CAPACITIES</b></dt>
+        <dd> Any non-negative (fractional or integer) capacity can be 
+             installed on the links.</dd>
+        <dt><b>MODULAR_LINK_CAPACITIES</b></dt>
+        <dd> All non-negative integer combinations of the base 
+             capacities specified for the link are admissible.</dd>
+        <dt><b>EXPLICIT_LINK_CAPACITIES</b></dt>
+        <dd> An explicit list of all admissible capacities on a link 
+             is provided. At most one of them may be installed, and 
+             only once.</dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Fixed charge model                     -->
+    <!-- --------------------------------------------------------- -->
+
+
+    <a name="FixedChargeModel"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+         Fixed charge model
+      </p>
+    <dl>
+        <dt><b>YES</b></dt>
+        <dd>
+            Take the fixed charge cost specification of the links into account.
+        </dd>
+        <dt><b>NO</b></dt>
+        <dd>
+            Ignore the fixed charge cost specification of the links 
+            (i.e., assume fixed charge cost 0 for all links).
+        </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Routing model                          -->
+    <!-- --------------------------------------------------------- -->
+
+
+      <a name="ModelRoutings"> </a>
+      <br></br><hr></hr>
+      <p class="data_first_level">
+         Routing model     
+      </p>
+    <dl>
+        <dt><b>CONTINUOUS</b></dt>
+        <dd> 
+            Any fraction of a demand can be carried on any admissible 
+            path for the demand. A bifurcated routing is allowed. 
+        </dd>
+        <dt><b>INTEGER</b></dt>
+        <dd> 
+            Integer multiples of the routing unit of a demand can 
+            be routed on any admissible path for the demand. 
+            A bifurcated routing is allowed. 
+        </dd>
+        <dt><b>SINGLE_PATH</b></dt>
+        <dd> 
+            Each demand must be completely routed over a single admissible path. 
+        </dd>
+        <dt><b>OSPF_SINGLE_PATH</b></dt>
+        <dd>    
+            Planned for a later version.
+        </dd>
+        <dt><b>OSPF_EQUAL_SPLIT_PATH</b></dt>
+        <dd>    
+            Planned for a later version.
+        </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Admissible Path model                  -->
+    <!-- --------------------------------------------------------- -->
+
+
+      <a name="ModelRoutingAdmissiblePaths"> </a>
+      <br></br><hr></hr>
+      <p class="data_first_level">
+         Admissible path model     
+      </p>
+    <dl>
+        <dt><b>ALL_PATHS</b></dt>
+        <dd> 
+            For each demand, all paths satisfying the hop limits
+            can be used. Any explicit list of admissible paths is ignored. 
+        </dd>
+        <dt><b>EXPLICIT_LIST</b></dt>
+        <dd> 
+            For each demand an explicit list of admissible paths must 
+            be specified. Only these paths are admissible (provided that they
+            satisfy the given hop limits).
+        </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Hop limit model                        -->
+    <!-- --------------------------------------------------------- -->
+
+
+    <a name="ModelRoutingHopLimit"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+         Hop limit model     
+      </p>
+    <dl>
+        <dt><b>INDIVIDUAL_HOP_LIMITS</b></dt>
+        <dd> 
+            Use only those admissible paths (either given by an explicit list 
+            or implicitly) which satisfy the hop limit specified for each 
+            demand.
+        </dd>
+        <dt><b>IGNORE_HOP_LIMITS</b></dt>
+        <dd>    
+            Ignore the hop limit specification of the demands, i.e., 
+            routing paths are not length-restricted.
+        </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Node model                             -->
+    <!-- --------------------------------------------------------- -->
+
+    <a name="ModelNodes"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+      Node model     </p>
+
+    <dl>
+        <dt><b>NO_NODE_HARDWARE</b></dt>
+        <dd>
+            No hardware like multiplexers, cross-connects, line-cards, 
+            etc. is considered in the current version.
+        </dd>
+        <dt><b>NODE_HARDWARE</b></dt>
+        <dd>
+            Planned for Version 2.0 (multiplexers, cross-connects, 
+            line-cards, ports).
+        </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Objective model                        -->
+    <!-- --------------------------------------------------------- -->
+
+
+    <a name="ModelObjective"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+      Objective model     </p>
+    <dl>
+        <dt><b>MINIMIZE_TOTAL_COST</b></dt>
+        <dd>    
+            Minimize total network cost, which is the sum of link capacity
+            cost, fixed-charge cost, routing cost, and (from Version 2.0 on) 
+            hardware cost.
+        </dd>
+   </dl>
+
+    <!-- --------------------------------------------------------- -->
+    <!--                    Survivability model                    -->
+    <!-- --------------------------------------------------------- -->
+
+
+    <a name="ModelSurvivability"> </a>
+    <br></br><hr></hr>
+      <p class="data_first_level">
+      Survivability model     </p>
+    <dl>
+        <dt><b>NO_SURVIVABILITY</b></dt>
+        <dd>    
+            No survivability needs to be ensured in the routing.
+        </dd>
+
+        <dt><b>ONE_PLUS_ONE_PROTECTION</b></dt>
+        <dd>    
+The routing of every demand must satisfy the conditions of 1+1 
+dedicated path protection. That is, each demand must be routed on a 
+single working path in the normal operating state, and a single 
+link-disjoint backup path must be provided to protect the demand 
+against single link failures.
+       </dd> 
+       
+        <dt><b>SHARED_PATH_PROTECTION</b></dt>
+        <dd>    
+For each demand, a working path routing for the non-failure state
+and an end-to-end backup path for each single link failure must
+be provided. In each failure state, all non-affected working
+paths must be maintained.  The backup capacity is shared among
+the different demands as well as between the network states,
+i.e., the backup path may depend on the specific link failure.
+The capacity of failing working paths is released and can be
+reused in failure states.
+       </dd> 
+       
+        <dt><b>UNRESTRICTED_FLOW_RECONFIGURATION</b></dt>
+        <dd>    
+For each demand, independent routings must be provided for the 
+non-failure state as well as for all single link failure states. 
+The routings of a demand in the different states are not coupled
+in any way.
+       </dd> 
+   </dl>
+
+
+  <br/>
+  <hr/>
+  <center>
+         <font size=-1 >
+                &copy; 2006 Zuse-Institute Berlin (ZIB)
+                <BR>
+                  <A TARGET="_parent" HREF="http://www.zib.de">
+                         http://www.zib.de
+                  </A>
+         </font>
+  </center>
+  
+  </body>
+</html>

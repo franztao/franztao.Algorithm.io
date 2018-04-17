@@ -1,11 +1,24 @@
 package substratenetwork;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
 import sevn.Parameter;
+import sndlib.core.io.SNDlibIOFactory;
+import sndlib.core.io.SNDlibIOFormat;
+import sndlib.core.io.SNDlibParseException;
+import sndlib.core.io.SNDlibParser;
+import sndlib.core.network.Network;
+import sndlib.core.network.Node;
 import virtualnetwork.SurvivalVirtualNetwork;
 import virtualnetwork.VirtualNetwork;
 
@@ -51,10 +64,44 @@ public class SubstrateNetwork implements Cloneable
      * @param snp
      *            snp
      */
-    public SubstrateNetwork(SubStrateNetworkParameter snp)
+    public SubstrateNetwork(SubStrateNetworkParameter snp, int ithexperiment)
     {
-        // node
-        this.nodeSize = snp.getNodeSize();
+
+        Network network = null;
+        if (snp.getTopologyType() == Parameter.TopologyTypeSNDLib)
+        {
+            Reader networkReader = null;
+
+            File file = new File(Parameter.SNDLibFile);
+            String[] filelist = file.list();
+            File readfile = new File(Parameter.SNDLibFile + "\\" + filelist[ithexperiment % filelist.length]);
+
+            try
+            {
+                networkReader = new FileReader(readfile.getAbsolutePath());
+            } catch (FileNotFoundException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            SNDlibParser parser = SNDlibIOFactory.newParser(SNDlibIOFormat.NATIVE);
+
+            try
+            {
+                network = parser.parseNetwork(networkReader);
+            } catch (SNDlibParseException | IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            this.nodeSize = network.nodeCount();
+
+        } else
+        {
+            // node
+            this.nodeSize = snp.getNodeSize();
+        }
+
         this.nodeComputationCapacity = new int[nodeSize];
         this.nodeComputation4Former = new int[nodeSize];
         this.nodeComputation4SurvivalUnsharedBackupSum = new int[nodeSize];
@@ -116,6 +163,11 @@ public class SubstrateNetwork implements Cloneable
             setResourceDistribution4DataCenter(snp);
         }
 
+        if (snp.getTopologyType() == Parameter.TopologyTypeSNDLib)
+        {
+            setResourceDistribution4SNDLib(snp, network);
+        }
+
         // label
         String str = "SN";
         for (int i = 0; i < this.nodeSize; i++)
@@ -127,6 +179,73 @@ public class SubstrateNetwork implements Cloneable
         this.virNetSuceedEmbedSum = 0;
         this.surNetSuceedEmbedSum = 0;
         this.virNetSum = 0;
+
+    }
+
+    /**
+     * @param snp
+     * @param network
+     */
+    private void setResourceDistribution4SNDLib(SubStrateNetworkParameter snp, Network network)
+    {
+        // node computation
+        for (int i = 0; i < this.nodeSize; i++)
+        {
+            this.nodeComputationCapacity[i] = (int) (snp.getNodeComputationMinimum()
+                    + Math.random() * (snp.getNodeComputationMaximum() - snp.getNodeComputationMinimum()));
+        }
+
+        // edge bandwith
+        Iterator<Node> Nodeseti = network.nodes().iterator();
+
+        for (int i = 0; i < this.nodeSize; i++)
+        {
+            Node nodei = Nodeseti.next();
+            for (int j = 0; j < i; j++)
+            {
+
+                Iterator<Node> Nodesetj = network.nodes().iterator();
+                Node nodej = Nodesetj.next();
+
+                if ((network.hasLink(nodei.getId() + "_" + nodej.getId()))
+                        || (network.hasLink(nodej.getId() + "_" + nodei.getId())))
+                {
+                    this.topology[i][j] = this.topology[j][i] = true;
+                }
+            }
+        }
+        for (int i = 0; i < this.nodeSize; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                if (this.topology[i][j])
+                {
+                    this.edgeSize++;
+                    this.edgeBandwithCapacity[i][j] = (int) (snp.getEdgeBandwithMinimum()
+                            + Math.random() * (snp.getEdgeBandwithMaximum() - snp.getEdgeBandwithMinimum()));
+                    this.edgeBandwithCapacity[j][i] = this.edgeBandwithCapacity[i][j];
+                }
+            }
+        }
+
+        // service
+        for (int i = 0; i < this.nodeSize; i++)
+        {
+            for (int j = 0; j < this.serviceNum; j++)
+            {
+                if (Math.random() < snp.getSerivecProbability())
+                {
+                    this.boolServiceTypeSet[i][j] = true;
+                    vectorServiceTypeSet.get(i).addElement(j);
+                }
+            }
+            if (vectorServiceTypeSet.get(i).size() == 0)
+            {
+                int index = (int) ((this.serviceNum - 1) * Math.random());
+                this.boolServiceTypeSet[i][index] = true;
+                vectorServiceTypeSet.get(i).addElement(index);
+            }
+        }
 
     }
 
@@ -379,7 +498,7 @@ public class SubstrateNetwork implements Cloneable
         }
 
         int ktriple = Parameter.DataCenterAry * Parameter.DataCenterAry * Parameter.DataCenterAry;
-        for (int i = ( Parameter.DataCenterAry + kdouble+1 ); i <= (Parameter.DataCenterAry + kdouble + ktriple); i++)
+        for (int i = (Parameter.DataCenterAry + kdouble + 1); i <= (Parameter.DataCenterAry + kdouble + ktriple); i++)
         {
             if ((i % (kdouble)) == 0)
             {
