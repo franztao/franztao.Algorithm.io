@@ -7,6 +7,7 @@ package sevn;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -177,8 +178,19 @@ public class Algorithm
             vn.setLeaveTime(sameVn.getLeaveTime());
         } else
         {
-            vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
-                    * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+            if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeExponential)
+            {
+
+                ExponentialDistribution dist = new ExponentialDistribution(
+                        Parameter.VNRequestsContinueTimeExponentialMean);
+                vn.setLeaveTime(((int) dist.sample()));
+            }
+
+            if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeUniform)
+            {
+                vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
+                        * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+            }
         }
 
         // node

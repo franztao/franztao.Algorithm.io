@@ -149,7 +149,7 @@ public class Result
     {
         try
         {
-            File flTexFileWriter = new File(fileAbsolutePath + dataFilePathString + "number.tex");
+            File flTexFileWriter = new File(fileAbsolutePath + dataFilePathString + "Fig/number.tex");
 
             if (!flTexFileWriter.exists())
             {
@@ -178,12 +178,17 @@ public class Result
             fwTexFileWriter
                     .write(prefix + "RequestPerTimeAppearNum" + "}{" + Parameter.RequestPerTimeAppearNum + "}\n");
             fwTexFileWriter.write(prefix + "VNRequestsDuration" + "}{" + Parameter.VirNetDuration + "}\n");
+            fwTexFileWriter.write(prefix + "PossionMean" + "}{" + Parameter.PossionMean + "}\n");
+
             fwTexFileWriter.write(
                     prefix + "VNRequestsContinueTimeMinimum" + "}{" + Parameter.VNRequestsContinueTimeMinimum + "}\n");
             fwTexFileWriter.write(
                     prefix + "VNRequestsContinueTimeMaximum" + "}{" + Parameter.VNRequestsContinueTimeMaximum + "}\n");
             fwTexFileWriter.write(
                     prefix + "VNRequestsContinueTimeAverage" + "}{" + Parameter.VNRequestsContinueTimeAverage + "}\n");
+            fwTexFileWriter.write(prefix + "VNRequestsContinueTimeExponentialMean" + "}{"
+                    + Parameter.VNRequestsContinueTimeExponentialMean + "}\n");
+
             fwTexFileWriter.write(prefix + "SubStrateNodeSize" + "}{" + Parameter.SubStrateNodeSize + "}\n");
             fwTexFileWriter.write(prefix + "SubStrateNodeComputationMinimum" + "}{"
                     + Parameter.SubStrateNodeComputationMinimum + "}\n");

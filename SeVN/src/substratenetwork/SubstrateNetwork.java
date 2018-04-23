@@ -17,6 +17,7 @@ import sndlib.core.io.SNDlibIOFactory;
 import sndlib.core.io.SNDlibIOFormat;
 import sndlib.core.io.SNDlibParseException;
 import sndlib.core.io.SNDlibParser;
+import sndlib.core.network.Link;
 import sndlib.core.network.Network;
 import sndlib.core.network.Node;
 import virtualnetwork.SurvivalVirtualNetwork;
@@ -207,10 +208,23 @@ public class SubstrateNetwork implements Cloneable
                 Iterator<Node> Nodesetj = network.nodes().iterator();
                 Node nodej = Nodesetj.next();
 
-                if ((network.hasLink(nodei.getId() + "_" + nodej.getId()))
-                        || (network.hasLink(nodej.getId() + "_" + nodei.getId())))
+                for (Iterator<Link> Edgei = network.links().iterator(); Edgei.hasNext();)
                 {
-                    this.topology[i][j] = this.topology[j][i] = true;
+                    Link link = Edgei.next();
+
+                    if (link.getFirstNode().getId().equals(nodei.getId())
+                            && link.getSecondNode().getId().equals(nodej.getId()))
+                    {
+                       
+                        this.topology[i][j] = this.topology[j][i] = true;
+
+                    }
+                    if (link.getFirstNode().getId().equals(nodej.getId())
+                            && link.getSecondNode().getId().equals(nodei.getId()))
+                    {  
+                        this.topology[i][j] = this.topology[j][i] = true;
+
+                    }
                 }
             }
         }

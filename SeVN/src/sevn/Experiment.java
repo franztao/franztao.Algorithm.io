@@ -6,6 +6,7 @@ package sevn;
 
 import java.util.Vector;
 
+import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -56,7 +57,7 @@ public class Experiment
         generateComparableAlgorithm(this.vnp);
         runComparableAlgorithmInSameVirNet(i);
         this.result.recordExperimentParameter(0, algorithms);
-        
+
     }
 
     /**
@@ -71,7 +72,8 @@ public class Experiment
         {
             VirtualNetwork sameVirNet = new VirtualNetwork(this.vnp);
 
-            if (this.vnp.topologyType == Parameter.TopologyTypeRandom||this.vnp.topologyType ==Parameter.TopologyTypeSNDLib)
+            if (this.vnp.topologyType == Parameter.TopologyTypeRandom
+                    || this.vnp.topologyType == Parameter.TopologyTypeSNDLib)
             {
                 constructSameVirNet4RandomTopo(sameVirNet);
             }
@@ -97,13 +99,19 @@ public class Experiment
 
                 if ((0 == (time % Parameter.VirNetDuration)))
                 {
-                    long AppearNum = Parameter.RequestPerTimeAppearNum;
-                    double AppearProbability = Parameter.RequestAppearProbability;
-                    if (Parameter.PossionMean != -1)
+                    long AppearNum;
+                    double AppearProbability;
+                    if (Parameter.RequestType == Parameter.RequestTypePossion)
                     {
                         PoissonDistribution dist = new PoissonDistribution(Parameter.PossionMean);
                         AppearNum = dist.sample();
                         AppearProbability = 1;
+                    }
+
+                    if (Parameter.RequestType == Parameter.RequestTypeGeometric)
+                    {
+                        AppearNum = Parameter.RequestPerTimeAppearNum;
+                        AppearProbability = Parameter.RequestAppearProbability;
                     }
 
                     for (int r = 0; r < AppearNum; r++)
@@ -136,9 +144,19 @@ public class Experiment
     private void constructSameVirNet4DataCenter(VirtualNetwork vn)
     {
 
-        // need to be possion
-        vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum
-                + Math.random() * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+        if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeExponential)
+        {
+
+            ExponentialDistribution dist = new ExponentialDistribution(Parameter.VNRequestsContinueTimeExponentialMean);
+            vn.setLeaveTime(((int) dist.sample()));
+        }
+
+        if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeUniform)
+        {
+            vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
+                    * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+        }
+
         boolean[] isSamesNode = new boolean[this.basicSubstrateNework.nodeSize];
 
         // core
@@ -195,9 +213,16 @@ public class Experiment
     private void constructSameVirNet4RandomTopo(VirtualNetwork vn)
     {
 
-        // need to be possion
-        vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum
-                + Math.random() * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+        if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeExponential)
+        {
+            ExponentialDistribution dist = new ExponentialDistribution(Parameter.VNRequestsContinueTimeExponentialMean);
+            vn.setLeaveTime(((int) dist.sample()));
+        }
+        if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeUniform)
+        {
+            vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
+                    * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
+        }
         boolean[] isSamesNode = new boolean[this.basicSubstrateNework.nodeSize];
         for (int i = 0; i < vn.nodeSize; i++)
         {
