@@ -1,4 +1,4 @@
-package substratenetwork;
+package substrateNetwork;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,8 +20,8 @@ import sndlib.core.io.SNDlibParser;
 import sndlib.core.network.Link;
 import sndlib.core.network.Network;
 import sndlib.core.network.Node;
-import virtualnetwork.SurvivalVirtualNetwork;
-import virtualnetwork.VirtualNetwork;
+import survivabelVirtualNetwork.SurvivalVirtualNetwork;
+import virtualNetwork.VirtualNetwork;
 
 public class SubstrateNetwork implements Cloneable
 {
@@ -56,7 +56,7 @@ public class SubstrateNetwork implements Cloneable
     public int virNetSuceedEmbedSum;
     public int surNetSuceedEmbedSum;
     // EmbeddingCost
-    public int virNetSum;
+    public int virNetReqSum;
     public int edgeSize;
 
     /**
@@ -179,7 +179,7 @@ public class SubstrateNetwork implements Cloneable
 
         this.virNetSuceedEmbedSum = 0;
         this.surNetSuceedEmbedSum = 0;
-        this.virNetSum = 0;
+        this.virNetReqSum = 0;
 
     }
 
@@ -197,33 +197,30 @@ public class SubstrateNetwork implements Cloneable
         }
 
         // edge bandwith
-        Iterator<Node> Nodeseti = network.nodes().iterator();
+        Iterator<Node> fromNodeSetIte = network.nodes().iterator();
 
         for (int i = 0; i < this.nodeSize; i++)
         {
-            Node nodei = Nodeseti.next();
+            Node fromNode = fromNodeSetIte.next();
             for (int j = 0; j < i; j++)
             {
 
-                Iterator<Node> Nodesetj = network.nodes().iterator();
-                Node nodej = Nodesetj.next();
+                Iterator<Node> toNodeSetIte = network.nodes().iterator();
+                Node toNode = toNodeSetIte.next();
 
-                for (Iterator<Link> Edgei = network.links().iterator(); Edgei.hasNext();)
+                for (Iterator<Link> edgeIte = network.links().iterator(); edgeIte.hasNext();)
                 {
-                    Link link = Edgei.next();
+                    Link link = edgeIte.next();
 
-                    if (link.getFirstNode().getId().equals(nodei.getId())
-                            && link.getSecondNode().getId().equals(nodej.getId()))
+                    if (link.getFirstNode().getId().equals(fromNode.getId())
+                            && link.getSecondNode().getId().equals(toNode.getId()))
                     {
-                       
                         this.topology[i][j] = this.topology[j][i] = true;
-
                     }
-                    if (link.getFirstNode().getId().equals(nodej.getId())
-                            && link.getSecondNode().getId().equals(nodei.getId()))
+                    if (link.getFirstNode().getId().equals(toNode.getId())
+                            && link.getSecondNode().getId().equals(fromNode.getId()))
                     {  
                         this.topology[i][j] = this.topology[j][i] = true;
-
                     }
                 }
             }

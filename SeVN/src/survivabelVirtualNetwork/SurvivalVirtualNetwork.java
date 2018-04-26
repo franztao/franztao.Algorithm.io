@@ -2,7 +2,7 @@
  * 
  */
 
-package virtualnetwork;
+package survivabelVirtualNetwork;
 
 import gurobi.GRB;
 import gurobi.GRBEnv;
@@ -11,20 +11,21 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
+import multipleKnapsack.MulitpleKnapsack;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import multipleknapsack.MulitpleKnapsack;
-import sevn.Algorithm;
 import sevn.Parameter;
+import substrateNetwork.BackupNode;
+import substrateNetwork.SubstrateNetwork;
+import virtualNetwork.VirtualNetwork;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import substratenetwork.BackupNode;
-import substratenetwork.SubstrateNetwork;
+import algorithm.StarDP;
 
 /**
  * EVN.
@@ -678,7 +679,7 @@ public class SurvivalVirtualNetwork
      * @param alg
      *            alg
      */
-    public void computeConsumedResource(Algorithm alg)
+    public void computeConsumedResource(StarDP alg)
     {
         int nodeNum = 0;
         int nodeComputaiton = 0;
@@ -711,7 +712,7 @@ public class SurvivalVirtualNetwork
     /**
      * heursitcAlgorithm4Survivability.
      */
-    public boolean heursitcAlgorithm4SeVN(Algorithm alg) throws GRBException
+    public boolean heursitcAlgorithm4SeVN(StarDP alg) throws GRBException
     {
         // 1 node+2 node computaion+12 bandwidth
         // 0 node+1 node computaion+5 bandwidth
@@ -719,7 +720,7 @@ public class SurvivalVirtualNetwork
         // 1 node+6 node computaion+3 bandwidth
         // =2 node+11 node computaion+23 bandwidth
 
-        if (alg.sequence == Parameter.Ran)
+        if (alg.failSequence == Parameter.Ran)
         {
             for (int i = 0; i < this.nodeSize4Failure; i++)
             {
@@ -738,7 +739,7 @@ public class SurvivalVirtualNetwork
 
             }
         }
-        if (alg.sequence == Parameter.Min)
+        if (alg.failSequence == Parameter.Min)
         {
             boolean[] isFailed = new boolean[this.nodeSize4Failure];
             for (int i = 0; i < this.nodeSize4Failure; i++)
@@ -802,7 +803,7 @@ public class SurvivalVirtualNetwork
      * @return
      * 
      */
-    public boolean exactAlgorithmIntegerProgram4SeVN(Algorithm alg)
+    public boolean exactAlgorithmIntegerProgram4SeVN(StarDP alg)
     {
         try
         {
@@ -1121,7 +1122,7 @@ public class SurvivalVirtualNetwork
      * startSurvivalVirtualNetwork.
      * 
      */
-    public boolean startSeVNAlgorithm(Algorithm alg)
+    public boolean startSeVNAlgorithm(StarDP alg)
     {
         boolean isSvnAlgorithmSuccess = false;
         if (alg.isExact)

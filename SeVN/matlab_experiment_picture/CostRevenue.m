@@ -15,7 +15,7 @@ grid on;
 axis tight
 xlabel('Node Computation')
 for i=1:1:AlgNum
-    plot(plotXaxisValue,experimentCostNode(i,:),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
+    plot(plotXaxisValue,PolyTao(plotXaxisValue,experimentCostNode(i,:),curveFittingPolypower,iscurveFitting),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
 end
 
 subplot(1,2,2);
@@ -24,7 +24,7 @@ grid on;
 axis tight
 xlabel('Edge Bandwidth')
 for i=1:1:AlgNum
-    plot(plotXaxisValue,experimentCostEdge(i,:),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
+    plot(plotXaxisValue,PolyTao(plotXaxisValue,experimentCostEdge(i,:),curveFittingPolypower,iscurveFitting),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
 end
 
 h=legend(LegendString,'Orientation','horizontal','FontSize',LegendSize);

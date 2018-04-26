@@ -4,10 +4,9 @@
 
 package sevn;
 
-import substratenetwork.SubStrateNetworkParameter;
-
-import substratenetwork.SubstrateNetwork;
-import virtualnetwork.VirtualNetworkParameter;
+import substrateNetwork.SubStrateNetworkParameter;
+import substrateNetwork.SubstrateNetwork;
+import virtualNetwork.VirtualNetworkParameter;
 
 public class Main
 {
@@ -24,17 +23,19 @@ public class Main
         Result result = new Result();
         result.recordTexParameter();
 
-        for (int i = 0; i < Parameter.ExperimentTimes; i++)
+        for (int ithExp = 0; ithExp < Parameter.ExperimentTimes; ithExp++)
         {
             SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
 
-            SubstrateNetwork sn = new SubstrateNetwork(snp, i);
+            SubstrateNetwork sn = new SubstrateNetwork(snp, ithExp);
 
             VirtualNetworkParameter vnp = new VirtualNetworkParameter();
 
-            Experiment exp = new Experiment(sn, vnp, result);
-
-            exp.bootExperiment(i);
+            Experiment exp = new Experiment(sn, vnp);
+            
+            result.recordExperimentParameter(0, exp.algorithms);
+            
+            exp.bootExperiment(ithExp);
         }
 
         return;

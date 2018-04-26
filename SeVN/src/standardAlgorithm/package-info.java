@@ -5,4 +5,4 @@
  * @author franz
  *
  */
-package standardalgorithm;
+package standardAlgorithm;

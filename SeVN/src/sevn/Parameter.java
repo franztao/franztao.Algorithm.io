@@ -8,9 +8,16 @@ package sevn;
  */
 public class Parameter
 {
-    
-    public static final int ExperimentTimes = 10;
 
+    //SNDLib topology number is 12
+    public static final int ExperimentTimes = 12;
+
+    
+    //VirutualNetworkEmbeddingAlgorithm
+    public static final int VNERandom=0;
+    public static final int VNEILP=1;
+    public static final int VNEAlgorithm=VNEILP;
+    
     //resource shared
     public static final int FailureDependent = 0;
     public static final int FailureIndependent = 1;
@@ -51,7 +58,7 @@ public class Parameter
     //RequestType
     public static final int RequestTypeGeometric=1;
     public static final int RequestTypePossion=0;
-    public static final int RequestType=RequestTypeGeometric;
+    public static final int RequestType=RequestTypePossion;
     //GeometricDistribution 
     public static final double RequestAppearProbability = 0.75;// 0.1
     public static final long RequestPerTimeAppearNum = 1;// 1
@@ -72,7 +79,7 @@ public class Parameter
     
     
     // ExperimentPicture
-    public static final int ExperimentPicturePlotNumber = 15;
+    public static final int ExperimentPicturePlotNumber = 25;
 
     // service parameter
     public static final int ServiceNumber = 15;// 15
@@ -105,16 +112,17 @@ public class Parameter
     public static final int TopologyType = TopologyTypeSNDLib;
     
     
-    // Random
-    // node parameter
-    //16
-    public static final int SubStrateNodeSize = 30;// 100
     public static final int SubStrateNodeComputationMinimum = 50;// 50
     public static final int SubStrateNodeComputationMaximum = 100;// 100
+    public static final int SubStrateEdgeBandwithMinimum = 20;//100
+    public static final int SubStrateEdgeBandwithMaximum = 50;//200
+    
+    // Random
+    // node parameter
+    public static final int SubStrateNodeSize = 30;// 100
     // edge parameter
     public static final double SubStrateNodenodeProbability = 0.75;
-    public static final int SubStrateEdgeBandwithMinimum = 100;//100
-    public static final int SubStrateEdgeBandwithMaximum = 200;//200
+   
 
     
     //SNDlib

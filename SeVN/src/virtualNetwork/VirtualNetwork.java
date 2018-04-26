@@ -1,11 +1,13 @@
 /**
  * 
  */
-package virtualnetwork;
+package virtualNetwork;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import survivabelVirtualNetwork.SurvivalVirtualNetwork;
 
 
 /**
@@ -49,8 +51,7 @@ public class VirtualNetwork
 
         this.nodeSize = vnp.nodeSize;
         this.serviceNum = vnp.serviceNumber;
-
-        initialise();
+        initializeVariable();
 
     }
 
@@ -64,13 +65,13 @@ public class VirtualNetwork
     {
         this.nodeSize = sameVirNet.nodeSize;
         this.serviceNum = sameVirNet.serviceNum;
-        initialise();
+        initializeVariable();
     }
 
     /**
      * instantiation.
      */
-    private void initialise()
+    private void initializeVariable()
     {
         this.virNode2subNode = new int[nodeSize];
         this.nodeComputationDemand = new int[nodeSize];

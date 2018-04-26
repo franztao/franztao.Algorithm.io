@@ -1,10 +1,10 @@
 /**
  * 
  */
-package substratenetwork;
+package substrateNetwork;
 
 
-import virtualnetwork.VirtualNetwork;
+import virtualNetwork.VirtualNetwork;
 
 /**
  * @author franz should simplify the backup node's number notice testsample

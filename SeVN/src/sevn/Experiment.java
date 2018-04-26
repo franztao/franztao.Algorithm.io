@@ -11,9 +11,10 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import substratenetwork.SubstrateNetwork;
-import virtualnetwork.VirtualNetwork;
-import virtualnetwork.VirtualNetworkParameter;
+import algorithm.StarDP;
+import substrateNetwork.SubstrateNetwork;
+import virtualNetwork.VirtualNetwork;
+import virtualNetwork.VirtualNetworkParameter;
 
 /**
  * Experiment.
@@ -31,17 +32,17 @@ public class Experiment
     private Result result;
     private Result[] algorithmResult;
 
-    Vector<Algorithm> algorithms;
+    Vector<StarDP> algorithms;
 
     /**
      * Experiment .
      */
-    public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp, Result result)
+    public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp)
     {
         this.basicSubstrateNework = sn;
         this.vnp = vnp;
-        this.algorithms = new Vector<Algorithm>();
-        this.result = result;
+        this.algorithms = new Vector<StarDP>();
+//        this.result = result;
         PropertyConfigurator.configure("log4j.properties");
     }
 
@@ -51,12 +52,11 @@ public class Experiment
      * @param vnp
      * 
      */
-    public void bootExperiment(int i)
+    public void bootExperiment(int ithExper)
     {
-
         generateComparableAlgorithm(this.vnp);
-        runComparableAlgorithmInSameVirNet(i);
-        this.result.recordExperimentParameter(0, algorithms);
+        runComparableAlgorithmInSameVirNet(ithExper);
+//        this.result.recordExperimentParameter(0, algorithms);
 
     }
 
@@ -70,20 +70,20 @@ public class Experiment
     {
         for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++)
         {
-            VirtualNetwork sameVirNet = new VirtualNetwork(this.vnp);
+            VirtualNetwork protoVirNet = new VirtualNetwork(this.vnp);
 
             if (this.vnp.topologyType == Parameter.TopologyTypeRandom
                     || this.vnp.topologyType == Parameter.TopologyTypeSNDLib)
             {
-                constructSameVirNet4RandomTopo(sameVirNet);
+                constructSameVirNet4RandomTopo(protoVirNet);
             }
 
             if (this.vnp.topologyType == Parameter.TopologyTypeDataCenter)
             {
-                constructSameVirNet4DataCenter(sameVirNet);
+                constructSameVirNet4DataCenter(protoVirNet);
             }
 
-            logger.info("###################### Time/Total Time: " + time + "/"
+            logger.info("####### Time/Total Time: " + time + "/"
                     + Parameter.SubstrateNewtorkRunTimeInterval);
 
             for (int alg = 0; alg < algorithms.size(); alg++)
@@ -119,7 +119,7 @@ public class Experiment
                         if ((Math.random() < AppearProbability))
                         {
                             logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                            algorithms.get(alg).generateAndProtectVirNet(sameVirNet);
+                            algorithms.get(alg).generateAndProtectVirNet(protoVirNet);
                             this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
                         }
                     }
@@ -230,6 +230,7 @@ public class Experiment
             do
             {
                 snodeloc = (int) Math.round(Math.random() * (this.basicSubstrateNework.nodeSize - 1));
+                //every phisical mapped only one virtual node
                 if (!isSamesNode[snodeloc])
                 {
                     vn.virNode2subNode[i] = snodeloc;
@@ -278,71 +279,71 @@ public class Experiment
         // FD FI
         // FD ILP EVSNR Min Ran
         // VNE can not able to compare with VNE algorithm
-        Algorithm alg;
+        StarDP alg;
         this.algorithms.clear();
         try
         {
             SubstrateNetwork FD_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FD_Min_Shared_Heuristic", FD_Min_Shared, false, Parameter.FailureDependent, true,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FD_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FD_Min_NoShared_Heuristic", FD_Min_NoShared, false, Parameter.FailureDependent, false,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FD_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FD_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.FailureDependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FI_Min_Shared_Heuristic", FI_Min_Shared, false, Parameter.FailureIndependent, true,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FI_Min_NoShared_Heuristic", FI_Min_NoShared, false, Parameter.FailureIndependent, false,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.FailureIndependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.FailureIndependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork virNet = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork One2OneProtection_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
                     Parameter.One2OneProtection, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork One2OneProtection_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new Algorithm();
+            alg = new StarDP();
             alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
                     Parameter.One2OneProtection, true, Parameter.Ran);
             this.algorithms.addElement(alg);

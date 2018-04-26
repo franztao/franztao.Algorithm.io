@@ -11,34 +11,40 @@ experimentEdgeUsed(:,1)=NaN;
 subplot(1,4,1);
 hold on;
 grid on;
-axis tight
+axis tight;
+xlabel('eVN');
 for i=1:1:AlgNum
-    plot(plotXaxisValue,experimentNodeUsed(i,:),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
+    plot(plotXaxisValue,PolyTao(plotXaxisValue,experimentNodeUsed(i,:),curveFittingPolypower,iscurveFitting),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
 end
 
 subplot(1,4,2);
 hold on;
 grid on;
-axis tight
+axis tight;
+xlabel('SeVN');
 for i=1:1:AlgNum
-    plot(plotXaxisValue,experimentEdgeUsed(i,:),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
+    plot(plotXaxisValue,PolyTao(plotXaxisValue,experimentEdgeUsed(i,:),curveFittingPolypower,iscurveFitting),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
 end
+
 
 subplot(1,4,3);
 hold on;
 grid on;
-axis tight
-for i=1:1:AlgNum-1
+axis tight;
+xlabel('Incremental eVN');
+for i=1:1:AlgNum
     plot(plotXaxisValue,experimentNode(i,:),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
 end
 
 subplot(1,4,4);
 hold on;
 grid on;
-axis tight
-for i=1:1:AlgNum-1
+axis tight;
+xlabel('Incremental SeVN');
+for i=1:1:AlgNum
     plot(plotXaxisValue,experimentEdge(i,:),strtrim(ALgLineStyle(i,:)),'LineWidth',pictureLineWidth,'MarkerFaceColor',strtrim(ALgLineBlockColor(i,:)));
 end
+
 
 h=legend(LegendString,'Orientation','horizontal','FontSize',LegendSize);
 

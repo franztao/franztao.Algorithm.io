@@ -2,7 +2,7 @@
  * 
  */
 
-package substratenetwork;
+package substrateNetwork;
 
 import sevn.Parameter;
 
@@ -16,7 +16,7 @@ public class SubStrateNetworkParameter
 {
 
     // node parameter
-    private int nodeSize = Parameter.SubStrateNodeSize;
+    private int nodeSize=-1;
     private int nodeComputationMinimum = Parameter.SubStrateNodeComputationMinimum;
     private int nodeComputationMaximum = Parameter.SubStrateNodeComputationMaximum;
 
@@ -26,7 +26,7 @@ public class SubStrateNetworkParameter
     private int edgeBandwithMaximum = Parameter.SubStrateEdgeBandwithMaximum;
 
     // service parameter
-    private int serviceNumber = Parameter.ServiceNumber;
+    private int serviceNumber;
     private double serivecProbability = Parameter.SerivecProbability;
 
     private int topologyType = Parameter.TopologyType;
@@ -41,6 +41,17 @@ public class SubStrateNetworkParameter
         {
             this.nodeSize = 9;
             this.serviceNumber = 4;
+        }
+
+        if (this.topologyType == Parameter.TopologyTypeSNDLib)
+        {
+            this.serviceNumber = Parameter.ServiceNumber;
+        }
+        
+        if (this.topologyType == Parameter.TopologyTypeRandom)
+        {
+            this.nodeSize = Parameter.SubStrateNodeSize;
+            this.serviceNumber = Parameter.ServiceNumber;
         }
 
         if (this.topologyType == Parameter.TopologyTypeDataCenter)

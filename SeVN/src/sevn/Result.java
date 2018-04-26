@@ -9,7 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
-import virtualnetwork.VirtualNetwork;
+import algorithm.StarDP;
+import virtualNetwork.VirtualNetwork;
 
 /**
  * Result.
@@ -144,7 +145,10 @@ public class Result
 
         recordDataLength = 0;
     }
-
+    
+/*
+ * note experimental section about parameter into .tex file
+ */
     void recordTexParameter()
     {
         try
@@ -235,7 +239,7 @@ public class Result
      * @param time
      * 
      */
-    public void recordExperimentData(int experimentTimes, Algorithm algorithm, int time)
+    public void recordExperimentData(int experimentTimes, StarDP algorithm, int time)
     {
         recordExperimentData4AllPerformenceMetric(experimentTimes, algorithm, time);
     }
@@ -250,7 +254,7 @@ public class Result
      * @param time
      *            time
      */
-    private void recordExperimentData4AllPerformenceMetric(int experimentTimes, Algorithm algorithm, int time)
+    private void recordExperimentData4AllPerformenceMetric(int experimentTimes, StarDP algorithm, int time)
     {
 
         arrayActiveNodeVirNodeAcc[recordDataLength] = this.activeNodeVirNodeAcc;
@@ -318,7 +322,7 @@ public class Result
      * @param dataLength
      *            dataLength
      */
-    private void writeExperimentData(int experimentTimes, Algorithm algorithm, String filename, double[] recordData,
+    private void writeExperimentData(int experimentTimes, StarDP algorithm, String filename, double[] recordData,
             int dataLength)
     {
         File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
@@ -365,7 +369,7 @@ public class Result
      *            algorithms
      * 
      */
-    public void recordExperimentParameter(int experimentTimes, Vector<Algorithm> algorithms)
+    public void recordExperimentParameter(int experimentTimes, Vector<StarDP> algorithms)
     {
         File flParameter = new File(fileAbsolutePath + dataFilePathString + "Parameter.txt");
         FileWriter fwParameter;
@@ -414,7 +418,7 @@ public class Result
      * @param datalength
      *            .
      */
-    void writeExperimentData(int experimentTimes, Algorithm algorithm, String filename, int[] recordData,
+    void writeExperimentData(int experimentTimes, StarDP algorithm, String filename, int[] recordData,
             int datalength)
     {
         File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
@@ -457,7 +461,7 @@ public class Result
      * @param algorithm
      *            algorithm
      */
-    public void updateExperimentData(Algorithm algorithm)
+    public void updateExperimentData(StarDP algorithm)
     {
         // node
         int usedNode = 0;
@@ -655,8 +659,8 @@ public class Result
             this.acceptanceRatioVirNet = 1.0;
         } else
         {
-            this.acceptanceRatioSurNet = (1.0 * algorithm.getSn().surNetSuceedEmbedSum / algorithm.getSn().virNetSum);
-            this.acceptanceRatioVirNet = (1.0 * algorithm.getSn().virNetSuceedEmbedSum / algorithm.getSn().virNetSum);
+            this.acceptanceRatioSurNet = (1.0 * algorithm.getSn().surNetSuceedEmbedSum / algorithm.getSn().virNetReqSum);
+            this.acceptanceRatioVirNet = (1.0 * algorithm.getSn().virNetSuceedEmbedSum / algorithm.getSn().virNetReqSum);
 
         }
     }
@@ -669,7 +673,7 @@ public class Result
      * @param algorithm
      *            algorithm
      */
-    public void writeExperimentDatatoFile(int experimentTimes, Algorithm algorithm)
+    public void writeExperimentDatatoFile(int experimentTimes, StarDP algorithm)
     {
         writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_", this.arrayActiveNodeSubNode,
                 recordDataLength);
@@ -749,7 +753,7 @@ public class Result
      * @param algorithm
      *            .
      */
-    public void updateExperimentDataAccumulate(Algorithm algorithm)
+    public void updateExperimentDataAccumulate(StarDP algorithm)
     {
         // node
         int usedNode = 0;

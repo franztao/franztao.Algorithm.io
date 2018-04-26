@@ -1,7 +1,7 @@
 /**
  * 
  */
-package virtualnetwork;
+package virtualNetwork;
 
 import sevn.Parameter;
 
@@ -12,7 +12,7 @@ import sevn.Parameter;
 public class VirtualNetworkParameter
 {
     // node parameter
-    public int nodeSize;// = EVSNR.VirtualNodeSize;
+    public int nodeSize = -1;//
     public int nodeSizeMinimum = Parameter.VirtualNodeSizeMinimum;
     public int nodeSizeMaximum = Parameter.VirtualNodeSizeMaximum;
     public int nodeComputationMinimum = Parameter.VirtualNodeComputationMinimum;
@@ -44,7 +44,7 @@ public class VirtualNetworkParameter
         {
             this.nodeSize = Parameter.DataCenterVNSize;
             this.nodeSizeMinimum = 2;
-            this.nodeSizeMaximum = Parameter.DataCenterVNSize+2;
+            this.nodeSizeMaximum = Parameter.DataCenterVNSize + 2;
 
             // the VM slots on each PM and bandwidth on each link,
             // according to a normal distribution with mean of ↵ and standard
@@ -54,11 +54,12 @@ public class VirtualNetworkParameter
 
             this.serviceNumber = 3;
         }
-        
-        if (this.topologyType == Parameter.TopologyTypeRandom||this.topologyType ==Parameter.TopologyTypeSNDLib)
+
+        if (this.topologyType == Parameter.TopologyTypeRandom || this.topologyType == Parameter.TopologyTypeSNDLib)
         {
-            this.nodeSize = (int) (this.nodeSizeMinimum + Math.random() * (this.nodeSizeMaximum - this.nodeSizeMinimum));
-            this.serviceNumber=Parameter.ServiceNumber;
+            this.nodeSize = (int) (this.nodeSizeMinimum
+                    + Math.random() * (this.nodeSizeMaximum - this.nodeSizeMinimum));
+            this.serviceNumber = Parameter.ServiceNumber;
         }
     }
 

@@ -2,7 +2,7 @@
  * 
  */
 
-package standardalgorithm;
+package standardAlgorithm;
 
 import java.util.List;
 import org.jgraph.graph.DefaultEdge;
