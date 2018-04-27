@@ -3,7 +3,6 @@
  */
 package substrateNetwork;
 
-
 import virtualNetwork.VirtualNetwork;
 
 /**
@@ -37,9 +36,9 @@ public class BackupNode
         {
             isUsedNode[vn.virNode2subNode[i]] = true;
         }
-        
+
         this.backupNodeSize = 0;
-        
+
         for (int i = 0; i < sn.nodeSize; i++)
         {
             if (!isUsedNode[i])
@@ -52,7 +51,7 @@ public class BackupNode
         this.boolServiceTypeSet = new boolean[this.backupNodeSize][sn.serviceNum];
         this.nodeComputationCapacity = new int[this.backupNodeSize];
         this.isHaveSubstrateNodeResource4buNode = new boolean[this.backupNodeSize];
-        
+
         for (int i = 0, j = 0; i < sn.nodeSize; i++)
         {
             if (!isUsedNode[i])
@@ -67,7 +66,7 @@ public class BackupNode
                 {
                     boolServiceTypeSet[j][l] = sn.boolServiceTypeSet[i][l];
                 }
-                
+
                 this.nodeComputationCapacity[j] = sn.getSubstrateRemainComputaion4SurVirNet(i, isShared);
                 j++;
             }

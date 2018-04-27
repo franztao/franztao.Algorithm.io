@@ -11,7 +11,7 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import algorithm.StarDP;
+import algorithm.SeVN;
 import substrateNetwork.SubstrateNetwork;
 import virtualNetwork.VirtualNetwork;
 import virtualNetwork.VirtualNetworkParameter;
@@ -32,7 +32,7 @@ public class Experiment
     private Result result;
     private Result[] algorithmResult;
 
-    Vector<StarDP> algorithms;
+    Vector<SeVN> algorithms;
 
     /**
      * Experiment .
@@ -41,7 +41,7 @@ public class Experiment
     {
         this.basicSubstrateNework = sn;
         this.vnp = vnp;
-        this.algorithms = new Vector<StarDP>();
+        this.algorithms = new Vector<SeVN>();
 //        this.result = result;
         PropertyConfigurator.configure("log4j.properties");
     }
@@ -118,7 +118,8 @@ public class Experiment
                     {
                         if ((Math.random() < AppearProbability))
                         {
-                            logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                            logger.info("+++++ Time/Total Time: " + time + "/"
+                                    + Parameter.SubstrateNewtorkRunTimeInterval+"Alg: "+alg );
                             algorithms.get(alg).generateAndProtectVirNet(protoVirNet);
                             this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
                         }
@@ -279,71 +280,71 @@ public class Experiment
         // FD FI
         // FD ILP EVSNR Min Ran
         // VNE can not able to compare with VNE algorithm
-        StarDP alg;
+        SeVN alg;
         this.algorithms.clear();
         try
         {
             SubstrateNetwork FD_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FD_Min_Shared_Heuristic", FD_Min_Shared, false, Parameter.FailureDependent, true,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FD_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FD_Min_NoShared_Heuristic", FD_Min_NoShared, false, Parameter.FailureDependent, false,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FD_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FD_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.FailureDependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Min_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FI_Min_Shared_Heuristic", FI_Min_Shared, false, Parameter.FailureIndependent, true,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Min_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FI_Min_NoShared_Heuristic", FI_Min_NoShared, false, Parameter.FailureIndependent, false,
                     Parameter.Min);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.FailureIndependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork FI_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.FailureIndependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork virNet = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork One2OneProtection_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
                     Parameter.One2OneProtection, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetwork One2OneProtection_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new StarDP();
+            alg = new SeVN();
             alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
                     Parameter.One2OneProtection, true, Parameter.Ran);
             this.algorithms.addElement(alg);

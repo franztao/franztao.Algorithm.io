@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
-import algorithm.StarDP;
+import algorithm.SeVN;
 import virtualNetwork.VirtualNetwork;
 
 /**
@@ -239,7 +239,7 @@ public class Result
      * @param time
      * 
      */
-    public void recordExperimentData(int experimentTimes, StarDP algorithm, int time)
+    public void recordExperimentData(int experimentTimes, SeVN algorithm, int time)
     {
         recordExperimentData4AllPerformenceMetric(experimentTimes, algorithm, time);
     }
@@ -254,7 +254,7 @@ public class Result
      * @param time
      *            time
      */
-    private void recordExperimentData4AllPerformenceMetric(int experimentTimes, StarDP algorithm, int time)
+    private void recordExperimentData4AllPerformenceMetric(int experimentTimes, SeVN algorithm, int time)
     {
 
         arrayActiveNodeVirNodeAcc[recordDataLength] = this.activeNodeVirNodeAcc;
@@ -322,7 +322,7 @@ public class Result
      * @param dataLength
      *            dataLength
      */
-    private void writeExperimentData(int experimentTimes, StarDP algorithm, String filename, double[] recordData,
+    private void writeExperimentData(int experimentTimes, SeVN algorithm, String filename, double[] recordData,
             int dataLength)
     {
         File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
@@ -369,7 +369,7 @@ public class Result
      *            algorithms
      * 
      */
-    public void recordExperimentParameter(int experimentTimes, Vector<StarDP> algorithms)
+    public void recordExperimentParameter(int experimentTimes, Vector<SeVN> algorithms)
     {
         File flParameter = new File(fileAbsolutePath + dataFilePathString + "Parameter.txt");
         FileWriter fwParameter;
@@ -418,7 +418,7 @@ public class Result
      * @param datalength
      *            .
      */
-    void writeExperimentData(int experimentTimes, StarDP algorithm, String filename, int[] recordData,
+    void writeExperimentData(int experimentTimes, SeVN algorithm, String filename, int[] recordData,
             int datalength)
     {
         File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
@@ -461,7 +461,7 @@ public class Result
      * @param algorithm
      *            algorithm
      */
-    public void updateExperimentData(StarDP algorithm)
+    public void updateExperimentData(SeVN algorithm)
     {
         // node
         int usedNode = 0;
@@ -673,7 +673,7 @@ public class Result
      * @param algorithm
      *            algorithm
      */
-    public void writeExperimentDatatoFile(int experimentTimes, StarDP algorithm)
+    public void writeExperimentDatatoFile(int experimentTimes, SeVN algorithm)
     {
         writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_", this.arrayActiveNodeSubNode,
                 recordDataLength);
@@ -753,7 +753,7 @@ public class Result
      * @param algorithm
      *            .
      */
-    public void updateExperimentDataAccumulate(StarDP algorithm)
+    public void updateExperimentDataAccumulate(SeVN algorithm)
     {
         // node
         int usedNode = 0;

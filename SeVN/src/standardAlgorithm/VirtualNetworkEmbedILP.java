@@ -3,7 +3,7 @@
  */
 package standardAlgorithm;
 
-import algorithm.StarDP;
+import algorithm.SeVN;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -21,7 +21,7 @@ import virtualNetwork.VirtualNetwork;
 public class VirtualNetworkEmbedILP
 {
 
-    public boolean VirtualNetworkEmbedding(VirtualNetwork vn, VirtualNetwork sameVn, SubstrateNetwork sn, StarDP alg)
+    public boolean VirtualNetworkEmbedding(VirtualNetwork vn, VirtualNetwork sameVn, SubstrateNetwork sn, SeVN alg)
             throws GRBException
     {
         GRBEnv env;
@@ -56,20 +56,28 @@ public class VirtualNetworkEmbedILP
             }
         }
 
-        GRBVar[] willActiveNode;
-        willActiveNode = new GRBVar[sameVn.nodeSize];
-        for (int j = 0; j < sameVn.nodeSize; j++)
-        {
-            willActiveNode[j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "willActiveNode" + ": " + j);
-        }
-
         model.update();
         // set objecion function
         GRBLinExpr objexpr = new GRBLinExpr();
-        for (int i = 0; i < sameVn.nodeSize; i++)
+
+        for (int i = 0; i < vn.nodeSize; i++)
         {
-            objexpr.addTerm(1.0, willActiveNode[i]);
+            for (int j = i; j < i; j++)
+            {
+                if (vn.topology[i][j])
+                {
+                    for (int k = 0; k < sn.nodeSize; k++)
+                    {
+                        for (int l = 0; l < sn.nodeSize; l++)
+                        {
+
+                            objexpr.addTerm(vn.edgeBandwithDemand[i][j], edgeMappingMatrix[i][j][k][l]);
+                        }
+                    }
+                }
+            }
         }
+
         model.setObjective(objexpr, GRB.MINIMIZE);
 
         // limite mapping matrix
@@ -145,10 +153,30 @@ public class VirtualNetworkEmbedILP
             }
         }
 
+        // edge limition
+        for (int i = 0; i < vn.nodeSize; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                if (vn.topology[i][j])
+                {
+                    for (int k = 0; k < sn.nodeSize; k++)
+                    {
+                        for (int l = 0; l < k; l++)
+                        {
+                            model.addConstr(edgeMappingMatrix[i][j][k][l], GRB.EQUAL, edgeMappingMatrix[i][j][l][k],
+                                    "vPathEqual" + "i " + i + "j " + j + "r " + k + "c: " + l);
+                        }
+                    }
+
+                }
+            }
+        }
+        
         // edge mapping
         for (int i = 0; i < vn.nodeSize; i++)
         {
-            for (int j = i + 1; j < vn.nodeSize; j++)
+            for (int j = 0; j < i; j++)
             {
                 if (vn.topology[i][j])
                 {
@@ -187,7 +215,7 @@ public class VirtualNetworkEmbedILP
                 GRBLinExpr bandwidth = new GRBLinExpr();
                 for (int i = 0; i < vn.nodeSize; i++)
                 {
-                    for (int j = i + 1; j < vn.nodeSize; j++)
+                    for (int j = 0; j < i; j++)
                     {
                         if (vn.topology[i][j])
                         {
@@ -223,7 +251,7 @@ public class VirtualNetworkEmbedILP
 
             }
         }
-        return false;
+        return true;
     }
 
 }

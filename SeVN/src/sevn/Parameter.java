@@ -51,7 +51,6 @@ public class Parameter
     public static final boolean IsMultipleNodeMapOneNode = true;
     public static final boolean IsConsiderEdgeBandwith = true;
     
-
     public static final long SubstrateNewtorkRunTimeInterval = 600;// 30000
     public static final long unitTimeInterval = 1;
     
@@ -72,10 +71,10 @@ public class Parameter
     public static final int VNRequestsLeaseType=VNRequestsLeaseTypeExponential;
     //uniform
     public static final long VNRequestsContinueTimeMinimum = 1;
-    public static final long VNRequestsContinueTimeMaximum = 100;
+    public static final long VNRequestsContinueTimeMaximum = 10;
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
     //Exponential
-    public static final long VNRequestsContinueTimeExponentialMean=100;
+    public static final long VNRequestsContinueTimeExponentialMean=20;
     
     
     // ExperimentPicture
@@ -112,10 +111,10 @@ public class Parameter
     public static final int TopologyType = TopologyTypeSNDLib;
     
     
-    public static final int SubStrateNodeComputationMinimum = 50;// 50
-    public static final int SubStrateNodeComputationMaximum = 100;// 100
-    public static final int SubStrateEdgeBandwithMinimum = 20;//100
-    public static final int SubStrateEdgeBandwithMaximum = 50;//200
+    public static final int SubStrateNodeComputationMinimum = 20;// 50
+    public static final int SubStrateNodeComputationMaximum = 50;// 100
+    public static final int SubStrateEdgeBandwithMinimum = 50;//100
+    public static final int SubStrateEdgeBandwithMaximum = 100;//200
     
     // Random
     // node parameter
