@@ -42,7 +42,7 @@ public class Experiment
         this.basicSubstrateNework = sn;
         this.vnp = vnp;
         this.algorithms = new Vector<SeVN>();
-//        this.result = result;
+        // this.result = result;
         PropertyConfigurator.configure("log4j.properties");
     }
 
@@ -56,7 +56,7 @@ public class Experiment
     {
         generateComparableAlgorithm(this.vnp);
         runComparableAlgorithmInSameVirNet(ithExper);
-//        this.result.recordExperimentParameter(0, algorithms);
+        // this.result.recordExperimentParameter(0, algorithms);
 
     }
 
@@ -83,8 +83,7 @@ public class Experiment
                 constructSameVirNet4DataCenter(protoVirNet);
             }
 
-            logger.info("####### Time/Total Time: " + time + "/"
-                    + Parameter.SubstrateNewtorkRunTimeInterval);
+            logger.info("####### Time/Total Time: " + time + "/" + Parameter.SubstrateNewtorkRunTimeInterval);
 
             for (int alg = 0; alg < algorithms.size(); alg++)
             {
@@ -119,7 +118,7 @@ public class Experiment
                         if ((Math.random() < AppearProbability))
                         {
                             logger.info("+++++ Time/Total Time: " + time + "/"
-                                    + Parameter.SubstrateNewtorkRunTimeInterval+"Alg: "+alg );
+                                    + Parameter.SubstrateNewtorkRunTimeInterval + "Alg: " + alg);
                             algorithms.get(alg).generateAndProtectVirNet(protoVirNet);
                             this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
                         }
@@ -231,7 +230,7 @@ public class Experiment
             do
             {
                 snodeloc = (int) Math.round(Math.random() * (this.basicSubstrateNework.nodeSize - 1));
-                //every phisical mapped only one virtual node
+                // every phisical mapped only one virtual node
                 if (!isSamesNode[snodeloc])
                 {
                     vn.virNode2subNode[i] = snodeloc;

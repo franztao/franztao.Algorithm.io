@@ -6,8 +6,8 @@ package algorithm;
 import java.util.Vector;
 
 import gurobi.GRBException;
-import multipleKnapsack.MulitpleKnapsack;
 import sevn.Parameter;
+import standardAlgorithm.MulitpleKnapsack;
 import survivabelVirtualNetwork.SurvivalVirtualNetwork;
 
 /**

@@ -25,22 +25,23 @@ import virtualNetwork.VirtualNetwork;
 
 public class SubstrateNetwork implements Cloneable
 {
+    // node
     public int nodeSize;
-
     public int[] nodeComputationCapacity;
     public int[] nodeComputation4Former;
     public int[] nodeComputation4SurvivalUnsharedBackupSum;
     public int[] nodeComputation4Temp;
     public Vector<Vector<Integer>> virNetIndexSet4sNode;
     public Vector<Vector<Integer>> surVirNetIndexSet4sNode;
-
+    // edge
+    public int edgeSize;
     public boolean[][] topology;
     public int[][] edgeBandwithCapacity;
     public int[][] edgeBandwith4Former;
     public int[][] edgeBandwith4SurvivalUnsharedBackupSum;
     public int[][] edgeBandwith4Temp;
-    public Vector<Vector<Vector<Integer>>> virNetIndexSet4Edge;
-    public Vector<Vector<Vector<Integer>>> surVirNetIndexSet4Edge;
+    public Vector<Vector<Vector<Integer>>> virNetIndexSet4sEdge;
+    public Vector<Vector<Vector<Integer>>> surVirNetIndexSet4sEdge;
 
     public int serviceNum;
     public boolean[][] boolServiceTypeSet;
@@ -57,7 +58,6 @@ public class SubstrateNetwork implements Cloneable
     public int surNetSuceedEmbedSum;
     // EmbeddingCost
     public int virNetReqSum;
-    public int edgeSize;
 
     /**
      * SubstrateNetwork.
@@ -122,16 +122,16 @@ public class SubstrateNetwork implements Cloneable
         edgeBandwith4Former = new int[nodeSize][nodeSize];
         edgeBandwith4SurvivalUnsharedBackupSum = new int[nodeSize][nodeSize];
         edgeBandwith4Temp = new int[nodeSize][nodeSize];
-        this.virNetIndexSet4Edge = new Vector<Vector<Vector<Integer>>>();
-        this.surVirNetIndexSet4Edge = new Vector<Vector<Vector<Integer>>>();
+        this.virNetIndexSet4sEdge = new Vector<Vector<Vector<Integer>>>();
+        this.surVirNetIndexSet4sEdge = new Vector<Vector<Vector<Integer>>>();
         for (int i = 0; i < nodeSize; i++)
         {
-            this.virNetIndexSet4Edge.addElement(new Vector<Vector<Integer>>());
-            this.surVirNetIndexSet4Edge.addElement(new Vector<Vector<Integer>>());
+            this.virNetIndexSet4sEdge.addElement(new Vector<Vector<Integer>>());
+            this.surVirNetIndexSet4sEdge.addElement(new Vector<Vector<Integer>>());
             for (int j = 0; j < nodeSize; j++)
             {
-                this.virNetIndexSet4Edge.get(i).add(new Vector<Integer>());
-                this.surVirNetIndexSet4Edge.get(i).add(new Vector<Integer>());
+                this.virNetIndexSet4sEdge.get(i).add(new Vector<Integer>());
+                this.surVirNetIndexSet4sEdge.get(i).add(new Vector<Integer>());
             }
         }
 
@@ -219,7 +219,7 @@ public class SubstrateNetwork implements Cloneable
                     }
                     if (link.getFirstNode().getId().equals(toNode.getId())
                             && link.getSecondNode().getId().equals(fromNode.getId()))
-                    {  
+                    {
                         this.topology[i][j] = this.topology[j][i] = true;
                     }
                 }
@@ -304,7 +304,8 @@ public class SubstrateNetwork implements Cloneable
                 int ithSurVirNet = this.surVirNetIndexSet4sNode.get(nodeloc).get(i);
                 int temp = 0;
 
-                if (this.virNetCollection.get(ithSurVirNet).getIsRunning()
+                if ((this.virNetCollection.get(ithSurVirNet) != null)
+                        && this.virNetCollection.get(ithSurVirNet).getIsRunning()
                         && this.surVirNetSet.get(ithSurVirNet).isSucceedEmbed)
                 {
                     for (int j = 0; j < this.surVirNetSet.get(ithSurVirNet).getNodeSize(); j++)
@@ -369,12 +370,13 @@ public class SubstrateNetwork implements Cloneable
         if (isShared)
         {
             int maxShare = 0;
-            for (int i = 0; i < this.surVirNetIndexSet4Edge.get(from).get(to).size(); i++)
+            for (int i = 0; i < this.surVirNetIndexSet4sEdge.get(from).get(to).size(); i++)
             {
-                int ithEVN = this.surVirNetIndexSet4Edge.get(from).get(to).get(i);
+                int ithEVN = this.surVirNetIndexSet4sEdge.get(from).get(to).get(i);
 
                 int tempBandwith = 0;
-                if (this.virNetCollection.get(ithEVN).getIsRunning() && this.surVirNetSet.get(ithEVN).isSucceedEmbed)
+                if ((this.virNetCollection.get(ithEVN) != null) && this.virNetCollection.get(ithEVN).getIsRunning()
+                        && this.surVirNetSet.get(ithEVN).isSucceedEmbed)
                 {
                     for (int p = 0; p < this.surVirNetSet.get(ithEVN).getNodeSize(); p++)
                     {
@@ -614,17 +616,17 @@ public class SubstrateNetwork implements Cloneable
         // sn.EVNIndexSet4Edge = (Vector<Vector<Vector<Integer>>>)
         // ((SubstrateNetwork) super.clone()).EVNIndexSet4Edge
         // .clone();
-        sn.virNetIndexSet4Edge = new Vector<Vector<Vector<Integer>>>();
-        sn.surVirNetIndexSet4Edge = new Vector<Vector<Vector<Integer>>>();
+        sn.virNetIndexSet4sEdge = new Vector<Vector<Vector<Integer>>>();
+        sn.surVirNetIndexSet4sEdge = new Vector<Vector<Vector<Integer>>>();
 
         for (int i = 0; i < nodeSize; i++)
         {
-            sn.virNetIndexSet4Edge.addElement(new Vector<Vector<Integer>>());
-            sn.surVirNetIndexSet4Edge.addElement(new Vector<Vector<Integer>>());
+            sn.virNetIndexSet4sEdge.addElement(new Vector<Vector<Integer>>());
+            sn.surVirNetIndexSet4sEdge.addElement(new Vector<Vector<Integer>>());
             for (int j = 0; j < nodeSize; j++)
             {
-                sn.virNetIndexSet4Edge.get(i).add(new Vector<Integer>());
-                sn.surVirNetIndexSet4Edge.get(i).add(new Vector<Integer>());
+                sn.virNetIndexSet4sEdge.get(i).add(new Vector<Integer>());
+                sn.surVirNetIndexSet4sEdge.get(i).add(new Vector<Integer>());
             }
         }
         return sn;

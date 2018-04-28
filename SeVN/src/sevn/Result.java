@@ -145,10 +145,10 @@ public class Result
 
         recordDataLength = 0;
     }
-    
-/*
- * note experimental section about parameter into .tex file
- */
+
+    /*
+     * note experimental section about parameter into .tex file
+     */
     void recordTexParameter()
     {
         try
@@ -418,8 +418,7 @@ public class Result
      * @param datalength
      *            .
      */
-    void writeExperimentData(int experimentTimes, SeVN algorithm, String filename, int[] recordData,
-            int datalength)
+    void writeExperimentData(int experimentTimes, SeVN algorithm, String filename, int[] recordData, int datalength)
     {
         File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
         FileWriter fw;
@@ -518,7 +517,7 @@ public class Result
         for (int i = 0; i < algorithm.getSn().virNetCollection.size(); i++)
         {
             VirtualNetwork vn = algorithm.getSn().virNetCollection.get(i);
-            if (vn.getIsRunning())
+            if (vn != null && vn.getIsRunning())
             {
                 runningVirNetNum++;
                 for (int j = 0; j < vn.nodeSize; j++)
@@ -538,7 +537,7 @@ public class Result
                     }
                 }
             }
-            if (vn.getIsRunning() && vn.surVirNet.isSucceedEmbed)
+            if (vn != null && vn.getIsRunning() && vn.surVirNet.isSucceedEmbed)
             {
                 runningSurNetNum++;
                 for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++)
@@ -595,16 +594,17 @@ public class Result
             for (int j = 0; j < algorithm.getSn().virNetIndexSet4sNode.get(i).size(); j++)
             {
                 int vnIndex = algorithm.getSn().virNetIndexSet4sNode.get(i).get(j);
-                if (algorithm.getSn().virNetCollection.get(vnIndex).getIsRunning())
+                if (algorithm.getSn().virNetCollection.get(vnIndex) != null
+                        && algorithm.getSn().virNetCollection.get(vnIndex).getIsRunning())
                 {
                     vnRequestInSubstrateNode++;
                 }
             }
             for (int j = 0; j < algorithm.getSn().getNodeSize(); j++)
             {
-                for (int k = 0; k < algorithm.getSn().virNetIndexSet4Edge.get(i).get(j).size(); k++)
+                for (int k = 0; k < algorithm.getSn().virNetIndexSet4sEdge.get(i).get(j).size(); k++)
                 {
-                    int vnIndex = algorithm.getSn().virNetIndexSet4Edge.get(i).get(j).get(k);
+                    int vnIndex = algorithm.getSn().virNetIndexSet4sEdge.get(i).get(j).get(k);
                     if (algorithm.getSn().virNetCollection.get(vnIndex).getIsRunning())
                     {
                         vnRequestInSubstrateEdge++;
@@ -659,8 +659,10 @@ public class Result
             this.acceptanceRatioVirNet = 1.0;
         } else
         {
-            this.acceptanceRatioSurNet = (1.0 * algorithm.getSn().surNetSuceedEmbedSum / algorithm.getSn().virNetReqSum);
-            this.acceptanceRatioVirNet = (1.0 * algorithm.getSn().virNetSuceedEmbedSum / algorithm.getSn().virNetReqSum);
+            this.acceptanceRatioSurNet = (1.0 * algorithm.getSn().surNetSuceedEmbedSum
+                    / algorithm.getSn().virNetReqSum);
+            this.acceptanceRatioVirNet = (1.0 * algorithm.getSn().virNetSuceedEmbedSum
+                    / algorithm.getSn().virNetReqSum);
 
         }
     }
@@ -815,7 +817,7 @@ public class Result
         for (int i = 0; i < algorithm.getSn().virNetCollection.size(); i++)
         {
             VirtualNetwork vn = algorithm.getSn().virNetCollection.get(i);
-            if (vn.getIsRunning())
+            if (vn != null && vn.getIsRunning())
             {
                 vnNum++;
                 for (int j = 0; j < vn.nodeSize; j++)
@@ -835,7 +837,7 @@ public class Result
                     }
                 }
             }
-            if (vn.getIsRunning() && vn.surVirNet.isSucceedEmbed)
+            if (vn != null && vn.getIsRunning() && vn.surVirNet.isSucceedEmbed)
             {
                 svnNum++;
                 for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++)

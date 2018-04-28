@@ -1,8 +1,0 @@
-/**
- * 
- */
-/**
- * @author franz
- *
- */
-package standardAlgorithm;

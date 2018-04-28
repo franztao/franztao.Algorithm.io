@@ -1,4 +1,8 @@
 
 commons-math
+Commons Math学习笔记
 https://blog.csdn.net/jiutianhe/article/details/41349649
 http://commons.apache.org/proper/commons-math/userguide/distribution.html
+
+OutOfMemoryError系列（2）: GC overhead limit exceeded
+https://blog.csdn.net/renfufei/article/details/77585294

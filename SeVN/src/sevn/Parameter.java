@@ -40,8 +40,8 @@ public class Parameter
 
     // Parameter
     public static final int addNewVirNodeNewSubNodeCost = 10000000;
-    public static final int addNewVirNodeCost = 100;//100
-    public static final int transformExistedNodeCost = 100000;//100000
+    public static final int addNewVirNodeCost = 100000;//100
+    public static final int transformExistedNodeCost = 100;//100000
     public static final int addNodeComputaionCost = 3;
     public static final int addEdgeBandwithCost = 1;
     public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost / addEdgeBandwithCost;
@@ -57,13 +57,13 @@ public class Parameter
     //RequestType
     public static final int RequestTypeGeometric=1;
     public static final int RequestTypePossion=0;
-    public static final int RequestType=RequestTypePossion;
+    public static final int RequestType=RequestTypeGeometric;
     //GeometricDistribution 
-    public static final double RequestAppearProbability = 0.75;// 0.1
+    public static final double RequestAppearProbability = 0.5;// 0.1
     public static final long RequestPerTimeAppearNum = 1;// 1
     public static final long VirNetDuration = 1;
-    //-1 represent do not use possion distribution
-    public static final long PossionMean=15;
+    //possion distribution
+    public static final long PossionMean=5;
     
    
     public static final int VNRequestsLeaseTypeUniform=0;
@@ -71,10 +71,10 @@ public class Parameter
     public static final int VNRequestsLeaseType=VNRequestsLeaseTypeExponential;
     //uniform
     public static final long VNRequestsContinueTimeMinimum = 1;
-    public static final long VNRequestsContinueTimeMaximum = 10;
+    public static final long VNRequestsContinueTimeMaximum = 100;
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
     //Exponential
-    public static final long VNRequestsContinueTimeExponentialMean=20;
+    public static final long VNRequestsContinueTimeExponentialMean=300;
     
     
     // ExperimentPicture
@@ -93,8 +93,8 @@ public class Parameter
     public static final int VirtualNodeComputationMaximum = 5;// 5
     // edge parameter
     public static final double VirtualNodenodeProbability = 0.5;// 0.5
-    public static final int VirtualEdgeBandwithMinimum = 10;// 10
-    public static final int VirtualEdgeBandwithMaximum = 20;// 20
+    public static final int VirtualEdgeBandwithMinimum = 1;// 10
+    public static final int VirtualEdgeBandwithMaximum = 10;// 20
 
     //failure migration
     public static final long SubStrateFacilityNodeFailDuration = SubstrateNewtorkRunTimeInterval
@@ -111,10 +111,10 @@ public class Parameter
     public static final int TopologyType = TopologyTypeSNDLib;
     
     
-    public static final int SubStrateNodeComputationMinimum = 20;// 50
-    public static final int SubStrateNodeComputationMaximum = 50;// 100
-    public static final int SubStrateEdgeBandwithMinimum = 50;//100
-    public static final int SubStrateEdgeBandwithMaximum = 100;//200
+    public static final int SubStrateNodeComputationMinimum = 10;// 50
+    public static final int SubStrateNodeComputationMaximum = 20;// 100
+    public static final int SubStrateEdgeBandwithMinimum = 10;//100
+    public static final int SubStrateEdgeBandwithMaximum = 30;//200
     
     // Random
     // node parameter

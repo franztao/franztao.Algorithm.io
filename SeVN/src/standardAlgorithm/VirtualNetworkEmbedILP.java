@@ -20,36 +20,39 @@ import virtualNetwork.VirtualNetwork;
  */
 public class VirtualNetworkEmbedILP
 {
-
-    public boolean VirtualNetworkEmbedding(VirtualNetwork vn, VirtualNetwork sameVn, SubstrateNetwork sn, SeVN alg)
+    public GRBEnv env;
+    public GRBModel model;
+    public GRBVar[][] nodeMappingMatrix;
+    public GRBVar[][][][] edgeMappingMatrix;
+    
+    public boolean VirtualNetworkEmbedding(VirtualNetwork vn, VirtualNetwork protoVn, SubstrateNetwork sn, SeVN alg)
             throws GRBException
     {
-        GRBEnv env;
-        GRBModel model = null;
         env = new GRBEnv();
         model = new GRBModel(env);
         model.getEnv().set(GRB.IntParam.OutputFlag, 0);
-        GRBVar[][] nodeMappingMatrix;
-        nodeMappingMatrix = new GRBVar[sameVn.nodeSize][sn.nodeSize];
-        for (int j = 0; j < sameVn.nodeSize; j++)
+        
+        
+     // Create variables
+        nodeMappingMatrix = new GRBVar[protoVn.nodeSize][sn.nodeSize];
+        for (int i = 0; i < protoVn.nodeSize; i++)
         {
-            for (int k = 0; k < sn.nodeSize; k++)
+            for (int j = 0; j < sn.nodeSize; j++)
             {
-                nodeMappingMatrix[j][k] = model.addVar(0.0, 1.0, 0.0, GRB.CONTINUOUS, " r:" + j + " c:" + k);
+                nodeMappingMatrix[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, " r:" + i + " c:" + j);
             }
         }
 
-        GRBVar[][][][] edgeMappingMatrix;
-        edgeMappingMatrix = new GRBVar[sameVn.nodeSize][sameVn.nodeSize][sn.nodeSize][sn.nodeSize];
-        for (int i = 0; i < sameVn.nodeSize; i++)
+        edgeMappingMatrix = new GRBVar[protoVn.nodeSize][protoVn.nodeSize][sn.nodeSize][sn.nodeSize];
+        for (int i = 0; i < protoVn.nodeSize; i++)
         {
-            for (int j = 0; j < sameVn.nodeSize; j++)
+            for (int j = 0; j < i; j++)
             {
-                for (int k = 0; k < sameVn.nodeSize; k++)
+                for (int k = 0; k < sn.nodeSize; k++)
                 {
                     for (int l = 0; l < sn.nodeSize; l++)
                     {
-                        edgeMappingMatrix[i][j][j][k] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
+                        edgeMappingMatrix[i][j][k][l] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
                                 " i:" + j + " j:" + j + " k:" + k + " l:" + l);
                     }
                 }
@@ -59,19 +62,18 @@ public class VirtualNetworkEmbedILP
         model.update();
         // set objecion function
         GRBLinExpr objexpr = new GRBLinExpr();
-
-        for (int i = 0; i < vn.nodeSize; i++)
+        for (int i = 0; i < protoVn.nodeSize; i++)
         {
-            for (int j = i; j < i; j++)
+            for (int j = 0; j < i; j++)
             {
-                if (vn.topology[i][j])
+                if (protoVn.topology[i][j])
                 {
                     for (int k = 0; k < sn.nodeSize; k++)
                     {
-                        for (int l = 0; l < sn.nodeSize; l++)
+                        for (int l = 0; l < k; l++)
                         {
 
-                            objexpr.addTerm(vn.edgeBandwithDemand[i][j], edgeMappingMatrix[i][j][k][l]);
+                            objexpr.addTerm(protoVn.edgeBandwithDemand[i][j], edgeMappingMatrix[i][j][k][l]);
                         }
                     }
                 }
@@ -81,38 +83,27 @@ public class VirtualNetworkEmbedILP
         model.setObjective(objexpr, GRB.MINIMIZE);
 
         // limite mapping matrix
-        // Tuv=n
-        // GRBLinExpr conexpr = new GRBLinExpr();
-        // for (int j = 0; j < sameVn.nodeSize; j++)
-        // {
-        // for (int k = 0; k < sn.nodeSize; k++)
-        // {
-        // conexpr.addTerm(1.0, transformMatrix[j][k]);
-        // }
-        // }
-        // model.addConstr(conexpr, GRB.EQUAL, sameVn.nodeSize, "T=n:");
 
         // Tuj=1
-        for (int j = 0; j < sameVn.nodeSize; j++)
+        for (int i = 0; i < protoVn.nodeSize; i++)
         {
             GRBLinExpr expr = new GRBLinExpr();
-            for (int k = 0; k < sn.nodeSize; k++)
+            for (int j = 0; j < sn.nodeSize; j++)
             {
-                expr.addTerm(1.0, nodeMappingMatrix[j][k]);
+                expr.addTerm(1.0, nodeMappingMatrix[i][j]);
             }
-            model.addConstr(expr, GRB.EQUAL, 1.0, "Tuj=1:" + j);
+            model.addConstr(expr, GRB.EQUAL, 1.0, "Tuj=1:" + i);
         }
 
         // Tiv<=1
-        for (int k = 0; k < sn.nodeSize; k++)
+        for (int j = 0; j < sn.nodeSize; j++)
         {
             GRBLinExpr expr = new GRBLinExpr();
-            for (int j = 0; j < sameVn.nodeSize; j++)
+            for (int i = 0; i < protoVn.nodeSize; i++)
             {
-
-                expr.addTerm(1.0, nodeMappingMatrix[j][k]);
+                expr.addTerm(1.0, nodeMappingMatrix[i][j]);
             }
-            model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "Tiv<=1:" + k);
+            model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "Tiv<=1:" + j);
         }
 
         // node mapping
@@ -121,9 +112,9 @@ public class VirtualNetworkEmbedILP
         for (int j = 0; j < sn.nodeSize; j++)
         {
             GRBLinExpr expr = new GRBLinExpr();
-            for (int k = 0; k < sameVn.nodeSize; k++)
+            for (int i = 0; i < protoVn.nodeSize; i++)
             {
-                expr.addTerm(sameVn.nodeComputationDemand[k], nodeMappingMatrix[k][j]);
+                expr.addTerm(protoVn.nodeComputationDemand[i], nodeMappingMatrix[i][j]);
             }
             model.addConstr(expr, GRB.LESS_EQUAL, sn.getSubstrateRemainComputaion4VirNet(j, alg.isShared()),
                     "T'*D<=C" + "r " + j);
@@ -135,11 +126,11 @@ public class VirtualNetworkEmbedILP
             for (int l = 0; l < sn.serviceNum; l++)
             {
                 GRBLinExpr expr = new GRBLinExpr();
-                for (int k = 0; k < sameVn.nodeSize; k++)
+                for (int i = 0; i < protoVn.nodeSize; i++)
                 {
-                    if (sameVn.nodeServiceType[k] == l)
+                    if (protoVn.nodeServiceType[i] == l)
                     {
-                        expr.addTerm(1.0, nodeMappingMatrix[k][j]);
+                        expr.addTerm(1.0, nodeMappingMatrix[i][j]);
                     }
                 }
                 if (sn.boolServiceTypeSet[j][l])
@@ -154,31 +145,31 @@ public class VirtualNetworkEmbedILP
         }
 
         // edge limition
-        for (int i = 0; i < vn.nodeSize; i++)
-        {
-            for (int j = 0; j < i; j++)
-            {
-                if (vn.topology[i][j])
-                {
-                    for (int k = 0; k < sn.nodeSize; k++)
-                    {
-                        for (int l = 0; l < k; l++)
-                        {
-                            model.addConstr(edgeMappingMatrix[i][j][k][l], GRB.EQUAL, edgeMappingMatrix[i][j][l][k],
-                                    "vPathEqual" + "i " + i + "j " + j + "r " + k + "c: " + l);
-                        }
-                    }
-
-                }
-            }
-        }
-        
+//        for (int i = 0; i < vn.nodeSize; i++)
+//        {
+//            for (int j = 0; j < i; j++)
+//            {
+//                if (protoVn.topology[i][j])
+//                {
+//                    for (int k = 0; k < sn.nodeSize; k++)
+//                    {
+//                        for (int l = 0; l < k; l++)
+//                        {
+//                            model.addConstr(edgeMappingMatrix[i][j][k][l], GRB.EQUAL, edgeMappingMatrix[i][j][l][k],
+//                                    "vPathEqual" + "i " + i + "j " + j + "r " + k + "c: " + l);
+//                        }
+//                    }
+//
+//                }
+//            }
+//        }
+//        
         // edge mapping
         for (int i = 0; i < vn.nodeSize; i++)
         {
             for (int j = 0; j < i; j++)
             {
-                if (vn.topology[i][j])
+                if (protoVn.topology[i][j])
                 {
                     for (int k = 0; k < sn.nodeSize; k++)
                     {
@@ -213,14 +204,15 @@ public class VirtualNetworkEmbedILP
             for (int l = 0; l < sn.nodeSize; l++)
             {
                 GRBLinExpr bandwidth = new GRBLinExpr();
-                for (int i = 0; i < vn.nodeSize; i++)
+                for (int i = 0; i < protoVn.nodeSize; i++)
                 {
                     for (int j = 0; j < i; j++)
                     {
-                        if (vn.topology[i][j])
+                        if (protoVn.topology[i][j])
                         {
 
-                            bandwidth.addTerm(vn.edgeBandwithDemand[i][j], edgeMappingMatrix[i][j][l][k]);
+                            bandwidth.addTerm(protoVn.edgeBandwithDemand[i][j], edgeMappingMatrix[i][j][k][l]);
+                            bandwidth.addTerm(protoVn.edgeBandwithDemand[i][j], edgeMappingMatrix[i][j][l][k]);
 
                         }
                     }
@@ -237,7 +229,7 @@ public class VirtualNetworkEmbedILP
             return false;
         }
 
-        for (int i = 0; i < vn.nodeSize; i++)
+        for (int i = 0; i < protoVn.nodeSize; i++)
         {
             for (int j = 0; j < sn.nodeSize; j++)
             {
@@ -245,8 +237,8 @@ public class VirtualNetworkEmbedILP
                 {
                     int snodeloc = j;
                     vn.virNode2subNode[i] = snodeloc;
-                    vn.nodeServiceType[i] = sameVn.nodeServiceType[i];
-                    vn.nodeComputationDemand[i] = sameVn.nodeComputationDemand[i];
+                    vn.nodeServiceType[i] = protoVn.nodeServiceType[i];
+                    vn.nodeComputationDemand[i] = protoVn.nodeComputationDemand[i];
                 }
 
             }

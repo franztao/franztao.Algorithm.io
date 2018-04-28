@@ -11,6 +11,7 @@ import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import gurobi.GRB;
 import gurobi.GRBException;
 import sevn.Parameter;
 import standardAlgorithm.VirtualNetworkEmbedILP;
@@ -34,7 +35,7 @@ public class SeVN
     public String algorithmName;
     private SubstrateNetwork subNet;
     private VirtualNetworkParameter vnp;
-    
+
     public StarDP alg;
 
     // algorithm
@@ -63,7 +64,7 @@ public class SeVN
     {
         for (int i = 0; i < this.subNet.virNetCollection.size(); i++)
         {
-            if (this.subNet.virNetCollection.get(i).getIsRunning())
+            if ((this.subNet.virNetCollection.get(i) != null) && (this.subNet.virNetCollection.get(i).getIsRunning()))
             {
                 this.subNet.virNetCollection.get(i)
                         .setLeaveTime(this.subNet.virNetCollection.get(i).getLeaveTime() - 1);
@@ -76,6 +77,7 @@ public class SeVN
                         releaseEnVirNetResource(i);
                     }
                 }
+                this.subNet.virNetCollection.set(i, null);
             }
         }
 
@@ -164,20 +166,8 @@ public class SeVN
         this.subNet.virNetCollection.get(index).destructerResource();
     }
 
-    /**
-     * copyVirtualNetwork.
-     * 
-     * @param vn
-     *            vn
-     * @param sameVn
-     *            sameVn
-     * @param vnp
-     *            vnp
-     * @return boolean
-     */
-    private boolean copyVirtualNetwork(VirtualNetwork vn, VirtualNetwork sameVn)
+    private boolean nodeMappingVNE(VirtualNetwork vn, VirtualNetwork sameVn, VirtualNetworkEmbedILP ilp)
     {
-
         // LeaveTime
         if (Parameter.IsSameVirNet4EveryTime)
         {
@@ -239,11 +229,12 @@ public class SeVN
 
         if (Parameter.VNEAlgorithm == Parameter.VNEILP)
         {
-            VirtualNetworkEmbedILP ilp = new VirtualNetworkEmbedILP();
+            ilp = new VirtualNetworkEmbedILP();
             try
             {
                 if (!ilp.VirtualNetworkEmbedding(vn, sameVn, subNet, this))
                 {
+                    algorithmLog.warn("Fail ILP VNE");
                     return false;
                 } else
                 {
@@ -269,89 +260,176 @@ public class SeVN
                 this.subNet.nodeComputation4Temp[vn.virNode2subNode[i]] += vn.nodeComputationDemand[i];
             }
         }
-        // edge
-        for (int i = 0; i < vn.nodeSize; i++)
+        return true;
+    }
+
+    /**
+     * copyVirtualNetwork.
+     * 
+     * @param vn
+     *            vn
+     * @param sameVn
+     *            sameVn
+     * @param vnp
+     *            vnp
+     * @return boolean
+     */
+    private boolean copyVirtualNetwork(VirtualNetwork vn, VirtualNetwork sameVn)
+    {
+        VirtualNetworkEmbedILP ilp = null;
+        if (!nodeMappingVNE(vn, sameVn, ilp))
         {
-            for (int j = 0; j < i; j++)
+            algorithmLog.warn("Node Mapping Failure");
+        }
+        if (!edgeMappingVNE(vn, sameVn, ilp))
+        {
+            algorithmLog.warn("Edge Mapping Failure");
+        }
+        return true;
+
+    }
+
+    /**
+     * @param vn
+     * @param protoVn
+     * @param ilp
+     */
+    private boolean edgeMappingVNE(VirtualNetwork vn, VirtualNetwork protoVn, VirtualNetworkEmbedILP ilp)
+    {
+        if (Parameter.VNEAlgorithm == Parameter.VNERandom)
+        {
+            // edge
+            for (int i = 0; i < vn.nodeSize; i++)
             {
-                if ((Parameter.IsSameVirNet4EveryTime && sameVn.topology[i][j])
-                        || ((Parameter.IsSameVirNet4EveryTime == false)))
+                for (int j = 0; j < i; j++)
                 {
-                    int distributeIthEdgeBandwith = 0;
-                    if (vn.virNode2subNode[i] != vn.virNode2subNode[j])
+                    if ((Parameter.IsSameVirNet4EveryTime && protoVn.topology[i][j])
+                            || ((Parameter.IsSameVirNet4EveryTime == false)))
                     {
-                        // exist edge's path,bandwith
-                        // source destination bandwith[][]
-                        int[][] tempBandwith = new int[this.subNet.nodeSize][this.subNet.nodeSize];
-                        int[][] tempTopo = new int[this.subNet.nodeSize][this.subNet.nodeSize];
-                        for (int k = 0; k < this.subNet.nodeSize; k++)
+                        int distributeIthEdgeBandwith = 0;
+                        if (vn.virNode2subNode[i] != vn.virNode2subNode[j])
                         {
-                            for (int l = 0; l < k; l++)
+                            // exist edge's path,bandwith
+                            // source destination bandwith[][]
+                            int[][] tempBandwith = new int[this.subNet.nodeSize][this.subNet.nodeSize];
+                            int[][] tempTopo = new int[this.subNet.nodeSize][this.subNet.nodeSize];
+                            for (int k = 0; k < this.subNet.nodeSize; k++)
                             {
-                                int rbw = this.subNet.getSubStrateRemainBandwith4VN(k, l, this.isShared);
-                                if (rbw > 0)
+                                for (int l = 0; l < k; l++)
                                 {
-                                    tempBandwith[k][l] = tempBandwith[l][k] = rbw;
-                                    tempTopo[l][k] = tempTopo[k][l] = 1;
+                                    int rbw = this.subNet.getSubStrateRemainBandwith4VN(k, l, this.isShared);
+                                    if (rbw > 0)
+                                    {
+                                        tempBandwith[k][l] = tempBandwith[l][k] = rbw;
+                                        tempTopo[l][k] = tempTopo[k][l] = 1;
+                                    }
                                 }
                             }
-                        }
 
-                        ShortestPath shortestPath = new ShortestPath(this.subNet.nodeSize);
-                        List<Integer> pathList = new LinkedList<Integer>();
-                        pathList = shortestPath.dijkstra(vn.virNode2subNode[i], vn.virNode2subNode[j], tempTopo);
+                            ShortestPath shortestPath = new ShortestPath(this.subNet.nodeSize);
+                            List<Integer> pathList = new LinkedList<Integer>();
+                            pathList = shortestPath.dijkstra(vn.virNode2subNode[i], vn.virNode2subNode[j], tempTopo);
 
-                        if (pathList == null)
-                        {
-                            algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
-                                    + ")-edge into SN : feasible path is null");
-                            return false;
-                        }
-                        if (pathList.isEmpty())
-                        {
-                            algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
-                                    + ")-edge into SN : feasible path is is empty");
-                            return false;
-                        }
-                        // set virtual network's edge bandwith
-                        int pathMaximumBandwith = 0;
-                        vn.virEdge2subPath.get(i).get(j).addElement(pathList.get(0));
-                        for (int s = pathList.get(0), k = 1; k < pathList.size(); k++)
-                        {
-                            int e = pathList.get(k);
-                            pathMaximumBandwith = Math.max(pathMaximumBandwith, tempBandwith[s][e]);
-                            vn.virEdge2subPath.get(i).get(j).addElement(e);
-                            s = e;
-                        }
-                        for (int k = pathList.size() - 1; k >= 0; k--)
-                        {
-                            vn.virEdge2subPath.get(j).get(i).addElement(pathList.get(k));
-                        }
-                        if (Parameter.IsSameVirNet4EveryTime)
-                        {
-                            distributeIthEdgeBandwith = sameVn.edgeBandwithDemand[i][j];
-                        } else
-                        {
-                            distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum
-                                    + Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
-                        }
-                        if (distributeIthEdgeBandwith > pathMaximumBandwith)
-                        {
-                            algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
-                                    + ") edge into SN :SN edge resource not more than PathBandwith Demand");
-                            return false;
-                        }
+                            if (pathList == null)
+                            {
+                                algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
+                                        + ")-edge into SN : feasible path is null");
+                                return false;
+                            }
+                            if (pathList.isEmpty())
+                            {
+                                algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
+                                        + ")-edge into SN : feasible path is is empty");
+                                return false;
+                            }
+                            // set virtual network's edge bandwith
+                            int pathMaximumBandwith = 0;
+                            vn.virEdge2subPath.get(i).get(j).addElement(pathList.get(0));
+                            for (int s = pathList.get(0), k = 1; k < pathList.size(); k++)
+                            {
+                                int e = pathList.get(k);
+                                pathMaximumBandwith = Math.max(pathMaximumBandwith, tempBandwith[s][e]);
+                                vn.virEdge2subPath.get(i).get(j).addElement(e);
+                                s = e;
+                            }
+                            for (int k = pathList.size() - 1; k >= 0; k--)
+                            {
+                                vn.virEdge2subPath.get(j).get(i).addElement(pathList.get(k));
+                            }
+                            if (Parameter.IsSameVirNet4EveryTime)
+                            {
+                                distributeIthEdgeBandwith = protoVn.edgeBandwithDemand[i][j];
+                            } else
+                            {
+                                distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum + Math
+                                        .round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
+                            }
+                            if (distributeIthEdgeBandwith > pathMaximumBandwith)
+                            {
+                                algorithmLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
+                                        + ") edge into SN :SN edge resource not more than PathBandwith Demand");
+                                return false;
+                            }
 
-                        for (int s = pathList.get(0), k = 1; k < pathList.size(); k++)
-                        {
-                            int e = pathList.get(k);
-                            this.subNet.edgeBandwith4Temp[s][e] += distributeIthEdgeBandwith;
-                            this.subNet.edgeBandwith4Temp[e][s] = this.subNet.edgeBandwith4Temp[s][e];
-                            s = e;
+                            for (int s = pathList.get(0), k = 1; k < pathList.size(); k++)
+                            {
+                                int e = pathList.get(k);
+                                this.subNet.edgeBandwith4Temp[s][e] += distributeIthEdgeBandwith;
+                                this.subNet.edgeBandwith4Temp[e][s] = this.subNet.edgeBandwith4Temp[s][e];
+                                s = e;
+                            }
                         }
+                        vn.topology[i][j] = vn.topology[j][i] = true;
+                        vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeIthEdgeBandwith;
                     }
-                    vn.topology[i][j] = vn.topology[j][i] = true;
-                    vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeIthEdgeBandwith;
+                }
+            }
+        }
+
+        if (Parameter.VNEAlgorithm == Parameter.VNEILP)
+        {
+            for (int i = 0; i < vn.nodeSize; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    if (!protoVn.topology[i][j])
+                    {
+                        continue;
+                    }
+                    if (vn.virNode2subNode[i] != vn.virNode2subNode[j])
+                    {
+                        int startNode = vn.virNode2subNode[i];
+                        int endNode = vn.virNode2subNode[i];
+                        vn.virEdge2subPath.get(i).get(j).addElement(startNode);
+                        while (startNode != endNode)
+                        {
+                            int k;
+                            for (k = 0; k < subNet.nodeSize; k++)
+                            {
+                                try
+                                {
+                                    if ((ilp.edgeMappingMatrix[i][j][startNode][k].get(GRB.DoubleAttr.X) == 1.0)
+                                            || (ilp.edgeMappingMatrix[i][j][k][startNode].get(GRB.DoubleAttr.X) == 1.0))
+                                    {
+                                        vn.virEdge2subPath.get(i).get(j).addElement(k);
+                                        this.subNet.edgeBandwith4Temp[startNode][k] += protoVn.edgeBandwithDemand[i][j];
+                                        startNode = k;
+                                    }
+                                } catch (GRBException e)
+                                {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            if (k == subNet.nodeSize)
+                            {
+                                algorithmLog.warn("VNE ILP is internal error: VN edge to SN path is wrong");
+                            }
+
+                        }
+                        vn.topology[i][j] = vn.topology[j][i] = true;
+                        vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = protoVn.edgeBandwithDemand[i][j];
+                    }
                 }
             }
         }
@@ -381,7 +459,7 @@ public class SeVN
             {
                 for (int k = 0; k < vn.virEdge2subPath.get(i).get(j).size() - 1; k++)
                 {
-                    this.subNet.virNetIndexSet4Edge.get(vn.virEdge2subPath.get(i).get(j).get(k))
+                    this.subNet.virNetIndexSet4sEdge.get(vn.virEdge2subPath.get(i).get(j).get(k))
                             .get(vn.virEdge2subPath.get(i).get(j).get(k + 1))
                             .addElement(this.subNet.virNetCollection.size());
                 }
@@ -430,6 +508,7 @@ public class SeVN
         // VirNet directly return, not process survivable procedure.
         if (this.algorithmName.equals("VirNet") || generateSurvivalVirtualNetwork(svn))
         {
+
             this.subNet.surNetSuceedEmbedSum++;
             algorithmLog.info("Alg: " + this.algorithmName + " Succeed to construct SeVN and embed SeVN");
         } else
@@ -447,15 +526,16 @@ public class SeVN
         boolean isSvnAlgorithmSuccess = false;
         if (this.isExact)
         {
-            isSvnAlgorithmSuccess = new ILP().exactAlgorithmIntegerProgram4SeVN(this,svn);
+            isSvnAlgorithmSuccess = new ILP().exactAlgorithmIntegerProgram4SeVN(this, svn);
         } else
         {
-            
-            this.alg=new StarDP(svn);
+
+            this.alg = new StarDP(svn);
             alg.obtainItems(svn);
             try
             {
-                isSvnAlgorithmSuccess = alg.heursitcAlgorithm4SeVN(this,svn);
+
+                isSvnAlgorithmSuccess = alg.heursitcAlgorithm4SeVN(this, svn);
             } catch (GRBException e)
             {
                 e.printStackTrace();
@@ -474,8 +554,9 @@ public class SeVN
     private boolean generateSurvivalVirtualNetwork(SurvivalVirtualNetwork svn)
     {
 
-        if (startSeVNAlgorithm(this,svn))
+        if (startSeVNAlgorithm(this, svn))
         {
+
             if (distributeResource4SurVirNet(svn))
             {
                 svn.isSucceedEmbed = true;
@@ -637,7 +718,7 @@ public class SeVN
             {
                 for (int k = 0; k < svn.surEdge2SubPath.get(i).get(j).size() - 1; k++)
                 {
-                    this.subNet.surVirNetIndexSet4Edge.get(svn.surEdge2SubPath.get(i).get(j).get(k))
+                    this.subNet.surVirNetIndexSet4sEdge.get(svn.surEdge2SubPath.get(i).get(j).get(k))
                             .get(svn.surEdge2SubPath.get(i).get(j).get(k + 1))
                             .addElement(this.subNet.surVirNetSet.size());
                 }
