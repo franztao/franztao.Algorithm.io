@@ -274,7 +274,7 @@ public class ILP
                                 conexpr.addTerm(1.0, transformMatrix[i][j][k]);
                             }
                         }
-                        if (sn.virNet.nodeServiceType[j] == (l))
+                        if (sn.virNet.nodeFunctionType[j] == (l))
                         {
                             model.addConstr(conexpr, GRB.GREATER_EQUAL, 1.0, "T*MBS" + "T " + i + "r " + j + "c: " + l);
                         }

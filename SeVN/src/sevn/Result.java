@@ -9,6 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import algorithm.SeVN;
 import virtualNetwork.VirtualNetwork;
 
@@ -20,6 +23,7 @@ import virtualNetwork.VirtualNetwork;
  */
 public class Result
 {
+    private Logger resultLog = Logger.getLogger(Result.class);
 
     String fileAbsolutePath = Parameter.FileAbsolutePath;//
     String dataFilePathString = "/Data/";
@@ -101,6 +105,7 @@ public class Result
      */
     public Result()
     {
+        PropertyConfigurator.configure("log4j.properties");
         arrayAcceptanceRatioSurNet = new double[(Parameter.ExperimentPicturePlotNumber + 1)
                 * Parameter.ExperimentTimes];
         arrayAcceptanceRatioVirNet = new double[(Parameter.ExperimentPicturePlotNumber + 1)
@@ -605,7 +610,8 @@ public class Result
                 for (int k = 0; k < algorithm.getSn().virNetIndexSet4sEdge.get(i).get(j).size(); k++)
                 {
                     int vnIndex = algorithm.getSn().virNetIndexSet4sEdge.get(i).get(j).get(k);
-                    if (algorithm.getSn().virNetCollection.get(vnIndex).getIsRunning())
+                    if (algorithm.getSn().virNetCollection.get(vnIndex) != null
+                            && algorithm.getSn().virNetCollection.get(vnIndex).getIsRunning())
                     {
                         vnRequestInSubstrateEdge++;
                     }
@@ -766,6 +772,11 @@ public class Result
         {
             int nc = algorithm.getSn().nodeComputationCapacity[i]
                     - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
+            
+            if (nc < 0)
+            {
+                resultLog.error("Error nc");
+            }
             if (nc != 0)
             {
                 usedNode++;
@@ -775,14 +786,15 @@ public class Result
                 nodeComputation += nc;
             }
 
-            if (nc < 0)
-            {
-                System.out.println("Error nc");
-            }
+            
             for (int j = 0; j < i; j++)
             {
                 int bc = algorithm.getSn().edgeBandwithCapacity[i][j]
                         - algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared());
+                if (bc < 0)
+                {
+                    resultLog.error("Error bc");
+                }
                 if (bc != 0)
                 {
                     usedEdge++;
@@ -791,10 +803,7 @@ public class Result
                 {
                     edgeBandwith += bc;
                 }
-                if (bc < 0)
-                {
-                    System.out.println("Error bc");
-                }
+                
             }
         }
 

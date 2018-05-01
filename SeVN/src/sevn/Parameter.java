@@ -10,7 +10,7 @@ public class Parameter
 {
 
     //SNDLib topology number is 12
-    public static final int ExperimentTimes = 12;
+    public static final int ExperimentTimes = 1;
 
     
     //VirutualNetworkEmbeddingAlgorithm
@@ -57,13 +57,13 @@ public class Parameter
     //RequestType
     public static final int RequestTypeGeometric=1;
     public static final int RequestTypePossion=0;
-    public static final int RequestType=RequestTypeGeometric;
+    public static final int RequestType=RequestTypePossion;
     //GeometricDistribution 
     public static final double RequestAppearProbability = 0.5;// 0.1
     public static final long RequestPerTimeAppearNum = 1;// 1
     public static final long VirNetDuration = 1;
     //possion distribution
-    public static final long PossionMean=5;
+    public static final long PossionMean=1;
     
    
     public static final int VNRequestsLeaseTypeUniform=0;
@@ -82,7 +82,7 @@ public class Parameter
 
     // service parameter
     public static final int ServiceNumber = 15;// 15
-    public static final double SerivecProbability = 0.5;// 0.5
+    public static final double SerivecProbability = 0.1;// 0.5
 
     
     // Virtual Network

@@ -28,7 +28,7 @@ public class SubstrateNetwork implements Cloneable
     // node
     public int nodeSize;
     public int[] nodeComputationCapacity;
-    public int[] nodeComputation4Former;
+    public int[] nodeComputation4Crital;
     public int[] nodeComputation4SurvivalUnsharedBackupSum;
     public int[] nodeComputation4Temp;
     public Vector<Vector<Integer>> virNetIndexSet4sNode;
@@ -37,7 +37,7 @@ public class SubstrateNetwork implements Cloneable
     public int edgeSize;
     public boolean[][] topology;
     public int[][] edgeBandwithCapacity;
-    public int[][] edgeBandwith4Former;
+    public int[][] edgeBandwith4Crital;
     public int[][] edgeBandwith4SurvivalUnsharedBackupSum;
     public int[][] edgeBandwith4Temp;
     public Vector<Vector<Vector<Integer>>> virNetIndexSet4sEdge;
@@ -75,8 +75,11 @@ public class SubstrateNetwork implements Cloneable
 
             File file = new File(Parameter.SNDLibFile);
             String[] filelist = file.list();
-            File readfile = new File(Parameter.SNDLibFile + "\\" + filelist[ithexperiment % filelist.length]);
-
+            File readfile = null;
+            if (filelist[ithexperiment % filelist.length] != null)
+            {
+                readfile = new File(Parameter.SNDLibFile + "\\" + filelist[ithexperiment % filelist.length]);
+            }
             try
             {
                 networkReader = new FileReader(readfile.getAbsolutePath());
@@ -95,7 +98,13 @@ public class SubstrateNetwork implements Cloneable
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            this.nodeSize = network.nodeCount();
+            if (network != null)
+            {
+                this.nodeSize = network.nodeCount();
+            } else
+            {
+                this.nodeSize = -1;
+            }
 
         } else
         {
@@ -104,7 +113,7 @@ public class SubstrateNetwork implements Cloneable
         }
 
         this.nodeComputationCapacity = new int[nodeSize];
-        this.nodeComputation4Former = new int[nodeSize];
+        this.nodeComputation4Crital = new int[nodeSize];
         this.nodeComputation4SurvivalUnsharedBackupSum = new int[nodeSize];
         this.nodeComputation4Temp = new int[nodeSize];
         this.virNetIndexSet4sNode = new Vector<Vector<Integer>>();
@@ -119,7 +128,7 @@ public class SubstrateNetwork implements Cloneable
         this.edgeSize = 0;
         this.topology = new boolean[nodeSize][nodeSize];
         this.edgeBandwithCapacity = new int[nodeSize][nodeSize];
-        edgeBandwith4Former = new int[nodeSize][nodeSize];
+        edgeBandwith4Crital = new int[nodeSize][nodeSize];
         edgeBandwith4SurvivalUnsharedBackupSum = new int[nodeSize][nodeSize];
         edgeBandwith4Temp = new int[nodeSize][nodeSize];
         this.virNetIndexSet4sEdge = new Vector<Vector<Vector<Integer>>>();
@@ -274,11 +283,11 @@ public class SubstrateNetwork implements Cloneable
         int remainComputation;
         if (isShared)
         {
-            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
+            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Crital[nodeloc]
                     - this.nodeComputation4Temp[nodeloc];
         } else
         {
-            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
+            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Crital[nodeloc]
                     - this.nodeComputation4Temp[nodeloc] - this.nodeComputation4SurvivalUnsharedBackupSum[nodeloc];
         }
         return remainComputation;
@@ -321,12 +330,12 @@ public class SubstrateNetwork implements Cloneable
 
                 maxShare = Math.max(maxShare, temp);
             }
-            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
+            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Crital[nodeloc]
                     - this.nodeComputation4Temp[nodeloc] - maxShare;
 
         } else
         {
-            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Former[nodeloc]
+            remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Crital[nodeloc]
                     - this.nodeComputation4Temp[nodeloc] - this.nodeComputation4SurvivalUnsharedBackupSum[nodeloc];
         }
         return remainComputation;
@@ -348,11 +357,11 @@ public class SubstrateNetwork implements Cloneable
         int remain = 0;
         if (isShared)
         {
-            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to]
+            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Crital[from][to]
                     - this.edgeBandwith4Temp[from][to];
         } else
         {
-            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to]
+            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Crital[from][to]
                     - this.edgeBandwith4Temp[from][to] - this.edgeBandwith4SurvivalUnsharedBackupSum[from][to];
         }
         return remain;
@@ -398,11 +407,11 @@ public class SubstrateNetwork implements Cloneable
                 }
                 maxShare = Math.max(maxShare, tempBandwith);
             }
-            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to]
+            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Crital[from][to]
                     - this.edgeBandwith4Temp[from][to] - maxShare;
         } else
         {
-            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Former[from][to]
+            remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Crital[from][to]
                     - this.edgeBandwith4Temp[from][to] - this.edgeBandwith4SurvivalUnsharedBackupSum[from][to];
         }
         return remain;
@@ -575,7 +584,7 @@ public class SubstrateNetwork implements Cloneable
         SubstrateNetwork sn = (SubstrateNetwork) super.clone();
         sn.nodeComputationCapacity = new int[sn.nodeSize];
         sn.nodeComputationCapacity = Arrays.copyOf(this.nodeComputationCapacity, this.nodeSize);
-        sn.nodeComputation4Former = new int[sn.nodeSize];
+        sn.nodeComputation4Crital = new int[sn.nodeSize];
         sn.nodeComputation4SurvivalUnsharedBackupSum = new int[sn.nodeSize];
         sn.nodeComputation4Temp = new int[sn.nodeSize];
 
@@ -598,7 +607,7 @@ public class SubstrateNetwork implements Cloneable
             sn.topology[i] = Arrays.copyOf(this.topology[i], this.nodeSize);
             sn.edgeBandwithCapacity[i] = Arrays.copyOf(this.edgeBandwithCapacity[i], this.nodeSize);
         }
-        sn.edgeBandwith4Former = new int[sn.nodeSize][sn.nodeSize];
+        sn.edgeBandwith4Crital = new int[sn.nodeSize][sn.nodeSize];
         sn.edgeBandwith4SurvivalUnsharedBackupSum = new int[sn.nodeSize][sn.nodeSize];
         sn.edgeBandwith4Temp = new int[sn.nodeSize][sn.nodeSize];
 

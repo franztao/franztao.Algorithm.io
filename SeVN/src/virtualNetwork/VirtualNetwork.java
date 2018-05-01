@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import survivabelVirtualNetwork.SurvivalVirtualNetwork;
 
-
 /**
  * @author franz
  *
@@ -30,7 +29,7 @@ public class VirtualNetwork
     public Vector<Vector<Vector<Integer>>> virEdge2subPath;
 
     public int serviceNum;
-    public int[] nodeServiceType;
+    public int[] nodeFunctionType;
 
     public String[] node2Label;
 
@@ -73,10 +72,12 @@ public class VirtualNetwork
      */
     private void initializeVariable()
     {
+        // node
         this.virNode2subNode = new int[nodeSize];
         this.nodeComputationDemand = new int[nodeSize];
         this.nodeComputationCapacity = new int[nodeSize];
 
+        //edge
         this.topology = new boolean[nodeSize][nodeSize];
         this.edgeBandwithDemand = new int[nodeSize][nodeSize];
         this.virEdge2subPath = new Vector<Vector<Vector<Integer>>>();
@@ -90,7 +91,8 @@ public class VirtualNetwork
             }
         }
 
-        this.nodeServiceType = new int[nodeSize];
+        //FunctionType
+        this.nodeFunctionType = new int[nodeSize];
 
         this.node2Label = new String[nodeSize];
         this.label2Node = new HashMap<String, Integer>();
@@ -246,7 +248,7 @@ public class VirtualNetwork
      */
     public int[] getNodeServiceType()
     {
-        return nodeServiceType;
+        return nodeFunctionType;
     }
 
     /**
@@ -255,7 +257,7 @@ public class VirtualNetwork
      */
     public void setNodeServiceType(int[] nodeServiceType)
     {
-        this.nodeServiceType = nodeServiceType;
+        this.nodeFunctionType = nodeServiceType;
     }
 
     /**
@@ -361,10 +363,10 @@ public class VirtualNetwork
             }
         }
 
-        nodeServiceType[0] = 0;
-        nodeServiceType[1] = 1;
-        nodeServiceType[2] = 2;
-        nodeServiceType[3] = 3;
+        nodeFunctionType[0] = 0;
+        nodeFunctionType[1] = 1;
+        nodeFunctionType[2] = 2;
+        nodeFunctionType[3] = 3;
     }
 
     public void initSample2()
@@ -386,15 +388,15 @@ public class VirtualNetwork
             }
         }
 
-        nodeServiceType[0] = 0;
-        nodeServiceType[1] = 1;
+        nodeFunctionType[0] = 0;
+        nodeFunctionType[1] = 1;
     }
 
     public void initSample3()
     {
         nodeComputationDemand[0] = 3;
 
-        nodeServiceType[0] = 0;
+        nodeFunctionType[0] = 0;
     }
 
     /**

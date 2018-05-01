@@ -21,7 +21,7 @@ public class ShortestPath
     public int nodeSize;
     public int source;
     public int destination;
-    public int[][] edgeConstraint;
+    // public int[][] edgeConstraint;
 
     /**
      * ShortestPath.

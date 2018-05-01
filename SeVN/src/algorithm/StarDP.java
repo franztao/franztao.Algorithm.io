@@ -38,7 +38,7 @@ public class StarDP
             items[i] = new StarStructure();
             items[i].starNodeSurVirNetInd = svn.virNode2surNode[i];
             items[i].starNodeComputation = svn.virNet.nodeComputationDemand[i];
-            items[i].starNodeServiceType = svn.virNet.nodeServiceType[i];
+            items[i].starNodeServiceType = svn.virNet.nodeFunctionType[i];
             items[i].neighborEdge = new Vector<StarEdgeStructure>();
             for (int j = 0; j < svn.virNet.nodeSize; j++)
             {
@@ -48,7 +48,7 @@ public class StarDP
                     edge.neighborNode4VirNetInd = j;
                     edge.neighborNode4SurVirNetInd = svn.virNode2surNode[j];
                     edge.neighborEdgeBandwith = svn.virNet.edgeBandwithDemand[i][j];
-                    edge.neighborNodeType = svn.virNet.nodeServiceType[j];
+                    edge.neighborNodeType = svn.virNet.nodeFunctionType[j];
                     items[i].neighborEdge.addElement(edge);
                 }
             }
@@ -186,7 +186,7 @@ public class StarDP
                         {
                             edge.neighborEdgeBandwith = this.svn.edgeBandwith4Comsume[i][surNode];
                         }
-                        edge.neighborNodeType = this.svn.virNet.nodeServiceType[k];
+                        edge.neighborNodeType = this.svn.virNet.nodeFunctionType[k];
                         star.neighborEdge.addElement(edge);
                     }
 

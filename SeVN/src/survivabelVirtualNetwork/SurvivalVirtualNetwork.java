@@ -291,7 +291,8 @@ public class SurvivalVirtualNetwork
      * @param matchMehtod
      *            Method
      */
-    public void augmentNodeEdge(int[] solution, int failNode, int matchMehtod, StarStructure[] items,Vector<StarStructure> knapsacks)
+    public void augmentNodeEdge(int[] solution, int failNode, int matchMehtod, StarStructure[] items,
+            Vector<StarStructure> knapsacks)
     {
 
         int[] virutialNode2NewSurvivalVirtualNode = new int[this.virNet.nodeSize];
