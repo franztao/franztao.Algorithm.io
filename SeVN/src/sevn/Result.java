@@ -476,6 +476,11 @@ public class Result
         {
             int nc = algorithm.getSn().nodeComputationCapacity[i]
                     - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
+
+            if (nc < 0)
+            {
+                resultLog.error("nodeComputation less zero");
+            }
             if (nc != 0)
             {
                 usedNode++;
@@ -485,14 +490,14 @@ public class Result
                 nodeComputation += nc;
             }
 
-            if (nc < 0)
-            {
-                System.out.println("Error nc");
-            }
             for (int j = 0; j < i; j++)
             {
                 int bc = algorithm.getSn().edgeBandwithCapacity[i][j]
-                        - algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared());
+                        - algorithm.getSn().getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared());
+                if (bc < 0)
+                {
+                    resultLog.error("edgeBandwith less zero");
+                }
                 if (bc != 0)
                 {
                     usedEdge++;
@@ -501,10 +506,7 @@ public class Result
                 {
                     edgeBandwith += bc;
                 }
-                if (bc < 0)
-                {
-                    System.out.println("Error bc");
-                }
+
             }
         }
 
@@ -586,7 +588,7 @@ public class Result
 
             for (int j = 0; j < algorithm.getSn().getNodeSize(); j++)
             {
-                if (algorithm.getSn().edgeBandwithCapacity[i][j] != algorithm.getSn().getSubStrateRemainBandwith4VN(i,
+                if (algorithm.getSn().edgeBandwithCapacity[i][j] != algorithm.getSn().getSubStrateRemainBandwith4VirNet(i,
                         j, algorithm.isShared()))
                 {
                     embeddedVN4SubstrateEdge++;
@@ -647,7 +649,7 @@ public class Result
             for (int j = 0; j < algorithm.getSn().getNodeSize(); j++)
             {
                 all = algorithm.getSn().edgeBandwithCapacity[i][j];
-                remain = algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared());
+                remain = algorithm.getSn().getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared());
                 if (all != remain)
                 {
                     utilizationEdge += ((all - remain) * 1.0 / algorithm.getSn().edgeBandwithCapacity[i][j]);
@@ -772,10 +774,10 @@ public class Result
         {
             int nc = algorithm.getSn().nodeComputationCapacity[i]
                     - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
-            
+
             if (nc < 0)
             {
-                resultLog.error("Error nc");
+                resultLog.error("nodeComputation less zero");
             }
             if (nc != 0)
             {
@@ -786,14 +788,13 @@ public class Result
                 nodeComputation += nc;
             }
 
-            
             for (int j = 0; j < i; j++)
             {
                 int bc = algorithm.getSn().edgeBandwithCapacity[i][j]
-                        - algorithm.getSn().getSubStrateRemainBandwith4VN(i, j, algorithm.isShared());
+                        - algorithm.getSn().getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared());
                 if (bc < 0)
                 {
-                    resultLog.error("Error bc");
+                    resultLog.error("edgeBandwith less zero");
                 }
                 if (bc != 0)
                 {
@@ -803,7 +804,7 @@ public class Result
                 {
                     edgeBandwith += bc;
                 }
-                
+
             }
         }
 

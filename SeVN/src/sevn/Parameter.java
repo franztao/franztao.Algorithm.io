@@ -3,32 +3,32 @@
  */
 
 package sevn;
+
 /*
  * Survivable Virtual Network Design and Embedding to Survive a Facility Node Failure
  */
 public class Parameter
 {
 
-    //SNDLib topology number is 12
+    // SNDLib topology number is 12
     public static final int ExperimentTimes = 1;
 
-    
-    //VirutualNetworkEmbeddingAlgorithm
-    public static final int VNERandom=0;
-    public static final int VNEILP=1;
-    public static final int VNEAlgorithm=VNEILP;
-    
-    //resource shared
+    // VirutualNetworkEmbeddingAlgorithm
+    public static final int VNERandom = 0;
+    public static final int VNEILP = 1;
+    public static final int VNEAlgorithm = VNERandom;
+
+    // resource shared
     public static final int FailureDependent = 0;
     public static final int FailureIndependent = 1;
     public static final int One2OneProtection = 2;
 
-    //star match method
+    // star match method
     public static final int MatchMethodIP = 1;
     public static final int MatchMethodDP = 2;
     public static final int MatchMethod = MatchMethodIP;
 
-    //VNR node fail sequence
+    // VNR node fail sequence
     public static final int Ran = 0;
     public static final int Min = 1;
 
@@ -40,8 +40,8 @@ public class Parameter
 
     // Parameter
     public static final int addNewVirNodeNewSubNodeCost = 10000000;
-    public static final int addNewVirNodeCost = 100000;//100
-    public static final int transformExistedNodeCost = 100;//100000
+    public static final int addNewVirNodeCost = 100000;// 100
+    public static final int transformExistedNodeCost = 100;// 100000
     public static final int addNodeComputaionCost = 3;
     public static final int addEdgeBandwithCost = 1;
     public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost / addEdgeBandwithCost;
@@ -50,33 +50,31 @@ public class Parameter
     public static final boolean IsReleaseVNafterEVNFailure = false;
     public static final boolean IsMultipleNodeMapOneNode = true;
     public static final boolean IsConsiderEdgeBandwith = true;
-    
+
     public static final long SubstrateNewtorkRunTimeInterval = 600;// 30000
     public static final long unitTimeInterval = 1;
-    
-    //RequestType
-    public static final int RequestTypeGeometric=1;
-    public static final int RequestTypePossion=0;
-    public static final int RequestType=RequestTypePossion;
-    //GeometricDistribution 
+
+    // RequestType
+    public static final int RequestTypeGeometric = 1;
+    public static final int RequestTypePossion = 0;
+    public static final int RequestType = RequestTypePossion;
+    // GeometricDistribution
     public static final double RequestAppearProbability = 0.5;// 0.1
     public static final long RequestPerTimeAppearNum = 1;// 1
     public static final long VirNetDuration = 1;
-    //possion distribution
-    public static final long PossionMean=1;
-    
-   
-    public static final int VNRequestsLeaseTypeUniform=0;
-    public static final int VNRequestsLeaseTypeExponential=1;
-    public static final int VNRequestsLeaseType=VNRequestsLeaseTypeExponential;
-    //uniform
+    // possion distribution
+    public static final long PossionMean = 1;
+
+    public static final int VNRequestsLeaseTypeUniform = 0;
+    public static final int VNRequestsLeaseTypeExponential = 1;
+    public static final int VNRequestsLeaseType = VNRequestsLeaseTypeExponential;
+    // uniform
     public static final long VNRequestsContinueTimeMinimum = 1;
     public static final long VNRequestsContinueTimeMaximum = 100;
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
-    //Exponential
-    public static final long VNRequestsContinueTimeExponentialMean=300;
-    
-    
+    // Exponential
+    public static final long VNRequestsContinueTimeExponentialMean = 300;
+
     // ExperimentPicture
     public static final int ExperimentPicturePlotNumber = 25;
 
@@ -84,7 +82,6 @@ public class Parameter
     public static final int ServiceNumber = 15;// 15
     public static final double SerivecProbability = 0.1;// 0.5
 
-    
     // Virtual Network
     // node parameter //2-5 5-8 5-10
     public static final int VirtualNodeSizeMinimum = 3;// 2
@@ -96,7 +93,7 @@ public class Parameter
     public static final int VirtualEdgeBandwithMinimum = 1;// 10
     public static final int VirtualEdgeBandwithMaximum = 10;// 20
 
-    //failure migration
+    // failure migration
     public static final long SubStrateFacilityNodeFailDuration = SubstrateNewtorkRunTimeInterval
             / ExperimentPicturePlotNumber;
 
@@ -109,32 +106,28 @@ public class Parameter
     public static final int TopologyTypeRandom = 1;
     public static final int TopologyTypeDataCenter = 2;
     public static final int TopologyType = TopologyTypeSNDLib;
-    
-    
+
     public static final int SubStrateNodeComputationMinimum = 10;// 50
     public static final int SubStrateNodeComputationMaximum = 20;// 100
-    public static final int SubStrateEdgeBandwithMinimum = 10;//100
-    public static final int SubStrateEdgeBandwithMaximum = 30;//200
-    
+    public static final int SubStrateEdgeBandwithMinimum = 10;// 100
+    public static final int SubStrateEdgeBandwithMaximum = 30;// 200
+
     // Random
     // node parameter
     public static final int SubStrateNodeSize = 30;// 100
     // edge parameter
     public static final double SubStrateNodenodeProbability = 0.75;
-   
 
-    
-    //SNDlib
-    public static final String SNDLibFile="F:\\workspace\\franztao.Algorithm.io\\SeVN\\data\\sndlib-networks-native";
+    // SNDlib
+    public static final String SNDLibFile = "F:\\workspace\\franztao.Algorithm.io\\SeVN\\data\\sndlib-networks-native";
 
-    //DataCenter
-    public static final int DataCenterLevel = 4;//4
-    public static final int DataCenterAry = 3;//3
-    public static final int DataCenterPMSlots = 10;//10
-    public static final int DataCenterToR2PM = 20;//20
-    public static final int DataCenterCore2Aggregation = 100;//100
-    public static final int DataCenterVNSize = 4;//4
-    public static final int DataCenterVNBandWidth = 1;//1
-    
+    // DataCenter
+    public static final int DataCenterLevel = 4;// 4
+    public static final int DataCenterAry = 3;// 3
+    public static final int DataCenterPMSlots = 10;// 10
+    public static final int DataCenterToR2PM = 20;// 20
+    public static final int DataCenterCore2Aggregation = 100;// 100
+    public static final int DataCenterVNSize = 4;// 4
+    public static final int DataCenterVNBandWidth = 1;// 1
 
 }

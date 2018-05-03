@@ -62,7 +62,7 @@ public class SeVN
      */
     public void releaseResource(boolean isForceRelease)
     {
-        
+
         for (int i = 0; i < this.subNet.virNetCollection.size(); i++)
         {
             if ((this.subNet.virNetCollection.get(i) != null) && (this.subNet.virNetCollection.get(i).getIsRunning()))
@@ -166,7 +166,7 @@ public class SeVN
         this.subNet.virNetCollection.get(index).destructerResource();
     }
 
-    private boolean nodeMappingVNE(VirtualNetwork vn, VirtualNetwork protoVN, VirtualNetworkEmbedILP ilp)
+    private void setLeaveTime(VirtualNetwork vn, VirtualNetwork protoVN)
     {
         // LeaveTime
         if (Parameter.IsSameVirNet4EveryTime)
@@ -188,22 +188,24 @@ public class SeVN
                         * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
             }
         }
+    }
+
+    private boolean nodeMappingVNE(VirtualNetwork vn, VirtualNetwork protoVN, VirtualNetworkEmbedILP ilp)
+    {
 
         // node
         if (Parameter.VNEAlgorithm == Parameter.VNERandom)
         {
             boolean[] isSamesNode = new boolean[this.subNet.nodeSize];
-            for (int i = 0; i < vn.nodeSize; i++)
+            for (int i = 0; i < protoVN.nodeSize; i++)
             {
                 int snodeloc;
                 if (Parameter.IsSameVirNet4EveryTime)
                 {
-
                     snodeloc = protoVN.virNode2subNode[i];
                     vn.virNode2subNode[i] = snodeloc;
                     vn.nodeFunctionType[i] = protoVN.nodeFunctionType[i];
                     vn.nodeComputationDemand[i] = protoVN.nodeComputationDemand[i];
-
                 } else
                 {
                     do
@@ -229,7 +231,7 @@ public class SeVN
 
         if (Parameter.VNEAlgorithm == Parameter.VNEILP)
         {
-            ilp = new VirtualNetworkEmbedILP();
+
             try
             {
                 if (!ilp.VirtualNetworkEmbedding(protoVN, subNet, this))
@@ -238,7 +240,7 @@ public class SeVN
                     return false;
                 } else
                 {
-                    sevnLog.warn("Succeed ILP VNE");
+                    sevnLog.info("Succeed ILP VNE");
                 }
             } catch (GRBException e)
             {
@@ -247,7 +249,8 @@ public class SeVN
             }
             for (int i = 0; i < protoVN.nodeSize; i++)
             {
-                for (int j = 0; j < subNet.nodeSize; j++)
+                int j;
+                for (j = 0; j < subNet.nodeSize; j++)
                 {
                     try
                     {
@@ -257,6 +260,7 @@ public class SeVN
                             vn.virNode2subNode[i] = snodeloc;
                             vn.nodeFunctionType[i] = protoVN.nodeFunctionType[i];
                             vn.nodeComputationDemand[i] = protoVN.nodeComputationDemand[i];
+                            break;
                         }
                     } catch (GRBException e)
                     {
@@ -265,10 +269,20 @@ public class SeVN
                     }
 
                 }
+                if (j == subNet.nodeSize)
+                {
+                    sevnLog.error("ILP node error");
+                    return false;
+                }
             }
         }
         for (int i = 0; i < vn.nodeSize; i++)
         {
+            if (vn.nodeComputationDemand[i] <= 0)
+            {
+                sevnLog.error("Fail to embed VN (" + i + ")-th node into SN: demand less than zero");
+                return false;
+            }
             if (vn.nodeComputationDemand[i] > this.subNet.getSubstrateRemainComputaion4VirNet(vn.virNode2subNode[i],
                     this.isShared))
             {
@@ -297,17 +311,56 @@ public class SeVN
      */
     private boolean copyVirtualNetwork(VirtualNetwork vn, VirtualNetwork protoVN)
     {
-        VirtualNetworkEmbedILP ilp = null;
+        setLeaveTime(vn, protoVN);
+        VirtualNetworkEmbedILP ilp = new VirtualNetworkEmbedILP();
         if (!nodeMappingVNE(vn, protoVN, ilp))
         {
             sevnLog.warn("Node Mapping Failure");
+            return false;
         }
         if (!edgeMappingVNE(vn, protoVN, ilp))
         {
             sevnLog.warn("Edge Mapping Failure");
+            return false;
         }
+        distributeNodeEdgeDemand(vn);
         return true;
 
+    }
+
+    void distributeNodeEdgeDemand(VirtualNetwork vn)
+    {
+        // modify node and edge new value
+        for (int i = 0; i < subNet.nodeSize; i++)
+        {
+            if (this.subNet.nodeComputation4Temp[i] > 0)
+            {
+                this.subNet.nodeComputation4Crital[i] += this.subNet.nodeComputation4Temp[i];
+                this.subNet.nodeComputation4Temp[i] = 0;
+            }
+            for (int j = 0; j < i; j++)
+            {
+                if (i != j)
+                {
+                    this.subNet.edgeBandwith4Crital[i][j] += this.subNet.edgeBandwith4Temp[i][j];
+                    this.subNet.edgeBandwith4Crital[j][i] = this.subNet.edgeBandwith4Crital[i][j];
+                    this.subNet.edgeBandwith4Temp[i][j] = this.subNet.edgeBandwith4Temp[j][i] = 0;
+                }
+            }
+        }
+        for (int i = 0; i < vn.nodeSize; i++)
+        {
+            this.subNet.virNetIndexSet4sNode.get(vn.virNode2subNode[i]).addElement(this.subNet.virNetCollection.size());
+            for (int j = 0; j < vn.nodeSize; j++)
+            {
+                for (int k = 0; k < vn.virEdge2subPath.get(i).get(j).size() - 1; k++)
+                {
+                    this.subNet.virNetIndexSet4sEdge.get(vn.virEdge2subPath.get(i).get(j).get(k))
+                            .get(vn.virEdge2subPath.get(i).get(j).get(k + 1))
+                            .addElement(this.subNet.virNetCollection.size());
+                }
+            }
+        }
     }
 
     /**
@@ -320,7 +373,7 @@ public class SeVN
         if (Parameter.VNEAlgorithm == Parameter.VNERandom)
         {
             // edge
-            for (int i = 0; i < vn.nodeSize; i++)
+            for (int i = 0; i < protoVn.nodeSize; i++)
             {
                 for (int j = 0; j < i; j++)
                 {
@@ -337,8 +390,11 @@ public class SeVN
                             {
                                 for (int l = 0; l < k; l++)
                                 {
-                                    int remainBandWidth = this.subNet.getSubStrateRemainBandwith4VN(k, l,
+                                    int remainBandWidth = this.subNet.getSubStrateRemainBandwith4VirNet(k, l,
                                             this.isShared);
+                                    if (remainBandWidth < 0) {
+                                        return false;
+                                    }
                                     if (remainBandWidth > 0)
                                     {
                                         tempBandwith[k][l] = tempBandwith[l][k] = remainBandWidth;
@@ -376,6 +432,7 @@ public class SeVN
                             {
                                 vn.virEdge2subPath.get(j).get(i).addElement(pathList.get(k));
                             }
+
                             if (Parameter.IsSameVirNet4EveryTime)
                             {
                                 distributeBandwith = protoVn.edgeBandwithDemand[i][j];
@@ -398,9 +455,10 @@ public class SeVN
                                 this.subNet.edgeBandwith4Temp[e][s] = this.subNet.edgeBandwith4Temp[s][e];
                                 s = e;
                             }
+                            vn.topology[i][j] = vn.topology[j][i] = true;
+                            vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeBandwith;
                         }
-                        vn.topology[i][j] = vn.topology[j][i] = true;
-                        vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeBandwith;
+
                     }
                 }
             }
@@ -408,7 +466,7 @@ public class SeVN
 
         if (Parameter.VNEAlgorithm == Parameter.VNEILP)
         {
-            for (int i = 0; i < vn.nodeSize; i++)
+            for (int i = 0; i < protoVn.nodeSize; i++)
             {
                 for (int j = 0; j < i; j++)
                 {
@@ -419,16 +477,16 @@ public class SeVN
                     if (vn.virNode2subNode[i] != vn.virNode2subNode[j])
                     {
                         int startNode = vn.virNode2subNode[i];
-                        int endNode = vn.virNode2subNode[i];
+                        int endNode = vn.virNode2subNode[j];
                         vn.virEdge2subPath.get(i).get(j).addElement(startNode);
-
-                        while (startNode != endNode)
+                        try
                         {
-                            int k;
-                            for (k = 0; k < subNet.nodeSize; k++)
+                            while (startNode != endNode)
                             {
-                                try
+                                int k;
+                                for (k = 0; k < subNet.nodeSize; k++)
                                 {
+
                                     if ((ilp.edgeMappingMatrix[i][j][startNode][k].get(GRB.DoubleAttr.X) == 1.0))
                                     {
                                         // || (ilp.edgeMappingMatrix[i][j][k][startNode].get(GRB.DoubleAttr.X) == 1.0)
@@ -437,18 +495,21 @@ public class SeVN
                                         this.subNet.edgeBandwith4Temp[startNode][k] += protoVn.edgeBandwithDemand[i][j];
                                         this.subNet.edgeBandwith4Temp[k][startNode] = this.subNet.edgeBandwith4Temp[startNode][k];
                                         startNode = k;
+                                        break;
                                     }
-                                } catch (GRBException e)
-                                {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                            }
-                            if (k == subNet.nodeSize)
-                            {
-                                sevnLog.warn("VNE ILP is internal error: VN edge to SN path is wrong");
-                            }
 
+                                }
+                                if (k == subNet.nodeSize)
+                                {
+                                    sevnLog.error("VNE ILP is internal error: VN edge to SN path is wrong");
+                                    return false;
+                                }
+
+                            }
+                        } catch (GRBException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
                         }
                         vn.topology[i][j] = vn.topology[j][i] = true;
                         vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = protoVn.edgeBandwithDemand[i][j];
@@ -457,37 +518,6 @@ public class SeVN
             }
         }
 
-        // modify node and edge new value
-        for (int i = 0; i < subNet.nodeSize; i++)
-        {
-            if (this.subNet.nodeComputation4Temp[i] > 0)
-            {
-                this.subNet.nodeComputation4Crital[i] += this.subNet.nodeComputation4Temp[i];
-                this.subNet.nodeComputation4Temp[i] = 0;
-            }
-            for (int j = 0; j < i; j++)
-            {
-                if (i != j)
-                {
-                    this.subNet.edgeBandwith4Crital[i][j] += this.subNet.edgeBandwith4Temp[i][j];
-                    this.subNet.edgeBandwith4Crital[j][i] = this.subNet.edgeBandwith4Crital[i][j];
-                    this.subNet.edgeBandwith4Temp[i][j] = this.subNet.edgeBandwith4Temp[j][i] = 0;
-                }
-            }
-        }
-        for (int i = 0; i < vn.nodeSize; i++)
-        {
-            this.subNet.virNetIndexSet4sNode.get(vn.virNode2subNode[i]).addElement(this.subNet.virNetCollection.size());
-            for (int j = 0; j < vn.nodeSize; j++)
-            {
-                for (int k = 0; k < vn.virEdge2subPath.get(i).get(j).size() - 1; k++)
-                {
-                    this.subNet.virNetIndexSet4sEdge.get(vn.virEdge2subPath.get(i).get(j).get(k))
-                            .get(vn.virEdge2subPath.get(i).get(j).get(k + 1))
-                            .addElement(this.subNet.virNetCollection.size());
-                }
-            }
-        }
         return true;
 
     }
@@ -950,6 +980,7 @@ public class SeVN
     {
         this.algorithmName = algName;
         this.subNet = sn;
+        this.subNet.algorihtm = this;
         this.isExact = isExact;
         this.isFailDep = failureindependent;
         this.isShared = isShared;

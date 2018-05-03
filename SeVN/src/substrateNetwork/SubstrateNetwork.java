@@ -12,7 +12,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import algorithm.SeVN;
 import sevn.Parameter;
+import sevn.Result;
 import sndlib.core.io.SNDlibIOFactory;
 import sndlib.core.io.SNDlibIOFormat;
 import sndlib.core.io.SNDlibParseException;
@@ -25,6 +30,8 @@ import virtualNetwork.VirtualNetwork;
 
 public class SubstrateNetwork implements Cloneable
 {
+    public SeVN algorihtm;
+    
     // node
     public int nodeSize;
     public int[] nodeComputationCapacity;
@@ -59,6 +66,8 @@ public class SubstrateNetwork implements Cloneable
     // EmbeddingCost
     public int virNetReqSum;
 
+    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetwork.class);
+
     /**
      * SubstrateNetwork.
      * 
@@ -68,6 +77,8 @@ public class SubstrateNetwork implements Cloneable
     public SubstrateNetwork(SubStrateNetworkParameter snp, int ithexperiment)
     {
 
+        PropertyConfigurator.configure("log4j.properties");
+        
         Network network = null;
         if (snp.getTopologyType() == Parameter.TopologyTypeSNDLib)
         {
@@ -290,6 +301,10 @@ public class SubstrateNetwork implements Cloneable
             remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Crital[nodeloc]
                     - this.nodeComputation4Temp[nodeloc] - this.nodeComputation4SurvivalUnsharedBackupSum[nodeloc];
         }
+        if (remainComputation < 0)
+        {
+            substrateNetworkLog.error(this.algorihtm.algorithmName+" getSubstrateRemainComputaion4SurVirNet");
+        }
         return remainComputation;
     }
 
@@ -338,6 +353,11 @@ public class SubstrateNetwork implements Cloneable
             remainComputation = this.nodeComputationCapacity[nodeloc] - this.nodeComputation4Crital[nodeloc]
                     - this.nodeComputation4Temp[nodeloc] - this.nodeComputation4SurvivalUnsharedBackupSum[nodeloc];
         }
+
+        if (remainComputation < 0)
+        {
+            substrateNetworkLog.error(this.algorihtm.algorithmName+" getSubstrateRemainComputaion4VirNet");
+        }
         return remainComputation;
     }
 
@@ -373,7 +393,7 @@ public class SubstrateNetwork implements Cloneable
      * @param isShared
      * @return
      */
-    public int getSubStrateRemainBandwith4VN(int from, int to, boolean isShared)
+    public int getSubStrateRemainBandwith4VirNet(int from, int to, boolean isShared)
     {
         int remain = 0;
         if (isShared)
@@ -413,6 +433,10 @@ public class SubstrateNetwork implements Cloneable
         {
             remain = this.edgeBandwithCapacity[from][to] - this.edgeBandwith4Crital[from][to]
                     - this.edgeBandwith4Temp[from][to] - this.edgeBandwith4SurvivalUnsharedBackupSum[from][to];
+        }
+        if (remain < 0)
+        {
+            substrateNetworkLog.error(this.algorihtm.algorithmName+" getSubStrateRemainBandwith4VirNet");
         }
         return remain;
     }

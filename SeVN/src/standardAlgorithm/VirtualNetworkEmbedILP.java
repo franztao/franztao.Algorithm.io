@@ -53,7 +53,7 @@ public class VirtualNetworkEmbedILP
                     for (int l = 0; l < subNet.nodeSize; l++)
                     {
                         edgeMappingMatrix[i][j][k][l] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
-                                " i:" + j + " j:" + j + " k:" + k + " l:" + l);
+                                " i:" + i + " j:" + j + " k:" + k + " l:" + l);
                     }
                 }
             }
@@ -217,7 +217,7 @@ public class VirtualNetworkEmbedILP
                         }
                     }
                 }
-                model.addConstr(bandwidth, GRB.LESS_EQUAL, subNet.getSubStrateRemainBandwith4VN(k, l, alg.isShared()),
+                model.addConstr(bandwidth, GRB.LESS_EQUAL, subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared()),
                         "vPathBandwidth" + "r " + k + "c: " + l);
             }
         }
@@ -229,7 +229,6 @@ public class VirtualNetworkEmbedILP
             return false;
         }
 
-        
         return true;
     }
 
