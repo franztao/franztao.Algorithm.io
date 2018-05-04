@@ -132,7 +132,7 @@ public class SurvivalVirtualNetwork
         }
 
         // service
-        this.serviceNum = vn.serviceNum;
+        this.serviceNum = vn.functionNum;
         this.boolServiceTypeSet = new boolean[nodeSize][serviceNum];
 
         // label
@@ -232,10 +232,10 @@ public class SurvivalVirtualNetwork
             {
                 if (i < this.nodeSize4Failure)
                 {
-                    this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[vn.virNode2subNode[i]][j];
+                    this.boolServiceTypeSet[i][j] = sn.boolFunctionTypeSet[vn.virNode2subNode[i]][j];
                 } else
                 {
-                    this.boolServiceTypeSet[i][j] = sn.boolServiceTypeSet[bn.backNode2subNode[i
+                    this.boolServiceTypeSet[i][j] = sn.boolFunctionTypeSet[bn.backNode2subNode[i
                             - this.nodeSize4Failure]][j];
                 }
             }

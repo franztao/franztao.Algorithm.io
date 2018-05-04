@@ -30,8 +30,10 @@ import virtualNetwork.VirtualNetwork;
 
 public class SubstrateNetwork implements Cloneable
 {
+    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetwork.class);
+
     public SeVN algorihtm;
-    
+
     // node
     public int nodeSize;
     public int[] nodeComputationCapacity;
@@ -50,14 +52,14 @@ public class SubstrateNetwork implements Cloneable
     public Vector<Vector<Vector<Integer>>> virNetIndexSet4sEdge;
     public Vector<Vector<Vector<Integer>>> surVirNetIndexSet4sEdge;
 
-    public int serviceNum;
-    public boolean[][] boolServiceTypeSet;
-    public Vector<Vector<Integer>> vectorServiceTypeSet;
+    public int functionNum;
+    public boolean[][] boolFunctionTypeSet;
+    public Vector<Vector<Integer>> vectorFunctionTypeSet;
 
     public String[] node2Label;
     public Map<String, Integer> label2Node;
 
-    public Vector<VirtualNetwork> virNetCollection;
+    public Vector<VirtualNetwork> virNetSet;
     public Vector<SurvivalVirtualNetwork> surVirNetSet;
 
     // acceptionRatio
@@ -65,8 +67,6 @@ public class SubstrateNetwork implements Cloneable
     public int surNetSuceedEmbedSum;
     // EmbeddingCost
     public int virNetReqSum;
-
-    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetwork.class);
 
     /**
      * SubstrateNetwork.
@@ -78,9 +78,9 @@ public class SubstrateNetwork implements Cloneable
     {
 
         PropertyConfigurator.configure("log4j.properties");
-        
+
         Network network = null;
-        if (snp.getTopologyType() == Parameter.TopologyTypeSNDLib)
+        if (Parameter.TopologyType == Parameter.TopologyTypeSNDLib)
         {
             Reader networkReader = null;
 
@@ -100,7 +100,6 @@ public class SubstrateNetwork implements Cloneable
                 e.printStackTrace();
             }
             SNDlibParser parser = SNDlibIOFactory.newParser(SNDlibIOFormat.NATIVE);
-
             try
             {
                 network = parser.parseNetwork(networkReader);
@@ -120,9 +119,10 @@ public class SubstrateNetwork implements Cloneable
         } else
         {
             // node
-            this.nodeSize = snp.getNodeSize();
+            this.nodeSize = snp.nodeSize;
         }
 
+        // node
         this.nodeComputationCapacity = new int[nodeSize];
         this.nodeComputation4Crital = new int[nodeSize];
         this.nodeComputation4SurvivalUnsharedBackupSum = new int[nodeSize];
@@ -156,41 +156,41 @@ public class SubstrateNetwork implements Cloneable
         }
 
         // service
-        this.serviceNum = snp.getServiceNumber();
-        this.boolServiceTypeSet = new boolean[nodeSize][serviceNum];
-        this.vectorServiceTypeSet = new Vector<Vector<Integer>>();
+        this.functionNum = snp.functionTypeNumber;
+        this.boolFunctionTypeSet = new boolean[nodeSize][functionNum];
+        this.vectorFunctionTypeSet = new Vector<Vector<Integer>>();
         for (int i = 0; i < this.nodeSize; i++)
         {
-            this.vectorServiceTypeSet.addElement(new Vector<Integer>());
+            this.vectorFunctionTypeSet.addElement(new Vector<Integer>());
         }
 
         // label
         this.node2Label = new String[nodeSize];
         this.label2Node = new HashMap<String, Integer>();
 
-        this.virNetCollection = new Vector<VirtualNetwork>();
+        this.virNetSet = new Vector<VirtualNetwork>();
         this.surVirNetSet = new Vector<SurvivalVirtualNetwork>();
-        if (snp.getTopologyType() == Parameter.TopologyTypeSample)
+        if (Parameter.TopologyType == Parameter.TopologyTypeSample)
         {
-            faultSetResourceDistribution();
+            setResourceDistribution4Sample();
         }
-        if (snp.getTopologyType() == Parameter.TopologyTypeRandom)
+        if (Parameter.TopologyType == Parameter.TopologyTypeRandom)
         {
             setResourceDistribution4RandomTopo(snp);
         }
 
-        if (snp.getTopologyType() == Parameter.TopologyTypeDataCenter)
+        if (Parameter.TopologyType == Parameter.TopologyTypeDataCenter)
         {
             setResourceDistribution4DataCenter(snp);
         }
 
-        if (snp.getTopologyType() == Parameter.TopologyTypeSNDLib)
+        if (Parameter.TopologyType == Parameter.TopologyTypeSNDLib)
         {
             setResourceDistribution4SNDLib(snp, network);
         }
 
         // label
-        String str = "SN";
+        String str = "SN_";
         for (int i = 0; i < this.nodeSize; i++)
         {
             node2Label[i] = (str + (i + 1));
@@ -203,6 +203,67 @@ public class SubstrateNetwork implements Cloneable
 
     }
 
+    public void setResourceDistribution4Sample()
+    {
+        nodeComputationCapacity[0] = 5;
+        nodeComputationCapacity[1] = 7;
+        nodeComputationCapacity[2] = 7;
+        nodeComputationCapacity[3] = 10;
+        nodeComputationCapacity[4] = 6;
+        nodeComputationCapacity[5] = 9;
+        nodeComputationCapacity[6] = 10;
+        nodeComputationCapacity[7] = 8;
+
+        topology[0][1] = true;
+        topology[0][2] = true;
+        topology[0][3] = true;
+        topology[0][4] = true;
+
+        topology[1][2] = true;
+        topology[1][4] = true;
+
+        topology[2][4] = true;
+        topology[2][5] = true;
+        topology[2][6] = true;
+
+        topology[3][6] = true;
+        topology[4][7] = true;
+
+        for (int i = 0; i < nodeSize; i++)
+        {
+            for (int j = 0; j < nodeSize; j++)
+            {
+                if (topology[i][j])
+                {
+                    topology[j][i] = true;
+                    edgeBandwithCapacity[i][j] = edgeBandwithCapacity[j][i] = 10;
+                }
+            }
+        }
+
+        boolFunctionTypeSet[0][0] = true;
+        
+        boolFunctionTypeSet[1][1] = true;
+        boolFunctionTypeSet[1][2] = true;
+        
+        boolFunctionTypeSet[2][2] = true;
+        
+        boolFunctionTypeSet[3][3] = true;
+
+        boolFunctionTypeSet[4][0] = true;
+        boolFunctionTypeSet[4][1] = true;
+        
+        boolFunctionTypeSet[5][0] = true;
+        boolFunctionTypeSet[5][3] = true;
+        
+        boolFunctionTypeSet[6][1] = true;
+        boolFunctionTypeSet[6][2] = true;
+        
+        boolFunctionTypeSet[7][1] = true;
+
+       
+    }
+
     /**
      * @param snp
      * @param network
@@ -212,8 +273,8 @@ public class SubstrateNetwork implements Cloneable
         // node computation
         for (int i = 0; i < this.nodeSize; i++)
         {
-            this.nodeComputationCapacity[i] = (int) (snp.getNodeComputationMinimum()
-                    + Math.random() * (snp.getNodeComputationMaximum() - snp.getNodeComputationMinimum()));
+            this.nodeComputationCapacity[i] = (int) (snp.nodeComputationMinimum
+                    + Math.random() * (snp.nodeComputationMaximum - snp.nodeComputationMinimum));
         }
 
         // edge bandwith
@@ -252,8 +313,8 @@ public class SubstrateNetwork implements Cloneable
                 if (this.topology[i][j])
                 {
                     this.edgeSize++;
-                    this.edgeBandwithCapacity[i][j] = (int) (snp.getEdgeBandwithMinimum()
-                            + Math.random() * (snp.getEdgeBandwithMaximum() - snp.getEdgeBandwithMinimum()));
+                    this.edgeBandwithCapacity[i][j] = (int) (snp.edgeBandwithMinimum
+                            + Math.random() * (snp.edgeBandwithMaximum - snp.edgeBandwithMinimum));
                     this.edgeBandwithCapacity[j][i] = this.edgeBandwithCapacity[i][j];
                 }
             }
@@ -262,19 +323,19 @@ public class SubstrateNetwork implements Cloneable
         // service
         for (int i = 0; i < this.nodeSize; i++)
         {
-            for (int j = 0; j < this.serviceNum; j++)
+            for (int j = 0; j < this.functionNum; j++)
             {
-                if (Math.random() < snp.getSerivecProbability())
+                if (Math.random() < snp.functionTypeProbability)
                 {
-                    this.boolServiceTypeSet[i][j] = true;
-                    vectorServiceTypeSet.get(i).addElement(j);
+                    this.boolFunctionTypeSet[i][j] = true;
+                    vectorFunctionTypeSet.get(i).addElement(j);
                 }
             }
-            if (vectorServiceTypeSet.get(i).size() == 0)
+            if (vectorFunctionTypeSet.get(i).size() == 0)
             {
-                int index = (int) ((this.serviceNum - 1) * Math.random());
-                this.boolServiceTypeSet[i][index] = true;
-                vectorServiceTypeSet.get(i).addElement(index);
+                int index = (int) ((this.functionNum - 1) * Math.random());
+                this.boolFunctionTypeSet[i][index] = true;
+                vectorFunctionTypeSet.get(i).addElement(index);
             }
         }
 
@@ -303,7 +364,7 @@ public class SubstrateNetwork implements Cloneable
         }
         if (remainComputation < 0)
         {
-            substrateNetworkLog.error(this.algorihtm.algorithmName+" getSubstrateRemainComputaion4SurVirNet");
+            substrateNetworkLog.error(this.algorihtm.algorithmName + " getSubstrateRemainComputaion4SurVirNet");
         }
         return remainComputation;
     }
@@ -328,8 +389,7 @@ public class SubstrateNetwork implements Cloneable
                 int ithSurVirNet = this.surVirNetIndexSet4sNode.get(nodeloc).get(i);
                 int temp = 0;
 
-                if ((this.virNetCollection.get(ithSurVirNet) != null)
-                        && this.virNetCollection.get(ithSurVirNet).getIsRunning()
+                if ((this.virNetSet.get(ithSurVirNet) != null) && this.virNetSet.get(ithSurVirNet).isRunning
                         && this.surVirNetSet.get(ithSurVirNet).isSucceedEmbed)
                 {
                     for (int j = 0; j < this.surVirNetSet.get(ithSurVirNet).getNodeSize(); j++)
@@ -356,7 +416,7 @@ public class SubstrateNetwork implements Cloneable
 
         if (remainComputation < 0)
         {
-            substrateNetworkLog.error(this.algorihtm.algorithmName+" getSubstrateRemainComputaion4VirNet");
+            substrateNetworkLog.error(this.algorihtm.algorithmName + " getSubstrateRemainComputaion4VirNet");
         }
         return remainComputation;
     }
@@ -404,7 +464,7 @@ public class SubstrateNetwork implements Cloneable
                 int ithEVN = this.surVirNetIndexSet4sEdge.get(from).get(to).get(i);
 
                 int tempBandwith = 0;
-                if ((this.virNetCollection.get(ithEVN) != null) && this.virNetCollection.get(ithEVN).getIsRunning()
+                if ((this.virNetSet.get(ithEVN) != null) && this.virNetSet.get(ithEVN).isRunning
                         && this.surVirNetSet.get(ithEVN).isSucceedEmbed)
                 {
                     for (int p = 0; p < this.surVirNetSet.get(ithEVN).getNodeSize(); p++)
@@ -414,7 +474,7 @@ public class SubstrateNetwork implements Cloneable
                             for (int t = 0; t < (this.surVirNetSet.get(ithEVN).surEdge2SubPath.get(p).get(q).size()
                                     - 1); t++)
                             {
-                                if (from == this.surVirNetSet.get(ithEVN).surEdge2SubPath.get(p).get(q).get(t)
+                                if ((from == this.surVirNetSet.get(ithEVN).surEdge2SubPath.get(p).get(q).get(t))
                                         && (to == this.surVirNetSet.get(ithEVN).surEdge2SubPath.get(p).get(q)
                                                 .get(t + 1)))
                                 {
@@ -436,7 +496,7 @@ public class SubstrateNetwork implements Cloneable
         }
         if (remain < 0)
         {
-            substrateNetworkLog.error(this.algorihtm.algorithmName+" getSubStrateRemainBandwith4VirNet");
+            substrateNetworkLog.error(this.algorihtm.algorithmName + " getSubStrateRemainBandwith4VirNet");
         }
         return remain;
     }
@@ -452,8 +512,8 @@ public class SubstrateNetwork implements Cloneable
         // node computation
         for (int i = 0; i < this.nodeSize; i++)
         {
-            this.nodeComputationCapacity[i] = (int) (snp.getNodeComputationMinimum()
-                    + Math.random() * (snp.getNodeComputationMaximum() - snp.getNodeComputationMinimum()));
+            this.nodeComputationCapacity[i] = (int) (snp.nodeComputationMinimum
+                    + Math.random() * (snp.nodeComputationMaximum - snp.nodeComputationMinimum));
         }
 
         // edge bandwith
@@ -461,7 +521,7 @@ public class SubstrateNetwork implements Cloneable
         {
             for (int j = 0; j < i; j++)
             {
-                if (Math.random() < snp.getNode2nodeProbability())
+                if (Math.random() < snp.node2nodeProbability)
                 {
                     this.topology[i][j] = this.topology[j][i] = true;
                 }
@@ -474,8 +534,8 @@ public class SubstrateNetwork implements Cloneable
                 if (this.topology[i][j])
                 {
                     this.edgeSize++;
-                    this.edgeBandwithCapacity[i][j] = (int) (snp.getEdgeBandwithMinimum()
-                            + Math.random() * (snp.getEdgeBandwithMaximum() - snp.getEdgeBandwithMinimum()));
+                    this.edgeBandwithCapacity[i][j] = (int) (snp.edgeBandwithMinimum
+                            + Math.random() * (snp.edgeBandwithMaximum - snp.edgeBandwithMinimum));
                     this.edgeBandwithCapacity[j][i] = this.edgeBandwithCapacity[i][j];
                 }
             }
@@ -484,19 +544,19 @@ public class SubstrateNetwork implements Cloneable
         // service
         for (int i = 0; i < this.nodeSize; i++)
         {
-            for (int j = 0; j < this.serviceNum; j++)
+            for (int j = 0; j < this.functionNum; j++)
             {
-                if (Math.random() < snp.getSerivecProbability())
+                if (Math.random() < snp.functionTypeProbability)
                 {
-                    this.boolServiceTypeSet[i][j] = true;
-                    vectorServiceTypeSet.get(i).addElement(j);
+                    this.boolFunctionTypeSet[i][j] = true;
+                    vectorFunctionTypeSet.get(i).addElement(j);
                 }
             }
-            if (vectorServiceTypeSet.get(i).size() == 0)
+            if (vectorFunctionTypeSet.get(i).size() == 0)
             {
-                int index = (int) ((this.serviceNum - 1) * Math.random());
-                this.boolServiceTypeSet[i][index] = true;
-                vectorServiceTypeSet.get(i).addElement(index);
+                int index = (int) ((this.functionNum - 1) * Math.random());
+                this.boolFunctionTypeSet[i][index] = true;
+                vectorFunctionTypeSet.get(i).addElement(index);
             }
         }
 
@@ -581,22 +641,22 @@ public class SubstrateNetwork implements Cloneable
             // core
             if (i == 0)
             {
-                this.boolServiceTypeSet[i][0] = true;
-                vectorServiceTypeSet.get(i).addElement(0);
+                this.boolFunctionTypeSet[i][0] = true;
+                vectorFunctionTypeSet.get(i).addElement(0);
             }
 
             // aggreation,ToR
             if ((i >= 1) && (i <= (Parameter.DataCenterAry + kdouble)))
             {
-                this.boolServiceTypeSet[i][1] = true;
-                vectorServiceTypeSet.get(i).addElement(1);
+                this.boolFunctionTypeSet[i][1] = true;
+                vectorFunctionTypeSet.get(i).addElement(1);
             }
 
             // PM
             if (i >= (1 + Parameter.DataCenterAry + kdouble))
             {
-                this.boolServiceTypeSet[i][2] = true;
-                vectorServiceTypeSet.get(i).addElement(2);
+                this.boolFunctionTypeSet[i][2] = true;
+                vectorFunctionTypeSet.get(i).addElement(2);
             }
         }
 
@@ -640,7 +700,7 @@ public class SubstrateNetwork implements Cloneable
         // sn.EVNCollection = (Vector<EnhancedVirtualNetwork>)
         // ((SubstrateNetwork) super.clone()).EVNCollection.clone();
 
-        sn.virNetCollection = new Vector<VirtualNetwork>();
+        sn.virNetSet = new Vector<VirtualNetwork>();
         sn.surVirNetSet = new Vector<SurvivalVirtualNetwork>();
 
         // sn.VNQIndexSet4Edge = (Vector<Vector<Vector<Integer>>>)
@@ -678,81 +738,6 @@ public class SubstrateNetwork implements Cloneable
                 this.edgeBandwith4Temp[i][j] = this.edgeBandwith4Temp[j][i] = 0;
             }
         }
-    }
-
-    public void faultSetResourceDistribution()
-    {
-        nodeComputationCapacity[0] = 5;
-
-        nodeComputationCapacity[1] = 7;
-        nodeComputationCapacity[2] = 7;
-        nodeComputationCapacity[3] = 10;
-        nodeComputationCapacity[4] = 6;
-        nodeComputationCapacity[5] = 9;
-        nodeComputationCapacity[6] = 8;
-        nodeComputationCapacity[7] = 9;
-        nodeComputationCapacity[8] = 8;
-
-        for (int i = 0; i < nodeSize; i++)
-        {
-            for (int j = 0; j < nodeSize; j++)
-            {
-                topology[i][j] = true;
-                edgeBandwithCapacity[i][j] = 30;
-            }
-        }
-        boolServiceTypeSet[0][0] = true;
-        boolServiceTypeSet[1][1] = true;
-        boolServiceTypeSet[1][2] = true;
-        boolServiceTypeSet[2][2] = true;
-        boolServiceTypeSet[3][3] = true;
-
-        boolServiceTypeSet[4][0] = true;
-        boolServiceTypeSet[4][1] = true;
-        boolServiceTypeSet[5][0] = true;
-        boolServiceTypeSet[5][3] = true;
-        boolServiceTypeSet[6][1] = true;
-        boolServiceTypeSet[6][2] = true;
-        boolServiceTypeSet[7][0] = true;
-        boolServiceTypeSet[7][3] = true;
-        boolServiceTypeSet[8][3] = true;
-
-        node2Label[0] = "S1";
-        node2Label[1] = "S2";
-        node2Label[2] = "S3";
-        node2Label[3] = "S4";
-        node2Label[4] = "S5";
-        node2Label[5] = "S6";
-        node2Label[6] = "S7";
-        node2Label[7] = "S8";
-        node2Label[8] = "S9";
-
-        label2Node.put("S1", 0);
-        label2Node.put("S2", 1);
-        label2Node.put("S3", 2);
-        label2Node.put("S4", 3);
-        label2Node.put("S5", 4);
-        label2Node.put("S6", 5);
-        label2Node.put("S7", 6);
-        label2Node.put("S8", 7);
-        label2Node.put("S9", 8);
-    }
-
-    /**
-     * @return the nodeSize
-     */
-    public int getNodeSize()
-    {
-        return nodeSize;
-    }
-
-    /**
-     * @param nodeSize
-     *            the nodeSize to set
-     */
-    public void setNodeSize(int nodeSize)
-    {
-        this.nodeSize = nodeSize;
     }
 
 }

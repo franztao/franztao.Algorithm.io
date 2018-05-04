@@ -32,9 +32,9 @@ public class Main
             VirtualNetworkParameter vnp = new VirtualNetworkParameter();
 
             Experiment exp = new Experiment(sn, vnp);
-            
-            result.recordExperimentParameter(0, exp.algorithms);
-            
+
+            result.recordExperimentParameter(exp.algorithms);
+
             exp.bootExperiment(ithExp);
         }
 

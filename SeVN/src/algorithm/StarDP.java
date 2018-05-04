@@ -73,7 +73,7 @@ public class StarDP
             for (int i = 0; i < svn.nodeSize4Failure; i++)
             {
 
-                if ((i == 0) && (alg.getVnp().topologyType == Parameter.TopologyTypeDataCenter))
+                if ((i == 0) && (Parameter.TopologyType == Parameter.TopologyTypeDataCenter))
                 {
                     i++;
                 }
@@ -92,7 +92,7 @@ public class StarDP
             boolean[] isFailed = new boolean[svn.nodeSize4Failure];
             for (int i = 0; i < svn.nodeSize4Failure; i++)
             {
-                if ((i == 0) && (alg.getVnp().topologyType == Parameter.TopologyTypeDataCenter))
+                if ((i == 0) && (Parameter.TopologyType == Parameter.TopologyTypeDataCenter))
                 {
                     i++;
                 }
@@ -102,7 +102,7 @@ public class StarDP
 
                 for (int j = 0; j < svn.nodeSize4Failure; j++)
                 {
-                    if ((j == 0) && (alg.getVnp().topologyType == Parameter.TopologyTypeDataCenter))
+                    if ((j == 0) && (Parameter.TopologyType == Parameter.TopologyTypeDataCenter))
                     {
                         j++;
                     }
@@ -120,7 +120,7 @@ public class StarDP
                 int optimalSolutionVal = Integer.MAX_VALUE;
                 for (int j = 0; j < svn.nodeSize4Failure; j++)
                 {
-                    if ((j == 0) && (alg.getVnp().topologyType == Parameter.TopologyTypeDataCenter))
+                    if ((j == 0) && (Parameter.TopologyType == Parameter.TopologyTypeDataCenter))
                     {
                         j++;
                     }

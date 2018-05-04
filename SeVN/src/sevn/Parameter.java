@@ -80,7 +80,7 @@ public class Parameter
 
     // service parameter
     public static final int ServiceNumber = 15;// 15
-    public static final double SerivecProbability = 0.1;// 0.5
+    public static final double FunctionTypeProbability = 0.1;// 0.5
 
     // Virtual Network
     // node parameter //2-5 5-8 5-10
@@ -105,7 +105,7 @@ public class Parameter
     public static final int TopologyTypeSample = -1;
     public static final int TopologyTypeRandom = 1;
     public static final int TopologyTypeDataCenter = 2;
-    public static final int TopologyType = TopologyTypeSNDLib;
+    public static final int TopologyType = TopologyTypeDataCenter;
 
     public static final int SubStrateNodeComputationMinimum = 10;// 50
     public static final int SubStrateNodeComputationMaximum = 20;// 100

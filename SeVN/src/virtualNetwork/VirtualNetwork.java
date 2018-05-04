@@ -15,27 +15,25 @@ import survivabelVirtualNetwork.SurvivalVirtualNetwork;
  */
 public class VirtualNetwork
 {
-    private boolean isRunning;
-    private int index;
-    private int leaveTime;
-
+    public boolean isRunning;
+    public int index;
+    public int leaveTime;
+    //node
     public int nodeSize;
     public int[] virNode2subNode;
     public int[] nodeComputationDemand;
     public int[] nodeComputationCapacity;
-
+    //edge
     public boolean[][] topology;
     public int[][] edgeBandwithDemand;
     public Vector<Vector<Vector<Integer>>> virEdge2subPath;
-
-    public int serviceNum;
+    //function
+    public int functionNum;
     public int[] nodeFunctionType;
 
     public String[] node2Label;
-
     public Map<String, Integer> label2Node;
 
-    public boolean isSampleInit;
 
     public SurvivalVirtualNetwork surVirNet;
 
@@ -49,7 +47,7 @@ public class VirtualNetwork
     {
 
         this.nodeSize = vnp.nodeSize;
-        this.serviceNum = vnp.serviceNumber;
+        this.functionNum = vnp.serviceNumber;
         initializeVariable();
 
     }
@@ -63,7 +61,7 @@ public class VirtualNetwork
     public VirtualNetwork(VirtualNetwork sameVirNet)
     {
         this.nodeSize = sameVirNet.nodeSize;
-        this.serviceNum = sameVirNet.serviceNum;
+        this.functionNum = sameVirNet.functionNum;
         initializeVariable();
     }
 
@@ -73,9 +71,9 @@ public class VirtualNetwork
     private void initializeVariable()
     {
         // node
-        this.virNode2subNode = new int[nodeSize];
         this.nodeComputationDemand = new int[nodeSize];
         this.nodeComputationCapacity = new int[nodeSize];
+        this.virNode2subNode = new int[nodeSize];
 
         //edge
         this.topology = new boolean[nodeSize][nodeSize];
@@ -231,7 +229,7 @@ public class VirtualNetwork
      */
     public int getServiceNumber()
     {
-        return serviceNum;
+        return functionNum;
     }
 
     /**
@@ -240,7 +238,7 @@ public class VirtualNetwork
      */
     public void setServiceNumber(int serviceNumber)
     {
-        this.serviceNum = serviceNumber;
+        this.functionNum = serviceNumber;
     }
 
     /**
@@ -294,22 +292,6 @@ public class VirtualNetwork
         this.label2Node = label2Node;
     }
 
-    /**
-     * @return the sampleInit
-     */
-    public boolean isSampleInit()
-    {
-        return isSampleInit;
-    }
-
-    /**
-     * @param sampleInit
-     *            the sampleInit to set
-     */
-    public void setSampleInit(boolean sampleInit)
-    {
-        this.isSampleInit = sampleInit;
-    }
 
     /**
      * @return the index
@@ -390,40 +372,6 @@ public class VirtualNetwork
 
         nodeFunctionType[0] = 0;
         nodeFunctionType[1] = 1;
-    }
-
-    public void initSample3()
-    {
-        nodeComputationDemand[0] = 3;
-
-        nodeFunctionType[0] = 0;
-    }
-
-    /**
-     * @return the leaveTime
-     */
-    public int getLeaveTime()
-    {
-        return leaveTime;
-    }
-
-    /**
-     * @param leaveTime
-     *            the leaveTime to set
-     */
-    public void setLeaveTime(int leaveTime)
-    {
-        this.leaveTime = leaveTime;
-    }
-
-    public boolean getIsRunning()
-    {
-        return isRunning;
-    }
-
-    public void setIsRunning(boolean isRunning)
-    {
-        this.isRunning = isRunning;
     }
 
 }

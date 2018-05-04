@@ -39,11 +39,12 @@ public class Experiment
      */
     public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp)
     {
+        PropertyConfigurator.configure("log4j.properties");
+
         this.basicSubstrateNework = sn;
         this.vnp = vnp;
         this.algorithms = new Vector<SeVN>();
-        // this.result = result;
-        PropertyConfigurator.configure("log4j.properties");
+
     }
 
     /**
@@ -70,18 +71,8 @@ public class Experiment
     {
         for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++)
         {
-            VirtualNetwork protoVirNet = new VirtualNetwork(this.vnp);
 
-            if (this.vnp.topologyType == Parameter.TopologyTypeRandom
-                    || this.vnp.topologyType == Parameter.TopologyTypeSNDLib)
-            {
-                constructSameVirNet4RandomTopo(protoVirNet);
-            }
-
-            if (this.vnp.topologyType == Parameter.TopologyTypeDataCenter)
-            {
-                constructSameVirNet4DataCenter(protoVirNet);
-            }
+            VirtualNetwork protoVirNet = generateProtoVirtualNetwork(this.vnp);
 
             experimentlogger.info("####### Time/Total Time: " + time + "/" + Parameter.SubstrateNewtorkRunTimeInterval);
 
@@ -138,6 +129,41 @@ public class Experiment
     }
 
     /**
+     * @param vnp2
+     * @return
+     * 
+     */
+    private VirtualNetwork generateProtoVirtualNetwork(VirtualNetworkParameter vnp2)
+    {
+        VirtualNetwork protoVirNet = new VirtualNetwork(this.vnp);
+
+        if (Parameter.TopologyType == Parameter.TopologyTypeRandom
+                || Parameter.TopologyType == Parameter.TopologyTypeSNDLib)
+        {
+            constructSameVirNet4RandomTopo(protoVirNet);
+        }
+        if (Parameter.TopologyType == Parameter.TopologyTypeSample)
+        {
+            constructSameVirNet4Sample(protoVirNet);
+        }
+
+        if (Parameter.TopologyType == Parameter.TopologyTypeDataCenter)
+        {
+            constructSameVirNet4DataCenter(protoVirNet);
+        }
+        return protoVirNet;
+    }
+
+    /**
+     * @param protoVirNet
+     */
+    private void constructSameVirNet4Sample(VirtualNetwork protoVirNet)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
      * constructSameVirNet4DataCenter.
      * 
      */
@@ -148,12 +174,12 @@ public class Experiment
         {
 
             ExponentialDistribution dist = new ExponentialDistribution(Parameter.VNRequestsContinueTimeExponentialMean);
-            vn.setLeaveTime(((int) dist.sample()));
+            vn.leaveTime = (((int) dist.sample()));
         }
 
         if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeUniform)
         {
-            vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
+            vn.leaveTime = ((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
                     * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
         }
 
@@ -170,7 +196,7 @@ public class Experiment
             int snodeloc;
             do
             {
-                snodeloc = (int) Math.round(1 + Parameter.DataCenterAry
+                snodeloc = (int) Math.ceil(1 + Parameter.DataCenterAry
                         + Parameter.DataCenterAry * Parameter.DataCenterAry + 1 + Math.random()
                                 * (Parameter.DataCenterAry * Parameter.DataCenterAry * Parameter.DataCenterAry - 1));
                 if (!isSamesNode[snodeloc])
@@ -184,8 +210,9 @@ public class Experiment
             // service
             Random ran = new Random();
 
-            int index = Math.abs(ran.nextInt()) % (this.basicSubstrateNework.vectorServiceTypeSet.get(snodeloc).size());
-            int nodeservice = this.basicSubstrateNework.vectorServiceTypeSet.get(snodeloc).elementAt(index);
+            int index = Math.abs(ran.nextInt())
+                    % (this.basicSubstrateNework.vectorFunctionTypeSet.get(snodeloc).size());
+            int nodeservice = this.basicSubstrateNework.vectorFunctionTypeSet.get(snodeloc).elementAt(index);
             vn.nodeFunctionType[i] = nodeservice;
 
             // node demand
@@ -200,7 +227,7 @@ public class Experiment
             if (vn.virNode2subNode[i] != vn.virNode2subNode[0])
             {
                 int distributeIthEdgeBandwith = (int) (2
-                        + Math.round(Math.random() * (Parameter.DataCenterVNBandWidth)));
+                        + Math.ceil(Math.random() * (Parameter.DataCenterVNBandWidth)));
                 vn.topology[i][0] = vn.topology[0][i] = true;
                 vn.edgeBandwithDemand[i][0] = vn.edgeBandwithDemand[0][i] = distributeIthEdgeBandwith;
             }
@@ -218,11 +245,11 @@ public class Experiment
         if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeExponential)
         {
             ExponentialDistribution dist = new ExponentialDistribution(Parameter.VNRequestsContinueTimeExponentialMean);
-            vn.setLeaveTime(((int) dist.sample()));
+            vn.leaveTime = (((int) dist.sample()));
         }
         if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeUniform)
         {
-            vn.setLeaveTime((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
+            vn.leaveTime = ((int) (Parameter.VNRequestsContinueTimeMinimum + Math.random()
                     * (Parameter.VNRequestsContinueTimeMaximum - Parameter.VNRequestsContinueTimeMinimum)));
         }
         boolean[] isSamesNode = new boolean[this.basicSubstrateNework.nodeSize];
@@ -242,12 +269,13 @@ public class Experiment
             } while (true);
             // service
             Random ran = new Random();
-            int index = Math.abs(ran.nextInt()) % (this.basicSubstrateNework.vectorServiceTypeSet.get(snodeloc).size());
-            int nodeservice = this.basicSubstrateNework.vectorServiceTypeSet.get(snodeloc).elementAt(index);
+            int index = Math.abs(ran.nextInt())
+                    % (this.basicSubstrateNework.vectorFunctionTypeSet.get(snodeloc).size());
+            int nodeservice = this.basicSubstrateNework.vectorFunctionTypeSet.get(snodeloc).elementAt(index);
             vn.nodeFunctionType[i] = nodeservice;
             // node demand
             vn.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum
-                    + Math.round(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
+                    + Math.ceil(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
 
         }
 
@@ -261,7 +289,7 @@ public class Experiment
                     if (vn.virNode2subNode[i] != vn.virNode2subNode[j])
                     {
                         int distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum
-                                + Math.round(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
+                                + Math.ceil(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
                         vn.topology[i][j] = vn.topology[j][i] = true;
                         vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeIthEdgeBandwith;
                     }

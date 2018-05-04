@@ -26,7 +26,6 @@ public class VirtualNetworkParameter
     // service parameter
     public int serviceNumber = Parameter.ServiceNumber;
 
-    public int topologyType = Parameter.TopologyType;
     public boolean isSampleInit;
 
     /**
@@ -34,13 +33,13 @@ public class VirtualNetworkParameter
      */
     public VirtualNetworkParameter()
     {
-        if (this.topologyType == Parameter.TopologyTypeSample)
+        if (Parameter.TopologyType == Parameter.TopologyTypeSample)
         {
             this.nodeSize = 4;
             this.serviceNumber = 4;
         }
 
-        if (this.topologyType == Parameter.TopologyTypeDataCenter)
+        if (Parameter.TopologyType == Parameter.TopologyTypeDataCenter)
         {
             this.nodeSize = Parameter.DataCenterVNSize;
             this.nodeSizeMinimum = 2;
@@ -55,7 +54,7 @@ public class VirtualNetworkParameter
             this.serviceNumber = 3;
         }
 
-        if (this.topologyType == Parameter.TopologyTypeRandom || this.topologyType == Parameter.TopologyTypeSNDLib)
+        if (Parameter.TopologyType == Parameter.TopologyTypeRandom || Parameter.TopologyType == Parameter.TopologyTypeSNDLib)
         {
             this.nodeSize = (int) (this.nodeSizeMinimum
                     + Math.random() * (this.nodeSizeMaximum - this.nodeSizeMinimum));
