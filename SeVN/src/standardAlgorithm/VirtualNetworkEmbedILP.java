@@ -48,7 +48,7 @@ public class VirtualNetworkEmbedILP
         {
             for (int j = 0; j < subNet.nodeSize; j++)
             {
-                nodeMappingMatrix[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, " r:" + i + " c:" + j);
+                nodeMappingMatrix[i][j] = model.addVar(0.0, 1.0, 0.0, Parameter.LinearProgramType, " r:" + i + " c:" + j);
             }
         }
 
@@ -61,7 +61,7 @@ public class VirtualNetworkEmbedILP
                 {
                     for (int l = 0; l < subNet.nodeSize; l++)
                     {
-                        edgeMappingMatrix[i][j][k][l] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
+                        edgeMappingMatrix[i][j][k][l] = model.addVar(0.0, 1.0, 0.0, Parameter.LinearProgramType,
                                 " i:" + i + " j:" + j + " k:" + k + " l:" + l);
                     }
                 }
@@ -125,12 +125,12 @@ public class VirtualNetworkEmbedILP
             {
                 expr.addTerm(protoVN.nodeComputationDemand[i], nodeMappingMatrix[i][j]);
             }
-            if (subNet.getSubstrateRemainComputaion4VirNet(j, alg.isShared()) < 0)
+            if (subNet.getSubstrateRemainComputaion4VirNet(j, alg.isShared) < 0)
             {
                 vneLog.error("subNet.getSubstrateRemainComputaion4VirNet(j, alg.isShared()) < 0");
                 return false;
             }
-            model.addConstr(expr, GRB.LESS_EQUAL, subNet.getSubstrateRemainComputaion4VirNet(j, alg.isShared()),
+            model.addConstr(expr, GRB.LESS_EQUAL, subNet.getSubstrateRemainComputaion4VirNet(j, alg.isShared),
                     "T'*D<=C" + "r " + j);
         }
         // virtual function
@@ -233,13 +233,13 @@ public class VirtualNetworkEmbedILP
                         }
                     }
                 }
-                if (subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared()) < 0)
+                if (subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared) < 0)
                 {
                     vneLog.error("subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared()) < 0");
                     return false;
                 }
                 model.addConstr(bandwidth, GRB.LESS_EQUAL,
-                        subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared()),
+                        subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared),
                         "vPathBandwidth" + "r " + k + "c: " + l);
             }
         }

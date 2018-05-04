@@ -242,26 +242,25 @@ public class SubstrateNetwork implements Cloneable
         }
 
         boolFunctionTypeSet[0][0] = true;
-        
+
         boolFunctionTypeSet[1][1] = true;
         boolFunctionTypeSet[1][2] = true;
-        
+
         boolFunctionTypeSet[2][2] = true;
-        
+
         boolFunctionTypeSet[3][3] = true;
 
         boolFunctionTypeSet[4][0] = true;
         boolFunctionTypeSet[4][1] = true;
-        
+
         boolFunctionTypeSet[5][0] = true;
         boolFunctionTypeSet[5][3] = true;
-        
+
         boolFunctionTypeSet[6][1] = true;
         boolFunctionTypeSet[6][2] = true;
-        
+
         boolFunctionTypeSet[7][1] = true;
 
-       
     }
 
     /**
@@ -388,11 +387,11 @@ public class SubstrateNetwork implements Cloneable
             {
                 int ithSurVirNet = this.surVirNetIndexSet4sNode.get(nodeloc).get(i);
                 int temp = 0;
-
-                if ((this.virNetSet.get(ithSurVirNet) != null) && this.virNetSet.get(ithSurVirNet).isRunning
+                if ((this.virNetSet.get(this.surVirNetSet.get(ithSurVirNet).virNet.index) != null)
+                        && this.virNetSet.get(this.surVirNetSet.get(ithSurVirNet).virNet.index).isRunning
                         && this.surVirNetSet.get(ithSurVirNet).isSucceedEmbed)
                 {
-                    for (int j = 0; j < this.surVirNetSet.get(ithSurVirNet).getNodeSize(); j++)
+                    for (int j = 0; j < this.surVirNetSet.get(ithSurVirNet).nodeSize; j++)
                     {
                         if (nodeloc == this.surVirNetSet.get(ithSurVirNet).surNode2subNode[j])
                         {
@@ -461,25 +460,26 @@ public class SubstrateNetwork implements Cloneable
             int maxShare = 0;
             for (int i = 0; i < this.surVirNetIndexSet4sEdge.get(from).get(to).size(); i++)
             {
-                int ithEVN = this.surVirNetIndexSet4sEdge.get(from).get(to).get(i);
+                int ithSeVN = this.surVirNetIndexSet4sEdge.get(from).get(to).get(i);
 
                 int tempBandwith = 0;
-                if ((this.virNetSet.get(ithEVN) != null) && this.virNetSet.get(ithEVN).isRunning
-                        && this.surVirNetSet.get(ithEVN).isSucceedEmbed)
+                if ((this.virNetSet.get(this.surVirNetSet.get(ithSeVN).virNet.index) != null)
+                        && this.virNetSet.get(this.surVirNetSet.get(ithSeVN).virNet.index).isRunning
+                        && this.surVirNetSet.get(ithSeVN).isSucceedEmbed)
                 {
-                    for (int p = 0; p < this.surVirNetSet.get(ithEVN).getNodeSize(); p++)
+                    for (int p = 0; p < this.surVirNetSet.get(ithSeVN).nodeSize; p++)
                     {
-                        for (int q = 0; q < this.surVirNetSet.get(ithEVN).getNodeSize(); q++)
+                        for (int q = 0; q < this.surVirNetSet.get(ithSeVN).nodeSize; q++)
                         {
-                            for (int t = 0; t < (this.surVirNetSet.get(ithEVN).surEdge2SubPath.get(p).get(q).size()
+                            for (int t = 0; t < (this.surVirNetSet.get(ithSeVN).surEdge2SubPath.get(p).get(q).size()
                                     - 1); t++)
                             {
-                                if ((from == this.surVirNetSet.get(ithEVN).surEdge2SubPath.get(p).get(q).get(t))
-                                        && (to == this.surVirNetSet.get(ithEVN).surEdge2SubPath.get(p).get(q)
+                                if ((from == this.surVirNetSet.get(ithSeVN).surEdge2SubPath.get(p).get(q).get(t))
+                                        && (to == this.surVirNetSet.get(ithSeVN).surEdge2SubPath.get(p).get(q)
                                                 .get(t + 1)))
                                 {
 
-                                    tempBandwith += this.surVirNetSet.get(ithEVN).edgeBandwith4Backup[p][q];
+                                    tempBandwith += this.surVirNetSet.get(ithSeVN).edgeBandwith4Backup[p][q];
                                 }
                             }
                         }

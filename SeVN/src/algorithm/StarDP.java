@@ -38,7 +38,7 @@ public class StarDP
             items[i] = new StarStructure();
             items[i].starNodeSurVirNetInd = svn.virNode2surNode[i];
             items[i].starNodeComputation = svn.virNet.nodeComputationDemand[i];
-            items[i].starNodeServiceType = svn.virNet.nodeFunctionType[i];
+            items[i].starNodeFunctionType = svn.virNet.nodeFunctionType[i];
             items[i].neighborEdge = new Vector<StarEdgeStructure>();
             for (int j = 0; j < svn.virNet.nodeSize; j++)
             {
@@ -83,7 +83,7 @@ public class StarDP
                 {
                     return false;
                 }
-                svn.augmentNodeEdge(ithItem2ithKnapsack, i, svn.matchMethod, this.items, this.knapsacks);
+                svn.augmentNodeEdge(ithItem2ithKnapsack, i, Parameter.MatchMethod, this.items, this.knapsacks);
 
             }
         }
@@ -134,8 +134,8 @@ public class StarDP
                         }
                     }
                 }
-                svn.augmentNodeEdge(solution[nextOptimalFailNode], nextOptimalFailNode, svn.matchMethod, this.items,
-                        this.knapsacks);
+                svn.augmentNodeEdge(solution[nextOptimalFailNode], nextOptimalFailNode, Parameter.MatchMethod,
+                        this.items, this.knapsacks);
                 isFailed[nextOptimalFailNode] = true;
             }
         }
@@ -159,11 +159,11 @@ public class StarDP
             {
 
                 StarStructure star = new StarStructure();
-                star.starNodeServiceType = -1;
-                star.nodeServiceTypeSet = new boolean[this.svn.serviceNum];
-                for (int j = 0; j < this.svn.serviceNum; j++)
+                star.starNodeFunctionType = -1;
+                star.nodeServiceTypeSet = new boolean[this.svn.functionNum];
+                for (int j = 0; j < this.svn.functionNum; j++)
                 {
-                    star.nodeServiceTypeSet[j] = this.svn.boolServiceTypeSet[i][j];
+                    star.nodeServiceTypeSet[j] = this.svn.boolFunctionTypeSet[i][j];
                 }
                 star.starNodeSurVirNetInd = i;
                 star.starNodeComputation = this.svn.nodeComputationConsume[i];
@@ -216,7 +216,7 @@ public class StarDP
         MulitpleKnapsack mkp = new MulitpleKnapsack(this.svn.virNet.nodeSize, knapsacks.size(), this.svn.nodeSize);
         constructMultipleKnapsackProbem(mkp, isFailDep);
         int optimalResult = -1;
-        if (this.svn.matchMethod == Parameter.MatchMethodDP)
+        if (Parameter.MatchMethod == Parameter.MatchMethodDP)
         {
             optimalResult = mkp.optimalSoutionDP(ithItem2ithKnapsack);
             if (optimalResult == -1)
@@ -227,7 +227,7 @@ public class StarDP
             }
         }
 
-        if (this.svn.matchMethod == Parameter.MatchMethodIP)
+        if (Parameter.MatchMethod == Parameter.MatchMethodIP)
         {
             optimalResult = mkp.optimalSoutionIntegerPrograming(ithItem2ithKnapsack);
             if (optimalResult == -1)
@@ -276,7 +276,7 @@ public class StarDP
                 // items[i].starNodeSurVirNetInd) {
                 // System.out.println("fff");
                 // }
-                if (knapsacks.elementAt(j).nodeServiceTypeSet[items[i].starNodeServiceType])
+                if (knapsacks.elementAt(j).nodeServiceTypeSet[items[i].starNodeFunctionType])
                 {
                     if (items[i].starNodeComputation <= this.svn.nodeComputationCapacity[knapsacks
                             .elementAt(j).starNodeSurVirNetInd])

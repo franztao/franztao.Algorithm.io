@@ -11,7 +11,7 @@ import java.util.Vector;
  */
 public class StarStructure
 {
-    public int starNodeServiceType;
+    public int starNodeFunctionType;
     public int starNodeComputation;
     public int starNodeSurVirNetInd;
 

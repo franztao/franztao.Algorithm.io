@@ -39,7 +39,7 @@ public class SurvivalVirtualNetwork
 
     private Logger loggerEnhancedVirtualNetwork = Logger.getLogger(SurvivalVirtualNetwork.class);
 
-    public final int matchMethod = Parameter.MatchMethod;
+//    public final int matchMethod = Parameter.MatchMethod;
 
     // nodeSize=enhacnedNodeSize+backupNodeSize
     public int nodeSize;
@@ -57,8 +57,8 @@ public class SurvivalVirtualNetwork
     public int[][] edgeBandwith4Backup;
     public Vector<Vector<Vector<Integer>>> surEdge2SubPath;
 
-    public int serviceNum;
-    public boolean[][] boolServiceTypeSet;
+    public int functionNum;
+    public boolean[][] boolFunctionTypeSet;
 
     public String[] node2Label;
     public Map<String, Integer> label2Node;
@@ -68,7 +68,7 @@ public class SurvivalVirtualNetwork
     public int[] surNode2subNode;
 
     public VirtualNetwork virNet;
-
+    public int index;
     // public boolean sampleInit;
 
     /**
@@ -105,6 +105,7 @@ public class SurvivalVirtualNetwork
     {
         PropertyConfigurator.configure("log4j.properties");
         this.virNet = vn;
+        this.virNet.surVirNet = this;
         this.isSucceedEmbed = false;
 
         // node
@@ -132,8 +133,8 @@ public class SurvivalVirtualNetwork
         }
 
         // service
-        this.serviceNum = vn.functionNum;
-        this.boolServiceTypeSet = new boolean[nodeSize][serviceNum];
+        this.functionNum = vn.functionNum;
+        this.boolFunctionTypeSet = new boolean[nodeSize][functionNum];
 
         // label
         this.node2Label = new String[nodeSize];
@@ -141,7 +142,7 @@ public class SurvivalVirtualNetwork
 
         // embed function
         this.virNode2surNode = new int[this.virNet.nodeSize];
-        this.surNode2virNode = new int[this.virNet.nodeSize];
+        this.surNode2virNode = new int[this.nodeSize];
         this.surNode2subNode = new int[this.nodeSize];
 
         // knapsack problem
@@ -149,27 +150,6 @@ public class SurvivalVirtualNetwork
         this.consumedResource = new ConsumeResource();
 
         constrcutSurVirNet(sn, vn, bn);
-    }
-
-    /**
-     * nodeSize.
-     * 
-     * @return the nodeSize
-     */
-    public int getNodeSize()
-    {
-        return nodeSize;
-    }
-
-    /**
-     * setNodeSize.
-     * 
-     * @param nodeSize
-     *            the nodeSize to set
-     */
-    public void setNodeSize(int nodeSize)
-    {
-        this.nodeSize = nodeSize;
     }
 
     /**
@@ -208,34 +188,31 @@ public class SurvivalVirtualNetwork
             this.surNode2virNode[i] = i;
         }
         // edge
-        for (int i = 0; i < this.nodeSize; i++)
+        for (int i = 0; i < this.nodeSize4Failure; i++)
         {
             for (int j = 0; j < i; j++)
             {
-                if ((i < this.nodeSize4Failure)
-                        && (vn.edgeBandwithDemand[this.virNode2surNode[i]][this.virNode2surNode[j]] > 0))
+                if ((vn.edgeBandwithDemand[this.virNode2surNode[i]][this.virNode2surNode[j]] > 0))
                 {
                     int isurNode = this.virNode2surNode[i];
                     int jsurNode = this.virNode2surNode[j];
-                    this.topology[isurNode][jsurNode] = true;
-                    this.topology[jsurNode][isurNode] = true;
-                    this.edgeBandwith4Comsume[isurNode][jsurNode] = vn.edgeBandwithDemand[i][j];
-                    this.edgeBandwith4Comsume[jsurNode][isurNode] = vn.edgeBandwithDemand[i][j];
+                    this.topology[isurNode][jsurNode] = this.topology[jsurNode][isurNode] = true;
+                    this.edgeBandwith4Comsume[isurNode][jsurNode] = this.edgeBandwith4Comsume[jsurNode][isurNode] = vn.edgeBandwithDemand[i][j];
                 }
             }
         }
 
-        // service
+        // function
         for (int i = 0; i < this.nodeSize; i++)
         {
-            for (int j = 0; j < this.serviceNum; j++)
+            for (int j = 0; j < this.functionNum; j++)
             {
                 if (i < this.nodeSize4Failure)
                 {
-                    this.boolServiceTypeSet[i][j] = sn.boolFunctionTypeSet[vn.virNode2subNode[i]][j];
+                    this.boolFunctionTypeSet[i][j] = sn.boolFunctionTypeSet[vn.virNode2subNode[i]][j];
                 } else
                 {
-                    this.boolServiceTypeSet[i][j] = sn.boolFunctionTypeSet[bn.backNode2subNode[i
+                    this.boolFunctionTypeSet[i][j] = sn.boolFunctionTypeSet[bn.backNode2subNode[i
                             - this.nodeSize4Failure]][j];
                 }
             }

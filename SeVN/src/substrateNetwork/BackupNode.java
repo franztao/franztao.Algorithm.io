@@ -13,7 +13,7 @@ public class BackupNode
 
     public int backupNodeSize;
     public int[] backNode2subNode;
-    public boolean[][] boolServiceTypeSet;
+    public boolean[][] boolFunctionTypeSet;
     public int[] nodeComputationCapacity;
 
     public boolean[] isHaveSubstrateNodeResource4buNode;
@@ -48,7 +48,7 @@ public class BackupNode
         }
 
         this.backNode2subNode = new int[this.backupNodeSize];
-        this.boolServiceTypeSet = new boolean[this.backupNodeSize][sn.functionNum];
+        this.boolFunctionTypeSet = new boolean[this.backupNodeSize][sn.functionNum];
         this.nodeComputationCapacity = new int[this.backupNodeSize];
         this.isHaveSubstrateNodeResource4buNode = new boolean[this.backupNodeSize];
 
@@ -64,7 +64,7 @@ public class BackupNode
 
                 for (int l = 0; l < sn.functionNum; l++)
                 {
-                    boolServiceTypeSet[j][l] = sn.boolFunctionTypeSet[i][l];
+                    boolFunctionTypeSet[j][l] = sn.boolFunctionTypeSet[i][l];
                 }
 
                 this.nodeComputationCapacity[j] = sn.getSubstrateRemainComputaion4SurVirNet(i, isShared);

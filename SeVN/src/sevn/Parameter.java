@@ -4,6 +4,8 @@
 
 package sevn;
 
+import gurobi.GRB;
+
 /*
  * Survivable Virtual Network Design and Embedding to Survive a Facility Node Failure
  */
@@ -11,12 +13,13 @@ public class Parameter
 {
 
     // SNDLib topology number is 12
-    public static final int ExperimentTimes = 1;
+    public static final int ExperimentTimes = 36;
 
+    public static final char LinearProgramType = GRB.CONTINUOUS;// GRB.BINARY
     // VirutualNetworkEmbeddingAlgorithm
     public static final int VNERandom = 0;
     public static final int VNEILP = 1;
-    public static final int VNEAlgorithm = VNERandom;
+    public static final int VNEAlgorithm = VNEILP;
 
     // resource shared
     public static final int FailureDependent = 0;
@@ -46,12 +49,11 @@ public class Parameter
     public static final int addEdgeBandwithCost = 1;
     public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost / addEdgeBandwithCost;
 
-    public static final boolean IsSameVirNet4EveryTime = true;
     public static final boolean IsReleaseVNafterEVNFailure = false;
     public static final boolean IsMultipleNodeMapOneNode = true;
     public static final boolean IsConsiderEdgeBandwith = true;
 
-    public static final long SubstrateNewtorkRunTimeInterval = 600;// 30000
+    public static final long SubstrateNewtorkRunTimeInterval = 1000;// 30000
     public static final long unitTimeInterval = 1;
 
     // RequestType
@@ -59,11 +61,11 @@ public class Parameter
     public static final int RequestTypePossion = 0;
     public static final int RequestType = RequestTypePossion;
     // GeometricDistribution
-    public static final double RequestAppearProbability = 0.5;// 0.1
+    public static final double RequestAppearProbability = 0.1;// 0.1
     public static final long RequestPerTimeAppearNum = 1;// 1
     public static final long VirNetDuration = 1;
     // possion distribution
-    public static final long PossionMean = 1;
+    public static final long PossionMean = 5;
 
     public static final int VNRequestsLeaseTypeUniform = 0;
     public static final int VNRequestsLeaseTypeExponential = 1;
@@ -73,7 +75,7 @@ public class Parameter
     public static final long VNRequestsContinueTimeMaximum = 100;
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
     // Exponential
-    public static final long VNRequestsContinueTimeExponentialMean = 300;
+    public static final long VNRequestsContinueTimeExponentialMean = SubstrateNewtorkRunTimeInterval / 10;
 
     // ExperimentPicture
     public static final int ExperimentPicturePlotNumber = 25;
@@ -105,12 +107,12 @@ public class Parameter
     public static final int TopologyTypeSample = -1;
     public static final int TopologyTypeRandom = 1;
     public static final int TopologyTypeDataCenter = 2;
-    public static final int TopologyType = TopologyTypeDataCenter;
+    public static final int TopologyType = TopologyTypeSNDLib;
 
     public static final int SubStrateNodeComputationMinimum = 10;// 50
     public static final int SubStrateNodeComputationMaximum = 20;// 100
     public static final int SubStrateEdgeBandwithMinimum = 10;// 100
-    public static final int SubStrateEdgeBandwithMaximum = 30;// 200
+    public static final int SubStrateEdgeBandwithMaximum = 50;// 200
 
     // Random
     // node parameter

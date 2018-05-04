@@ -374,7 +374,7 @@ public class Result
      *            algorithms
      * 
      */
-    public void recordExperimentParameter( Vector<SeVN> algorithms)
+    public void recordExperimentParameter(Vector<SeVN> algorithms)
     {
         File flParameter = new File(fileAbsolutePath + dataFilePathString + "Parameter.txt");
         FileWriter fwParameter;
@@ -389,21 +389,21 @@ public class Result
                 e.printStackTrace();
             }
         }
-            try
-            {
-                fwParameter = new FileWriter(flParameter);
-                fwParameter.write(Parameter.ExperimentTimes + "\n");
-                fwParameter.write((Parameter.ExperimentPicturePlotNumber + 1) + "\n");
-                fwParameter.write(Parameter.SubstrateNewtorkRunTimeInterval + "\n");
-                fwParameter.write(algorithms.size() + "\n");
-                fwParameter.write(Parameter.RelativeCostbetweenComputingBandwidth + "\n");
-                fwParameter.write(Parameter.addNewVirNodeCost + "\n");
-                fwParameter.flush();
-                fwParameter.close();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+        try
+        {
+            fwParameter = new FileWriter(flParameter);
+            fwParameter.write(Parameter.ExperimentTimes + "\n");
+            fwParameter.write((Parameter.ExperimentPicturePlotNumber + 1) + "\n");
+            fwParameter.write(Parameter.SubstrateNewtorkRunTimeInterval + "\n");
+            fwParameter.write(algorithms.size() + "\n");
+            fwParameter.write(Parameter.RelativeCostbetweenComputingBandwidth + "\n");
+            fwParameter.write(Parameter.addNewVirNodeCost + "\n");
+            fwParameter.flush();
+            fwParameter.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
@@ -469,10 +469,10 @@ public class Result
         int usedEdge = 0;
         int nodeComputation = 0;
         int edgeBandwith = 0;
-        for (int i = 0; i < algorithm.getSn().nodeSize; i++)
+        for (int i = 0; i < algorithm.subNet.nodeSize; i++)
         {
-            int nc = algorithm.getSn().nodeComputationCapacity[i]
-                    - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
+            int nc = algorithm.subNet.nodeComputationCapacity[i]
+                    - algorithm.subNet.getSubstrateRemainComputaion4VirNet(i, algorithm.isShared);
 
             if (nc < 0)
             {
@@ -489,8 +489,8 @@ public class Result
 
             for (int j = 0; j < i; j++)
             {
-                int bc = algorithm.getSn().edgeBandwithCapacity[i][j]
-                        - algorithm.getSn().getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared());
+                int bc = algorithm.subNet.edgeBandwithCapacity[i][j]
+                        - algorithm.subNet.getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared);
                 if (bc < 0)
                 {
                     resultLog.error("edgeBandwith less zero");
@@ -518,9 +518,9 @@ public class Result
         edgeBandwith = 0;
         int runningVirNetNum = 0;
         int runningSurNetNum = 0;
-        for (int i = 0; i < algorithm.getSn().virNetSet.size(); i++)
+        for (int i = 0; i < algorithm.subNet.virNetSet.size(); i++)
         {
-            VirtualNetwork vn = algorithm.getSn().virNetSet.get(i);
+            VirtualNetwork vn = algorithm.subNet.virNetSet.get(i);
             if (vn != null && vn.isRunning)
             {
                 runningVirNetNum++;
@@ -541,7 +541,7 @@ public class Result
                     }
                 }
             }
-            if (vn != null && vn.isRunning&& vn.surVirNet.isSucceedEmbed)
+            if (vn != null && vn.isRunning && vn.surVirNet.isSucceedEmbed)
             {
                 runningSurNetNum++;
                 for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++)
@@ -575,42 +575,42 @@ public class Result
         int embeddedVN4SubstrateEdge = 0;
         int vnRequestInSubstrateEdge = 0;
         int vnRequestInSubstrateNode = 0;
-        for (int i = 0; i < algorithm.getSn().nodeSize; i++)
+        for (int i = 0; i < algorithm.subNet.nodeSize; i++)
         {
-            if (algorithm.getSn().nodeComputationCapacity[i] != algorithm.getSn().getSubstrateRemainComputaion4VirNet(i,
-                    algorithm.isShared()))
+            if (algorithm.subNet.nodeComputationCapacity[i] != algorithm.subNet.getSubstrateRemainComputaion4VirNet(i,
+                    algorithm.isShared))
             {
                 embeddedVN4SubstrateNode++;
             }
 
-            for (int j = 0; j < algorithm.getSn().nodeSize; j++)
+            for (int j = 0; j < algorithm.subNet.nodeSize; j++)
             {
-                if (algorithm.getSn().edgeBandwithCapacity[i][j] != algorithm.getSn().getSubStrateRemainBandwith4VirNet(i,
-                        j, algorithm.isShared()))
+                if (algorithm.subNet.edgeBandwithCapacity[i][j] != algorithm.subNet.getSubStrateRemainBandwith4VirNet(i,
+                        j, algorithm.isShared))
                 {
                     embeddedVN4SubstrateEdge++;
                 }
             }
         }
 
-        for (int i = 0; i < algorithm.getSn().nodeSize; i++)
+        for (int i = 0; i < algorithm.subNet.nodeSize; i++)
         {
-            for (int j = 0; j < algorithm.getSn().virNetIndexSet4sNode.get(i).size(); j++)
+            for (int j = 0; j < algorithm.subNet.virNetIndexSet4sNode.get(i).size(); j++)
             {
-                int vnIndex = algorithm.getSn().virNetIndexSet4sNode.get(i).get(j);
-                if (algorithm.getSn().virNetSet.get(vnIndex) != null
-                        && algorithm.getSn().virNetSet.get(vnIndex).isRunning)
+                int vnIndex = algorithm.subNet.virNetIndexSet4sNode.get(i).get(j);
+                if (algorithm.subNet.virNetSet.get(vnIndex) != null
+                        && algorithm.subNet.virNetSet.get(vnIndex).isRunning)
                 {
                     vnRequestInSubstrateNode++;
                 }
             }
-            for (int j = 0; j < algorithm.getSn().nodeSize; j++)
+            for (int j = 0; j < algorithm.subNet.nodeSize; j++)
             {
-                for (int k = 0; k < algorithm.getSn().virNetIndexSet4sEdge.get(i).get(j).size(); k++)
+                for (int k = 0; k < algorithm.subNet.virNetIndexSet4sEdge.get(i).get(j).size(); k++)
                 {
-                    int vnIndex = algorithm.getSn().virNetIndexSet4sEdge.get(i).get(j).get(k);
-                    if (algorithm.getSn().virNetSet.get(vnIndex) != null
-                            && algorithm.getSn().virNetSet.get(vnIndex).isRunning)
+                    int vnIndex = algorithm.subNet.virNetIndexSet4sEdge.get(i).get(j).get(k);
+                    if (algorithm.subNet.virNetSet.get(vnIndex) != null
+                            && algorithm.subNet.virNetSet.get(vnIndex).isRunning)
                     {
                         vnRequestInSubstrateEdge++;
                     }
@@ -628,46 +628,44 @@ public class Result
         }
 
         // stress
-        this.stressNode = (1.0 * vnRequestInSubstrateNode / algorithm.getSn().nodeSize);
-        this.stressEdge = (1.0 * vnRequestInSubstrateNode / algorithm.getSn().edgeSize);
+        this.stressNode = (1.0 * vnRequestInSubstrateNode / algorithm.subNet.nodeSize);
+        this.stressEdge = (1.0 * vnRequestInSubstrateNode / algorithm.subNet.edgeSize);
 
         // utilization
         this.utilizationNode = 0;
         this.utilizationEdge = 0;
-        for (int i = 0; i < algorithm.getSn().nodeSize; i++)
+        for (int i = 0; i < algorithm.subNet.nodeSize; i++)
         {
-            int all = algorithm.getSn().nodeComputationCapacity[i];
-            int remain = algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
+            int all = algorithm.subNet.nodeComputationCapacity[i];
+            int remain = algorithm.subNet.getSubstrateRemainComputaion4VirNet(i, algorithm.isShared);
             if (all != remain)
             {
-                utilizationNode += ((all - remain) * 1.0 / algorithm.getSn().nodeComputationCapacity[i]);
+                utilizationNode += ((all - remain) * 1.0 / algorithm.subNet.nodeComputationCapacity[i]);
             }
 
-            for (int j = 0; j < algorithm.getSn().nodeSize; j++)
+            for (int j = 0; j < algorithm.subNet.nodeSize; j++)
             {
-                all = algorithm.getSn().edgeBandwithCapacity[i][j];
-                remain = algorithm.getSn().getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared());
+                all = algorithm.subNet.edgeBandwithCapacity[i][j];
+                remain = algorithm.subNet.getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared);
                 if (all != remain)
                 {
-                    utilizationEdge += ((all - remain) * 1.0 / algorithm.getSn().edgeBandwithCapacity[i][j]);
+                    utilizationEdge += ((all - remain) * 1.0 / algorithm.subNet.edgeBandwithCapacity[i][j]);
 
                 }
             }
         }
-        this.utilizationNode = this.utilizationNode / algorithm.getSn().nodeSize;
-        this.utilizationEdge = this.utilizationEdge / algorithm.getSn().edgeSize;
+        this.utilizationNode = this.utilizationNode / algorithm.subNet.nodeSize;
+        this.utilizationEdge = this.utilizationEdge / algorithm.subNet.edgeSize;
 
         // acception ratio
-        if (0 == algorithm.getSn().virNetSet.size())
+        if (0 == algorithm.subNet.virNetSet.size())
         {
             this.acceptanceRatioSurNet = 1.0;
             this.acceptanceRatioVirNet = 1.0;
         } else
         {
-            this.acceptanceRatioSurNet = (1.0 * algorithm.getSn().surNetSuceedEmbedSum
-                    / algorithm.getSn().virNetReqSum);
-            this.acceptanceRatioVirNet = (1.0 * algorithm.getSn().virNetSuceedEmbedSum
-                    / algorithm.getSn().virNetReqSum);
+            this.acceptanceRatioSurNet = (1.0 * algorithm.subNet.surNetSuceedEmbedSum / algorithm.subNet.virNetReqSum);
+            this.acceptanceRatioVirNet = (1.0 * algorithm.subNet.virNetSuceedEmbedSum / algorithm.subNet.virNetReqSum);
 
         }
     }
@@ -767,10 +765,10 @@ public class Result
         int usedEdge = 0;
         int nodeComputation = 0;
         int edgeBandwith = 0;
-        for (int i = 0; i < algorithm.getSn().nodeSize; i++)
+        for (int i = 0; i < algorithm.subNet.nodeSize; i++)
         {
-            int nc = algorithm.getSn().nodeComputationCapacity[i]
-                    - algorithm.getSn().getSubstrateRemainComputaion4VirNet(i, algorithm.isShared());
+            int nc = algorithm.subNet.nodeComputationCapacity[i]
+                    - algorithm.subNet.getSubstrateRemainComputaion4VirNet(i, algorithm.isShared);
 
             if (nc < 0)
             {
@@ -787,8 +785,8 @@ public class Result
 
             for (int j = 0; j < i; j++)
             {
-                int bc = algorithm.getSn().edgeBandwithCapacity[i][j]
-                        - algorithm.getSn().getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared());
+                int bc = algorithm.subNet.edgeBandwithCapacity[i][j]
+                        - algorithm.subNet.getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared);
                 if (bc < 0)
                 {
                     resultLog.error("edgeBandwith less zero");
@@ -821,9 +819,9 @@ public class Result
         edgeBandwith = 0;
         int vnNum = 0;
         int svnNum = 0;
-        for (int i = 0; i < algorithm.getSn().virNetSet.size(); i++)
+        for (int i = 0; i < algorithm.subNet.virNetSet.size(); i++)
         {
-            VirtualNetwork vn = algorithm.getSn().virNetSet.get(i);
+            VirtualNetwork vn = algorithm.subNet.virNetSet.get(i);
             if (vn != null && vn.isRunning)
             {
                 vnNum++;
@@ -871,13 +869,13 @@ public class Result
         this.revenueEdgeBwAcc += (edgeBandwith - this.revenueEdgeBw);
         this.revenueNodeCpAcc += (nodeComputation - this.revenueNodeCp);
 
-        this.virNetReqAcc = algorithm.getSn().virNetSuceedEmbedSum;
+        this.virNetReqAcc = algorithm.subNet.virNetSuceedEmbedSum;
         if (algorithm.algorithmName.equals("VirNet"))
         {
             this.surNetReqAcc = this.virNetReqAcc;
         } else
         {
-            this.surNetReqAcc = algorithm.getSn().surNetSuceedEmbedSum;
+            this.surNetReqAcc = algorithm.subNet.surNetSuceedEmbedSum;
         }
 
         this.activeNodeVirNode = usedNode;

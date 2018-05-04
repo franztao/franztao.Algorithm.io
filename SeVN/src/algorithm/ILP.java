@@ -264,12 +264,12 @@ public class ILP
             {
                 for (int j = 0; j < sn.virNet.nodeSize; j++)
                 {
-                    for (int l = 0; l < sn.serviceNum; l++)
+                    for (int l = 0; l < sn.functionNum; l++)
                     {
                         GRBLinExpr conexpr = new GRBLinExpr();
                         for (int k = 0; k < sn.nodeSize; k++)
                         {
-                            if (sn.boolServiceTypeSet[k][l])
+                            if (sn.boolFunctionTypeSet[k][l])
                             {
                                 conexpr.addTerm(1.0, transformMatrix[i][j][k]);
                             }

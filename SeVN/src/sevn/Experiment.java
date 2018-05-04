@@ -72,7 +72,7 @@ public class Experiment
         for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++)
         {
 
-            VirtualNetwork protoVirNet = generateProtoVirtualNetwork(this.vnp);
+            VirtualNetwork protoVirNet = generateProtoVirtualNetwork();
 
             experimentlogger.info("####### Time/Total Time: " + time + "/" + Parameter.SubstrateNewtorkRunTimeInterval);
 
@@ -106,7 +106,7 @@ public class Experiment
 
                     for (int r = 0; r < AppearNum; r++)
                     {
-                        if ((Math.random() < AppearProbability))
+                        if ((Math.random() <= AppearProbability))
                         {
                             experimentlogger.info("+++++ Time/Total Time: " + time + "/"
                                     + Parameter.SubstrateNewtorkRunTimeInterval + "  Alg: " + alg);
@@ -129,11 +129,10 @@ public class Experiment
     }
 
     /**
-     * @param vnp2
      * @return
      * 
      */
-    private VirtualNetwork generateProtoVirtualNetwork(VirtualNetworkParameter vnp2)
+    private VirtualNetwork generateProtoVirtualNetwork()
     {
         VirtualNetwork protoVirNet = new VirtualNetwork(this.vnp);
 
@@ -157,9 +156,47 @@ public class Experiment
     /**
      * @param protoVirNet
      */
-    private void constructSameVirNet4Sample(VirtualNetwork protoVirNet)
+    private void constructSameVirNet4Sample(VirtualNetwork vn)
     {
-        // TODO Auto-generated method stub
+        vn.leaveTime = (int) Parameter.SubstrateNewtorkRunTimeInterval;
+        vn.nodeComputationDemand[0] = 2;
+        vn.nodeComputationDemand[1] = 3;
+        vn.nodeComputationDemand[2] = 5;
+        vn.nodeComputationDemand[3] = 6;
+        vn.virNode2subNode[0] = 0;
+        vn.virNode2subNode[1] = 1;
+        vn.virNode2subNode[2] = 2;
+        vn.virNode2subNode[3] = 3;
+
+        vn.virNode2subNode[0] = 0;
+        vn.virNode2subNode[1] = 1;
+        vn.virNode2subNode[2] = 2;
+        vn.virNode2subNode[3] = 3;
+
+        vn.edgeBandwithDemand[0][1] = 4;
+        vn.edgeBandwithDemand[0][2] = 5;
+        vn.edgeBandwithDemand[0][3] = 3;
+        vn.edgeBandwithDemand[1][2] = 6;
+        vn.edgeBandwithDemand[1][0] = 4;
+        vn.edgeBandwithDemand[2][0] = 5;
+        vn.edgeBandwithDemand[3][0] = 3;
+        vn.edgeBandwithDemand[2][1] = 6;
+
+        for (int i = 0; i < vn.nodeSize; i++)
+        {
+            for (int j = 0; j < vn.nodeSize; j++)
+            {
+                if (0 != vn.edgeBandwithDemand[i][j])
+                {
+                    vn.topology[i][j] = true;
+                }
+            }
+        }
+
+        vn.nodeFunctionType[0] = 0;
+        vn.nodeFunctionType[1] = 1;
+        vn.nodeFunctionType[2] = 2;
+        vn.nodeFunctionType[3] = 3;
 
     }
 
@@ -239,7 +276,7 @@ public class Experiment
      * constructSameVirNet.
      * 
      */
-    private void constructSameVirNet4RandomTopo(VirtualNetwork vn)
+    public void constructSameVirNet4RandomTopo(VirtualNetwork vn)
     {
 
         if (Parameter.VNRequestsLeaseType == Parameter.VNRequestsLeaseTypeExponential)
@@ -329,19 +366,6 @@ public class Experiment
             // Parameter.FailureDependent, false,
             // Parameter.Min);
             // this.algorithms.addElement(alg);
-
-            SubstrateNetwork FD_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new SeVN();
-            alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent, true,
-                    Parameter.Ran);
-            this.algorithms.addElement(alg);
-
-            SubstrateNetwork FD_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new SeVN();
-            alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.FailureDependent, false,
-                    Parameter.Ran);
-            this.algorithms.addElement(alg);
-
             // SubstrateNetwork FI_Min_Shared = (SubstrateNetwork)
             // this.basicSubstrateNework.clone();
             // alg = new SeVN();
@@ -357,36 +381,6 @@ public class Experiment
             // Parameter.FailureIndependent, false,
             // Parameter.Min);
             // this.algorithms.addElement(alg);
-
-            SubstrateNetwork FI_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new SeVN();
-            alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.FailureIndependent, true,
-                    Parameter.Ran);
-            this.algorithms.addElement(alg);
-
-            SubstrateNetwork FI_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new SeVN();
-            alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.FailureIndependent, false,
-                    Parameter.Ran);
-            this.algorithms.addElement(alg);
-
-            SubstrateNetwork virNet = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new SeVN();
-            alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
-            this.algorithms.addElement(alg);
-
-            SubstrateNetwork One2OneProtection_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new SeVN();
-            alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
-                    Parameter.One2OneProtection, false, Parameter.Ran);
-            this.algorithms.addElement(alg);
-
-            SubstrateNetwork One2OneProtection_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
-            alg = new SeVN();
-            alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
-                    Parameter.One2OneProtection, true, Parameter.Ran);
-            this.algorithms.addElement(alg);
-
             // SubstrateNetwork One2OneProtection_Min_NoShared = (SubstrateNetwork)
             // this.basicSubstrateNework.clone();
             // alg = new SeVN();
@@ -402,6 +396,47 @@ public class Experiment
             // One2OneProtection_Min_Shared, false,
             // Parameter.One2OneProtection, true, Parameter.Min);
             // this.algorithms.addElement(alg);
+
+            SubstrateNetwork FD_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            alg = new SeVN();
+            alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent, true,
+                    Parameter.Ran);
+            this.algorithms.addElement(alg);
+
+            SubstrateNetwork FD_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            alg = new SeVN();
+            alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.FailureDependent, false,
+                    Parameter.Ran);
+            this.algorithms.addElement(alg);
+
+            SubstrateNetwork FI_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            alg = new SeVN();
+            alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.FailureIndependent, true,
+                    Parameter.Ran);
+            this.algorithms.addElement(alg);
+
+            SubstrateNetwork FI_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            alg = new SeVN();
+            alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.FailureIndependent, false,
+                    Parameter.Ran);
+            this.algorithms.addElement(alg);
+
+            SubstrateNetwork One2OneProtection_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            alg = new SeVN();
+            alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
+                    Parameter.One2OneProtection, false, Parameter.Ran);
+            this.algorithms.addElement(alg);
+
+            SubstrateNetwork One2OneProtection_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            alg = new SeVN();
+            alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
+                    Parameter.One2OneProtection, true, Parameter.Ran);
+            this.algorithms.addElement(alg);
+
+            SubstrateNetwork virNet = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            alg = new SeVN();
+            alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
+            this.algorithms.addElement(alg);
 
             // SubstrateNetwork FD_ILP_Shared_Exact = (SubstrateNetwork)
             // this.basicSubstrateNework.clone();
@@ -428,7 +463,7 @@ public class Experiment
         for (int i = 0; i < algorithms.size(); i++)
         {
             algorithmResult[i] = new Result();
-            algorithms.get(i).setVnp(vnp);
+            algorithms.get(i).vnp = (vnp);
         }
 
     }
