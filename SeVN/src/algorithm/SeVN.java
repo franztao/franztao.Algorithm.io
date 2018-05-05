@@ -7,7 +7,6 @@ package algorithm;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -201,7 +200,6 @@ public class SeVN
                 }
             } catch (GRBException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             for (int i = 0; i < protoVN.nodeSize; i++)
@@ -221,7 +219,6 @@ public class SeVN
                         }
                     } catch (GRBException e)
                     {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
 
@@ -459,7 +456,6 @@ public class SeVN
                             }
                         } catch (GRBException e)
                         {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                         vn.topology[i][j] = vn.topology[j][i] = true;

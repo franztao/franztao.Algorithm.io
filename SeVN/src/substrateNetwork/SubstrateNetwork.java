@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,7 +16,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import algorithm.SeVN;
 import sevn.Parameter;
-import sevn.Result;
 import sndlib.core.io.SNDlibIOFactory;
 import sndlib.core.io.SNDlibIOFormat;
 import sndlib.core.io.SNDlibParseException;
@@ -96,7 +94,6 @@ public class SubstrateNetwork implements Cloneable
                 networkReader = new FileReader(readfile.getAbsolutePath());
             } catch (FileNotFoundException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             SNDlibParser parser = SNDlibIOFactory.newParser(SNDlibIOFormat.NATIVE);
@@ -105,7 +102,6 @@ public class SubstrateNetwork implements Cloneable
                 network = parser.parseNetwork(networkReader);
             } catch (SNDlibParseException | IOException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             if (network != null)

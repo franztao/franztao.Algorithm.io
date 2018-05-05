@@ -13,7 +13,7 @@ public class Parameter
 {
 
     // SNDLib topology number is 12
-    public static final int ExperimentTimes = 36;
+    public static final int ExperimentTimes = 12;
 
     public static final char LinearProgramType = GRB.CONTINUOUS;// GRB.BINARY
     // VirutualNetworkEmbeddingAlgorithm
@@ -121,7 +121,7 @@ public class Parameter
     public static final double SubStrateNodenodeProbability = 0.75;
 
     // SNDlib
-    public static final String SNDLibFile = "F:\\workspace\\franztao.Algorithm.io\\SeVN\\data\\sndlib-networks-native";
+    public static final String SNDLibFile = "data\\sndlib-networks-native";
 
     // DataCenter
     public static final int DataCenterLevel = 4;// 4

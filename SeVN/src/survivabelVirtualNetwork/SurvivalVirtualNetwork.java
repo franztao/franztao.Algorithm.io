@@ -4,20 +4,12 @@
 
 package survivabelVirtualNetwork;
 
-import gurobi.GRB;
-import gurobi.GRBEnv;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBModel;
-import gurobi.GRBQuadExpr;
-import gurobi.GRBVar;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
 import sevn.Parameter;
-import standardAlgorithm.MulitpleKnapsack;
 import substrateNetwork.BackupNode;
 import substrateNetwork.SubstrateNetwork;
 import virtualNetwork.VirtualNetwork;
