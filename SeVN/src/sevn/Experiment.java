@@ -26,7 +26,7 @@ import virtualNetwork.VirtualNetworkParameter;
 public class Experiment
 {
     // log
-    private Logger experimentlogger = Logger.getLogger(Experiment.class);
+    private Logger experimentlogger = Logger.getLogger(Experiment.class.getName());
 
     private SubstrateNetwork basicSubstrateNework;
     private VirtualNetworkParameter vnp;
@@ -39,6 +39,7 @@ public class Experiment
      */
     public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp)
     {
+        experimentlogger.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
 
         this.basicSubstrateNework = sn;
@@ -64,10 +65,10 @@ public class Experiment
     /**
      * runComparableAlgorithmInSameVirNet.
      * 
-     * @param experimentTimes
+     * @param ithExper
      *            running experimentTimes
      */
-    private void runComparableAlgorithmWithSameVirNet(int experimentTimes)
+    private void runComparableAlgorithmWithSameVirNet(int ithExper)
     {
         for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++)
         {
@@ -81,7 +82,7 @@ public class Experiment
 
                 if ((time % (Parameter.SubstrateNewtorkRunTimeInterval / Parameter.ExperimentPicturePlotNumber)) == 0)
                 {
-                    this.algorithmResult[alg].recordExperimentData(experimentTimes, algorithms.get(alg), time);
+                    this.algorithmResult[alg].recordExperimentData(ithExper, algorithms.get(alg), time);
                 }
 
                 algorithms.get(alg).releaseResource(false);
@@ -123,7 +124,7 @@ public class Experiment
         {
             algorithms.get(alg).releaseResource(true);
             algorithms.get(alg).isClearAllResource();
-            this.algorithmResult[alg].writeExperimentDatatoFile(experimentTimes, algorithms.get(alg));
+            this.algorithmResult[alg].writeExperimentDatatoFile(ithExper, algorithms.get(alg));
         }
 
     }

@@ -3,6 +3,7 @@
  */
 package standardAlgorithm;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -23,18 +24,18 @@ import virtualNetwork.VirtualNetwork;
  */
 public class VirtualNetworkEmbedILP
 {
-    private Logger vneLog = Logger.getLogger(VirtualNetworkEmbedILP.class);
+    private Logger vneLog = Logger.getLogger(VirtualNetworkEmbedILP.class.getName());
     public GRBEnv env;
     public GRBModel model;
     public GRBVar[][] nodeMappingMatrix;
     public GRBVar[][][][] edgeMappingMatrix;
 
-    
     public VirtualNetworkEmbedILP()
     {
+        vneLog.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
     }
-    
+
     public boolean VirtualNetworkEmbedding(VirtualNetwork protoVN, SubstrateNetwork subNet, SeVN alg)
             throws GRBException
     {
@@ -48,7 +49,8 @@ public class VirtualNetworkEmbedILP
         {
             for (int j = 0; j < subNet.nodeSize; j++)
             {
-                nodeMappingMatrix[i][j] = model.addVar(0.0, 1.0, 0.0, Parameter.LinearProgramType, " r:" + i + " c:" + j);
+                nodeMappingMatrix[i][j] = model.addVar(0.0, 1.0, 0.0, Parameter.LinearProgramType,
+                        " r:" + i + " c:" + j);
             }
         }
 
@@ -134,7 +136,7 @@ public class VirtualNetworkEmbedILP
                     "T'*D<=C" + "r " + j);
         }
         // virtual function
-        // T'*S<=So
+        // T'*S<=So``
         for (int j = 0; j < subNet.nodeSize; j++)
         {
             for (int l = 0; l < subNet.functionNum; l++)
@@ -238,8 +240,7 @@ public class VirtualNetworkEmbedILP
                     vneLog.error("subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared()) < 0");
                     return false;
                 }
-                model.addConstr(bandwidth, GRB.LESS_EQUAL,
-                        subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared),
+                model.addConstr(bandwidth, GRB.LESS_EQUAL, subNet.getSubStrateRemainBandwith4VirNet(k, l, alg.isShared),
                         "vPathBandwidth" + "r " + k + "c: " + l);
             }
         }

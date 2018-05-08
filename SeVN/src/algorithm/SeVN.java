@@ -29,7 +29,7 @@ import virtualNetwork.VirtualNetworkParameter;
  */
 public class SeVN
 {
-    private Logger sevnLog = Logger.getLogger(SeVN.class);
+    private Logger sevnLog = Logger.getLogger(SeVN.class.getName());
 
     public String algorithmName;
     public SubstrateNetwork subNet;
@@ -49,7 +49,7 @@ public class SeVN
     public int failSequence;
 
     public SeVN()
-    {
+    {   sevnLog.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
     }
 

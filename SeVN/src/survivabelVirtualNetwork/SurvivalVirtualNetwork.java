@@ -29,7 +29,7 @@ import algorithm.StarStructure;
 public class SurvivalVirtualNetwork
 {
 
-    private Logger loggerEnhancedVirtualNetwork = Logger.getLogger(SurvivalVirtualNetwork.class);
+    private Logger loggerEnhancedVirtualNetwork = Logger.getLogger(SurvivalVirtualNetwork.class.getName());
 
 //    public final int matchMethod = Parameter.MatchMethod;
 
@@ -95,6 +95,8 @@ public class SurvivalVirtualNetwork
      */
     public SurvivalVirtualNetwork(SubstrateNetwork sn, VirtualNetwork vn, BackupNode bn)
     {
+        loggerEnhancedVirtualNetwork.setLevel(Parameter.logLevel);
+
         PropertyConfigurator.configure("log4j.properties");
         this.virNet = vn;
         this.virNet.surVirNet = this;

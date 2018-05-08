@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -28,7 +29,7 @@ import virtualNetwork.VirtualNetwork;
 
 public class SubstrateNetwork implements Cloneable
 {
-    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetwork.class);
+    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetwork.class.getName());
 
     public SeVN algorihtm;
 
@@ -74,6 +75,7 @@ public class SubstrateNetwork implements Cloneable
      */
     public SubstrateNetwork(SubStrateNetworkParameter snp, int ithexperiment)
     {
+        substrateNetworkLog.setLevel(Parameter.logLevel);
 
         PropertyConfigurator.configure("log4j.properties");
 

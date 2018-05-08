@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -23,8 +24,8 @@ import virtualNetwork.VirtualNetwork;
  */
 public class Result
 {
-    private Logger resultLog = Logger.getLogger(Result.class);
-
+    private Logger resultLog = Logger.getLogger(Result.class.getName());
+    
     String fileAbsolutePath = Parameter.FileAbsolutePath;//
     String dataFilePathString = "/Data/";
     String prefix = "\\newcommand{\\";
@@ -105,6 +106,7 @@ public class Result
      */
     public Result()
     {
+        resultLog.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
         arrayAcceptanceRatioSurNet = new double[(Parameter.ExperimentPicturePlotNumber + 1)
                 * Parameter.ExperimentTimes];
