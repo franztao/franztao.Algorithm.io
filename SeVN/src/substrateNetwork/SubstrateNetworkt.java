@@ -27,9 +27,9 @@ import sndlib.core.network.Node;
 import survivabelVirtualNetwork.SurvivalVirtualNetwork;
 import virtualNetwork.VirtualNetwork;
 
-public class SubstrateNetwork implements Cloneable
+public class SubstrateNetworkt implements Cloneable
 {
-    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetwork.class.getName());
+    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetworkt.class.getName());
 
     public SeVN algorihtm;
 
@@ -73,7 +73,7 @@ public class SubstrateNetwork implements Cloneable
      * @param snp
      *            snp
      */
-    public SubstrateNetwork(SubStrateNetworkParameter snp, int ithexperiment)
+    public SubstrateNetworkt(SubStrateNetworkParameter snp, int ithexperiment)
     {
         substrateNetworkLog.setLevel(Parameter.logLevel);
 
@@ -663,7 +663,7 @@ public class SubstrateNetwork implements Cloneable
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        SubstrateNetwork sn = (SubstrateNetwork) super.clone();
+        SubstrateNetworkt sn = (SubstrateNetworkt) super.clone();
         sn.nodeComputationCapacity = new int[sn.nodeSize];
         sn.nodeComputationCapacity = Arrays.copyOf(this.nodeComputationCapacity, this.nodeSize);
         sn.nodeComputation4Crital = new int[sn.nodeSize];

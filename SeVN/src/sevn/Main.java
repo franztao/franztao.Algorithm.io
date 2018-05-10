@@ -5,7 +5,7 @@
 package sevn;
 
 import substrateNetwork.SubStrateNetworkParameter;
-import substrateNetwork.SubstrateNetwork;
+import substrateNetwork.SubstrateNetworkt;
 import virtualNetwork.VirtualNetworkParameter;
 
 public class Main
@@ -27,7 +27,7 @@ public class Main
         {
             SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
 
-            SubstrateNetwork sn = new SubstrateNetwork(snp, ithExp);
+            SubstrateNetworkt sn = new SubstrateNetworkt(snp, ithExp);
 
             VirtualNetworkParameter vnp = new VirtualNetworkParameter();
 

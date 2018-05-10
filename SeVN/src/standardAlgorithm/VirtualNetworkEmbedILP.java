@@ -15,7 +15,7 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import sevn.Parameter;
-import substrateNetwork.SubstrateNetwork;
+import substrateNetwork.SubstrateNetworkt;
 import virtualNetwork.VirtualNetwork;
 
 /**
@@ -36,7 +36,7 @@ public class VirtualNetworkEmbedILP
         PropertyConfigurator.configure("log4j.properties");
     }
 
-    public boolean VirtualNetworkEmbedding(VirtualNetwork protoVN, SubstrateNetwork subNet, SeVN alg)
+    public boolean VirtualNetworkEmbedding(VirtualNetwork protoVN, SubstrateNetworkt subNet, SeVN alg)
             throws GRBException
     {
         env = new GRBEnv();

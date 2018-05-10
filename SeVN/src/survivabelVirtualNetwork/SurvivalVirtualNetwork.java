@@ -11,7 +11,7 @@ import java.util.Vector;
 
 import sevn.Parameter;
 import substrateNetwork.BackupNode;
-import substrateNetwork.SubstrateNetwork;
+import substrateNetwork.SubstrateNetworkt;
 import virtualNetwork.VirtualNetwork;
 
 import org.apache.log4j.Logger;
@@ -93,7 +93,7 @@ public class SurvivalVirtualNetwork
      * @param bn
      *            bn
      */
-    public SurvivalVirtualNetwork(SubstrateNetwork sn, VirtualNetwork vn, BackupNode bn)
+    public SurvivalVirtualNetwork(SubstrateNetworkt sn, VirtualNetwork vn, BackupNode bn)
     {
         loggerEnhancedVirtualNetwork.setLevel(Parameter.logLevel);
 
@@ -154,7 +154,7 @@ public class SurvivalVirtualNetwork
      * @param bn
      *            bn
      */
-    private void constrcutSurVirNet(SubstrateNetwork sn, VirtualNetwork vn, BackupNode bn)
+    private void constrcutSurVirNet(SubstrateNetworkt sn, VirtualNetwork vn, BackupNode bn)
     {
         // node
         for (int i = 0; i < this.nodeSize; i++)

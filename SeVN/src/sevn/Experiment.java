@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import algorithm.SeVN;
-import substrateNetwork.SubstrateNetwork;
+import substrateNetwork.SubstrateNetworkt;
 import virtualNetwork.VirtualNetwork;
 import virtualNetwork.VirtualNetworkParameter;
 
@@ -28,7 +28,7 @@ public class Experiment
     // log
     private Logger experimentlogger = Logger.getLogger(Experiment.class.getName());
 
-    private SubstrateNetwork basicSubstrateNework;
+    private SubstrateNetworkt basicSubstrateNework;
     private VirtualNetworkParameter vnp;
     private Result[] algorithmResult;
 
@@ -37,7 +37,7 @@ public class Experiment
     /**
      * Experiment .
      */
-    public Experiment(SubstrateNetwork sn, VirtualNetworkParameter vnp)
+    public Experiment(SubstrateNetworkt sn, VirtualNetworkParameter vnp)
     {
         experimentlogger.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
@@ -398,43 +398,43 @@ public class Experiment
             // Parameter.One2OneProtection, true, Parameter.Min);
             // this.algorithms.addElement(alg);
 
-            SubstrateNetwork FD_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            SubstrateNetworkt FD_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVN();
             alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetwork FD_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            SubstrateNetworkt FD_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVN();
             alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.FailureDependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetwork FI_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            SubstrateNetworkt FI_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVN();
             alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.FailureIndependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetwork FI_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            SubstrateNetworkt FI_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVN();
             alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.FailureIndependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetwork One2OneProtection_Ran_NoShared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            SubstrateNetworkt One2OneProtection_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVN();
             alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
                     Parameter.One2OneProtection, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetwork One2OneProtection_Ran_Shared = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            SubstrateNetworkt One2OneProtection_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVN();
             alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
                     Parameter.One2OneProtection, true, Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetwork virNet = (SubstrateNetwork) this.basicSubstrateNework.clone();
+            SubstrateNetworkt virNet = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVN();
             alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
             this.algorithms.addElement(alg);

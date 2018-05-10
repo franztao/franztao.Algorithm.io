@@ -28,7 +28,7 @@ public class BackupNode
      * @param isShared
      *            isShared
      */
-    public BackupNode(SubstrateNetwork sn, VirtualNetwork vn, boolean isShared)
+    public BackupNode(SubstrateNetworkt sn, VirtualNetwork vn, boolean isShared)
     {
         // backup node number;
         boolean[] isUsedNode = new boolean[sn.nodeSize];

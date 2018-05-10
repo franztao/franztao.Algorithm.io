@@ -15,7 +15,7 @@ public class Parameter
 {
     public static final Level logLevel=Level.WARN;
     // SNDLib topology number is 12
-    public static final int ExperimentTimes = 12;
+    public static final int ExperimentTimes = 36;
 
     public static final char LinearProgramType = GRB.BINARY;// GRB.BINARY
     // VirutualNetworkEmbeddingAlgorithm

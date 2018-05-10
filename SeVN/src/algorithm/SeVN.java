@@ -16,7 +16,7 @@ import sevn.Parameter;
 import standardAlgorithm.VirtualNetworkEmbedILP;
 import standardAlgorithm.ShortestPath;
 import substrateNetwork.BackupNode;
-import substrateNetwork.SubstrateNetwork;
+import substrateNetwork.SubstrateNetworkt;
 import survivabelVirtualNetwork.SurvivalVirtualNetwork;
 import virtualNetwork.VirtualNetwork;
 import virtualNetwork.VirtualNetworkParameter;
@@ -32,7 +32,7 @@ public class SeVN
     private Logger sevnLog = Logger.getLogger(SeVN.class.getName());
 
     public String algorithmName;
-    public SubstrateNetwork subNet;
+    public SubstrateNetworkt subNet;
     public VirtualNetworkParameter vnp;
 
     public StarDP alg;
@@ -821,7 +821,7 @@ public class SeVN
      * @param isShared
      *            isShared
      */
-    public void setParameter(String algName, SubstrateNetwork sn, boolean isExact, int failureindependent,
+    public void setParameter(String algName, SubstrateNetworkt sn, boolean isExact, int failureindependent,
             boolean isShared, int sequence)
     {
         this.algorithmName = algName;
