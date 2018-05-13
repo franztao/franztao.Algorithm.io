@@ -27,9 +27,9 @@ import virtualNetwork.VirtualNetworkParameter;
  * @author franz
  *
  */
-public class SeVN
+public class SeVNAlgorithm
 {
-    private Logger sevnLog = Logger.getLogger(SeVN.class.getName());
+    private Logger sevnLog = Logger.getLogger(SeVNAlgorithm.class.getName());
 
     public String algorithmName;
     public SubstrateNetworkt subNet;
@@ -48,7 +48,7 @@ public class SeVN
     // 0 Ran 1 Min
     public int failSequence;
 
-    public SeVN()
+    public SeVNAlgorithm()
     {   sevnLog.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
     }

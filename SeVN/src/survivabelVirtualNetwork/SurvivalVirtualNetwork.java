@@ -17,7 +17,7 @@ import virtualNetwork.VirtualNetwork;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import algorithm.SeVN;
+import algorithm.SeVNAlgorithm;
 import algorithm.StarStructure;
 
 /**
@@ -316,7 +316,7 @@ public class SurvivalVirtualNetwork
      * @param alg
      *            alg
      */
-    public void computeConsumedResource(SeVN alg)
+    public void computeConsumedResource(SeVNAlgorithm alg)
     {
         int nodeNum = 0;
         int nodeComputaiton = 0;

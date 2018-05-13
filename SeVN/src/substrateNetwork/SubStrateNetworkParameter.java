@@ -43,13 +43,13 @@ public class SubStrateNetworkParameter
 
         if (Parameter.TopologyType == Parameter.TopologyTypeSNDLib)
         {
-            this.functionTypeNumber = Parameter.ServiceNumber;
+            this.functionTypeNumber = Parameter.FunctionNumber;
         }
 
         if (Parameter.TopologyType == Parameter.TopologyTypeRandom)
         {
             this.nodeSize = Parameter.SubStrateNodeSize;
-            this.functionTypeNumber = Parameter.ServiceNumber;
+            this.functionTypeNumber = Parameter.FunctionNumber;
         }
 
         if (Parameter.TopologyType == Parameter.TopologyTypeDataCenter)

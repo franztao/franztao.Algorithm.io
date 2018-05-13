@@ -27,7 +27,7 @@ public class ILP
      * @return
      * 
      */
-    public boolean exactAlgorithmIntegerProgram4SeVN(SeVN alg, SurvivalVirtualNetwork sn)
+    public boolean exactAlgorithmIntegerProgram4SeVN(SeVNAlgorithm alg, SurvivalVirtualNetwork sn)
     {
         try
         {

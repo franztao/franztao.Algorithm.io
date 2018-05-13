@@ -60,7 +60,7 @@ public class StarDP
      * 
      * @param svn
      */
-    public boolean heursitcAlgorithm4SeVN(SeVN alg, SurvivalVirtualNetwork svn) throws GRBException
+    public boolean heursitcAlgorithm4SeVN(SeVNAlgorithm alg, SurvivalVirtualNetwork svn) throws GRBException
     {
         // 1 node+2 node computaion+12 bandwidth
         // 0 node+1 node computaion+5 bandwidth

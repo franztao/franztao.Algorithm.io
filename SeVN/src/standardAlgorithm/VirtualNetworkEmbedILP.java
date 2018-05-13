@@ -7,7 +7,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import algorithm.SeVN;
+import algorithm.SeVNAlgorithm;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -36,7 +36,7 @@ public class VirtualNetworkEmbedILP
         PropertyConfigurator.configure("log4j.properties");
     }
 
-    public boolean VirtualNetworkEmbedding(VirtualNetwork protoVN, SubstrateNetworkt subNet, SeVN alg)
+    public boolean VirtualNetworkEmbedding(VirtualNetwork protoVN, SubstrateNetworkt subNet, SeVNAlgorithm alg)
             throws GRBException
     {
         env = new GRBEnv();

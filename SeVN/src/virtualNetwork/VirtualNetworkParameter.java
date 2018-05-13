@@ -24,7 +24,7 @@ public class VirtualNetworkParameter
     public int edgeBandwithMaximum = Parameter.VirtualEdgeBandwithMaximum;
 
     // service parameter
-    public int serviceNumber = Parameter.ServiceNumber;
+    public int serviceNumber = Parameter.FunctionNumber;
 
     public boolean isSampleInit;
 
@@ -58,7 +58,7 @@ public class VirtualNetworkParameter
         {
             this.nodeSize = (int) (this.nodeSizeMinimum
                     + Math.random() * (this.nodeSizeMaximum - this.nodeSizeMinimum));
-            this.serviceNumber = Parameter.ServiceNumber;
+            this.serviceNumber = Parameter.FunctionNumber;
         }
     }
 

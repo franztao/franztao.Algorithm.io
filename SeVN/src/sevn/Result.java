@@ -13,7 +13,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import algorithm.SeVN;
+import algorithm.SeVNAlgorithm;
 import virtualNetwork.VirtualNetwork;
 
 /**
@@ -25,7 +25,7 @@ import virtualNetwork.VirtualNetwork;
 public class Result
 {
     private Logger resultLog = Logger.getLogger(Result.class.getName());
-    
+
     String fileAbsolutePath = Parameter.FileAbsolutePath;//
     String dataFilePathString = "/Data/";
     String prefix = "\\newcommand{\\";
@@ -150,7 +150,16 @@ public class Result
         arrayUtilizationNode = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayUtilizationEdge = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
-        recordDataLength = 0;
+//        this.migrationFrequenceNode = 0;
+//        this.migrationFrequenceEdge = 0;
+//
+//        this.stressNode = 0;
+//        this.stressEdge = 0;
+//
+//        this.utilizationNode = 0;
+//        this.utilizationEdge = 0;
+
+        this.recordDataLength = 0;
     }
 
     /*
@@ -246,7 +255,7 @@ public class Result
      * @param time
      * 
      */
-    public void recordExperimentData(int experimentTimes, SeVN algorithm, int time)
+    public void recordExperimentData(int experimentTimes, SeVNAlgorithm algorithm, int time)
     {
         recordExperimentData4AllPerformenceMetric(experimentTimes, algorithm, time);
     }
@@ -261,7 +270,7 @@ public class Result
      * @param time
      *            time
      */
-    private void recordExperimentData4AllPerformenceMetric(int experimentTimes, SeVN algorithm, int time)
+    private void recordExperimentData4AllPerformenceMetric(int experimentTimes, SeVNAlgorithm algorithm, int time)
     {
 
         arrayActiveNodeVirNodeAcc[recordDataLength] = this.activeNodeVirNodeAcc;
@@ -329,7 +338,7 @@ public class Result
      * @param dataLength
      *            dataLength
      */
-    private void writeExperimentData(int experimentTimes, SeVN algorithm, String filename, double[] recordData,
+    private void writeExperimentData(int experimentTimes, SeVNAlgorithm algorithm, String filename, double[] recordData,
             int dataLength)
     {
         File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
@@ -376,7 +385,7 @@ public class Result
      *            algorithms
      * 
      */
-    public void recordExperimentParameter(Vector<SeVN> algorithms)
+    public void recordExperimentParameter(Vector<SeVNAlgorithm> algorithms)
     {
         File flParameter = new File(fileAbsolutePath + dataFilePathString + "Parameter.txt");
         FileWriter fwParameter;
@@ -422,7 +431,8 @@ public class Result
      * @param datalength
      *            .
      */
-    void writeExperimentData(int experimentTimes, SeVN algorithm, String filename, int[] recordData, int datalength)
+    void writeExperimentData(int experimentTimes, SeVNAlgorithm algorithm, String filename, int[] recordData,
+            int datalength)
     {
         File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
         FileWriter fw;
@@ -463,8 +473,9 @@ public class Result
      * 
      * @param algorithm
      *            algorithm
+     * @param time
      */
-    public void updateExperimentData(SeVN algorithm)
+    public void updateExperimentData(SeVNAlgorithm algorithm, int time)
     {
         // node
         int usedNode = 0;
@@ -478,7 +489,7 @@ public class Result
 
             if (nc < 0)
             {
-                resultLog.error("nodeComputation less zero");
+                resultLog.error("Substrate nodeComputation less zero");
             }
             if (nc != 0)
             {
@@ -495,7 +506,7 @@ public class Result
                         - algorithm.subNet.getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared);
                 if (bc < 0)
                 {
-                    resultLog.error("edgeBandwith less zero");
+                    resultLog.error("Substrate edgeBandwith less zero");
                 }
                 if (bc != 0)
                 {
@@ -575,8 +586,8 @@ public class Result
         // migration ratio
         int embeddedVN4SubstrateNode = 0;
         int embeddedVN4SubstrateEdge = 0;
-        int vnRequestInSubstrateEdge = 0;
         int vnRequestInSubstrateNode = 0;
+        int vnRequestInSubstrateEdge = 0;
         for (int i = 0; i < algorithm.subNet.nodeSize; i++)
         {
             if (algorithm.subNet.nodeComputationCapacity[i] != algorithm.subNet.getSubstrateRemainComputaion4VirNet(i,
@@ -606,7 +617,7 @@ public class Result
                     vnRequestInSubstrateNode++;
                 }
             }
-            for (int j = 0; j < algorithm.subNet.nodeSize; j++)
+            for (int j = 0; j < i; j++)
             {
                 for (int k = 0; k < algorithm.subNet.virNetIndexSet4sEdge.get(i).get(j).size(); k++)
                 {
@@ -625,24 +636,34 @@ public class Result
             this.migrationFrequenceEdge = 0;
         } else
         {
-            this.migrationFrequenceNode = ((1.0 * vnRequestInSubstrateNode / embeddedVN4SubstrateNode));
-            this.migrationFrequenceEdge = ((1.0 * vnRequestInSubstrateEdge / embeddedVN4SubstrateEdge));
+            this.migrationFrequenceNode = ((time - 1) * this.migrationFrequenceNode
+                    + (1.0 * vnRequestInSubstrateNode / embeddedVN4SubstrateNode)) / time;
+            this.migrationFrequenceEdge = ((time - 1) * this.migrationFrequenceEdge
+                    + (1.0 * vnRequestInSubstrateEdge / embeddedVN4SubstrateEdge)) / time;
         }
 
         // stress
-        this.stressNode = (1.0 * vnRequestInSubstrateNode / algorithm.subNet.nodeSize);
-        this.stressEdge = (1.0 * vnRequestInSubstrateNode / algorithm.subNet.edgeSize);
+        if (time > 1)
+        {
+            this.stressNode = ((time - 1) * this.stressNode
+                    + (1.0 * vnRequestInSubstrateNode / algorithm.subNet.nodeSize)) / time;
+            this.stressEdge = ((time - 1) * this.stressEdge
+                    + (1.0 * vnRequestInSubstrateNode / algorithm.subNet.edgeSize)) / time;
+        }
 
         // utilization
         this.utilizationNode = 0;
         this.utilizationEdge = 0;
+
+        double utilizationN = 0;
+        double utilizationE = 0;
         for (int i = 0; i < algorithm.subNet.nodeSize; i++)
         {
             int all = algorithm.subNet.nodeComputationCapacity[i];
             int remain = algorithm.subNet.getSubstrateRemainComputaion4VirNet(i, algorithm.isShared);
             if (all != remain)
             {
-                utilizationNode += ((all - remain) * 1.0 / algorithm.subNet.nodeComputationCapacity[i]);
+                utilizationN += ((all - remain) * 1.0 / algorithm.subNet.nodeComputationCapacity[i]);
             }
 
             for (int j = 0; j < algorithm.subNet.nodeSize; j++)
@@ -651,14 +672,18 @@ public class Result
                 remain = algorithm.subNet.getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared);
                 if (all != remain)
                 {
-                    utilizationEdge += ((all - remain) * 1.0 / algorithm.subNet.edgeBandwithCapacity[i][j]);
+                    utilizationE += ((all - remain) * 1.0 / algorithm.subNet.edgeBandwithCapacity[i][j]);
 
                 }
             }
         }
-        this.utilizationNode = this.utilizationNode / algorithm.subNet.nodeSize;
-        this.utilizationEdge = this.utilizationEdge / algorithm.subNet.edgeSize;
-
+        if (time > 1)
+        {
+            this.utilizationNode = ((time - 1) * this.utilizationNode + (utilizationN / algorithm.subNet.nodeSize))
+                    / time;
+            this.utilizationEdge = ((time - 1) * this.utilizationEdge + (utilizationE / algorithm.subNet.edgeSize))
+                    / time;
+        }
         // acception ratio
         if (0 == algorithm.subNet.virNetSet.size())
         {
@@ -680,7 +705,7 @@ public class Result
      * @param algorithm
      *            algorithm
      */
-    public void writeExperimentDatatoFile(int experimentTimes, SeVN algorithm)
+    public void writeExperimentDatatoFile(int experimentTimes, SeVNAlgorithm algorithm)
     {
         writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_", this.arrayActiveNodeSubNode,
                 recordDataLength);
@@ -760,7 +785,7 @@ public class Result
      * @param algorithm
      *            .
      */
-    public void updateExperimentDataAccumulate(SeVN algorithm)
+    public void updateExperimentDataAccumulate(SeVNAlgorithm algorithm)
     {
         // node
         int usedNode = 0;
@@ -774,7 +799,7 @@ public class Result
 
             if (nc < 0)
             {
-                resultLog.error("nodeComputation less zero");
+                resultLog.error("SubstrateNetworkt nodeComputation less zero");
             }
             if (nc != 0)
             {
@@ -791,7 +816,7 @@ public class Result
                         - algorithm.subNet.getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared);
                 if (bc < 0)
                 {
-                    resultLog.error("edgeBandwith less zero");
+                    resultLog.error("SubstrateNetworkt edgeBandwith less zero");
                 }
                 if (bc != 0)
                 {
@@ -805,10 +830,25 @@ public class Result
             }
         }
 
-        this.costEdgeBwAcc += (edgeBandwith - this.costEdgeBw);
-        this.pathLengthSubEdgeAcc += (usedEdge - this.pathLengthSubEdge);
-        this.costNodeCpAcc += (nodeComputation - this.costNodeCp);
-        this.activeNodeSubNodeAcc += (usedNode - this.activeNodeSubNode);
+        if ((edgeBandwith - this.costEdgeBw) > 0)
+        {
+            this.costEdgeBwAcc += (edgeBandwith - this.costEdgeBw);
+        }
+
+        if ((usedEdge - this.pathLengthSubEdge) > 0)
+        {
+            this.pathLengthSubEdgeAcc += (usedEdge - this.pathLengthSubEdge);
+        }
+
+        if ((nodeComputation - this.costNodeCp) > 0)
+        {
+            this.costNodeCpAcc += (nodeComputation - this.costNodeCp);
+        }
+
+        if ((usedNode - this.activeNodeSubNode) > 0)
+        {
+            this.activeNodeSubNodeAcc += (usedNode - this.activeNodeSubNode);
+        }
 
         this.costEdgeBw = edgeBandwith;
         this.pathLengthSubEdge = usedEdge;
@@ -865,13 +905,29 @@ public class Result
                 }
             }
         }
+        if ((usedNode - this.activeNodeVirNode) > 0)
+        {
+            this.activeNodeVirNodeAcc += (usedNode - this.activeNodeVirNode);
+        }
 
-        this.activeNodeVirNodeAcc += (usedNode - this.activeNodeVirNode);
-        this.pathLengthVirEdgeAcc += (usedEdge - this.pathLengthVirEdge);
-        this.revenueEdgeBwAcc += (edgeBandwith - this.revenueEdgeBw);
-        this.revenueNodeCpAcc += (nodeComputation - this.revenueNodeCp);
+        if ((usedEdge - this.pathLengthVirEdge) > 0)
+        {
+
+            this.pathLengthVirEdgeAcc += (usedEdge - this.pathLengthVirEdge);
+        }
+
+        if ((edgeBandwith - this.revenueEdgeBw) > 0)
+        {
+            this.revenueEdgeBwAcc += (edgeBandwith - this.revenueEdgeBw);
+        }
+
+        if ((nodeComputation - this.revenueNodeCp) > 0)
+        {
+            this.revenueNodeCpAcc += (nodeComputation - this.revenueNodeCp);
+        }
 
         this.virNetReqAcc = algorithm.subNet.virNetSuceedEmbedSum;
+        
         if (algorithm.algorithmName.equals("VirNet"))
         {
             this.surNetReqAcc = this.virNetReqAcc;

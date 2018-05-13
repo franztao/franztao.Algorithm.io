@@ -13,7 +13,7 @@ import gurobi.GRB;
  */
 public class Parameter
 {
-    public static final Level logLevel=Level.WARN;
+    public static final Level logLevel=Level.INFO;
     // SNDLib topology number is 12
     public static final int ExperimentTimes = 36;
 
@@ -23,7 +23,9 @@ public class Parameter
     public static final int VNEILP = 1;
     public static final int VNEAlgorithm = VNEILP;
   
-    public static final long SubstrateNewtorkRunTimeInterval = 500;// 30000
+    public static final long SubstrateNewtorkRunTimeInterval = 300;// 30000
+    // ExperimentPicture
+    public static final int ExperimentPicturePlotNumber = 25;
     
     // RequestType
     public static final int RequestTypeGeometric = 1;
@@ -45,12 +47,10 @@ public class Parameter
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
     // Exponential
     public static final long VNRequestsContinueTimeExponentialMean = SubstrateNewtorkRunTimeInterval / 20;
-
-    // ExperimentPicture
-    public static final int ExperimentPicturePlotNumber = 25;
+   
 
     // service parameter
-    public static final int ServiceNumber = 15;// 15
+    public static final int FunctionNumber = 15;// 15
     public static final double FunctionTypeProbability = 0.5;// 0.5
 
     // Virtual Network
@@ -61,7 +61,7 @@ public class Parameter
     public static final int VirtualNodeComputationMaximum = 5;// 5
     // edge parameter
     public static final double VirtualNodenodeProbability = 0.5;// 0.5
-    public static final int VirtualEdgeBandwithMinimum = 1;// 10
+    public static final int VirtualEdgeBandwithMinimum = 5;// 10
     public static final int VirtualEdgeBandwithMaximum = 10;// 20
 
     // failure migration

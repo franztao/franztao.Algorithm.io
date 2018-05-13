@@ -15,7 +15,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import algorithm.SeVN;
+import algorithm.SeVNAlgorithm;
 import sevn.Parameter;
 import sndlib.core.io.SNDlibIOFactory;
 import sndlib.core.io.SNDlibIOFormat;
@@ -31,7 +31,7 @@ public class SubstrateNetworkt implements Cloneable
 {
     private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetworkt.class.getName());
 
-    public SeVN algorihtm;
+    public SeVNAlgorithm algorihtm;
 
     // node
     public int nodeSize;

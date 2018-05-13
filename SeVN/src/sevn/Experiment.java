@@ -12,7 +12,7 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import algorithm.SeVN;
+import algorithm.SeVNAlgorithm;
 import substrateNetwork.SubstrateNetworkt;
 import virtualNetwork.VirtualNetwork;
 import virtualNetwork.VirtualNetworkParameter;
@@ -32,7 +32,7 @@ public class Experiment
     private VirtualNetworkParameter vnp;
     private Result[] algorithmResult;
 
-    Vector<SeVN> algorithms;
+    Vector<SeVNAlgorithm> algorithms;
 
     /**
      * Experiment .
@@ -44,7 +44,7 @@ public class Experiment
 
         this.basicSubstrateNework = sn;
         this.vnp = vnp;
-        this.algorithms = new Vector<SeVN>();
+        this.algorithms = new Vector<SeVNAlgorithm>();
 
     }
 
@@ -86,7 +86,7 @@ public class Experiment
                 }
 
                 algorithms.get(alg).releaseResource(false);
-                this.algorithmResult[alg].updateExperimentData(algorithms.get(alg));
+                this.algorithmResult[alg].updateExperimentData(algorithms.get(alg),time);
 
                 if ((0 == (time % Parameter.VirNetDuration)))
                 {
@@ -348,7 +348,7 @@ public class Experiment
         // FD FI
         // FD ILP EVSNR Min Ran
         // VNE can not able to compare with VNE algorithm
-        SeVN alg;
+        SeVNAlgorithm alg;
         this.algorithms.clear();
         try
         {
@@ -399,43 +399,43 @@ public class Experiment
             // this.algorithms.addElement(alg);
 
             SubstrateNetworkt FD_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
-            alg = new SeVN();
+            alg = new SeVNAlgorithm();
             alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt FD_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
-            alg = new SeVN();
+            alg = new SeVNAlgorithm();
             alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.FailureDependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt FI_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
-            alg = new SeVN();
+            alg = new SeVNAlgorithm();
             alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.FailureIndependent, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt FI_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
-            alg = new SeVN();
+            alg = new SeVNAlgorithm();
             alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.FailureIndependent, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt One2OneProtection_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
-            alg = new SeVN();
+            alg = new SeVNAlgorithm();
             alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
                     Parameter.One2OneProtection, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt One2OneProtection_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
-            alg = new SeVN();
+            alg = new SeVNAlgorithm();
             alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
                     Parameter.One2OneProtection, true, Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt virNet = (SubstrateNetworkt) this.basicSubstrateNework.clone();
-            alg = new SeVN();
+            alg = new SeVNAlgorithm();
             alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
