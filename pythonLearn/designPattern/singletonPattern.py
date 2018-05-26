@@ -14,25 +14,32 @@ from bs4.tests.test_docs import __metaclass__
 #         return cls._instance
 # class Foo(Singleton):
 #     a=1
+
     
 # 使用类装饰器
 def singleton(cls):
-    _instance=None
-    def _wrapper(*args,**kwargs):
+    _instance = None
+
+    def _wrapper(*args, **kwargs):
         if _instance is None:
-            _instance=cls(*args,**kwargs)
+            _instance = cls(*args, **kwargs)
         return _instance
+
     return _wrapper
 
 
 class Singleton(type):
-    def __init__(self,name,bases,attrs):
-        super(Singleton,self).__init__(name,bases,attrs)
-        self._instance=None
-    def __call__(self,*args,**kwargs):
+
+    def __init__(self, name, bases, attrs):
+        super(Singleton, self).__init__(name, bases, attrs)
+        self._instance = None
+
+    def __call__(self, *args, **kwargs):
         if self._instance is None:
-            self._instance=super(Singleton,self).__call__(*args,**kwargs)
+            self._instance = super(Singleton, self).__call__(*args, **kwargs)
         return self._instance
+
+
 class Foo(object):
-    __metaclass__=Singleton
+    __metaclass__ = Singleton
     
