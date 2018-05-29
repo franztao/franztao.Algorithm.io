@@ -86,7 +86,7 @@ public class Experiment
                 }
 
                 algorithms.get(alg).releaseResource(false);
-                this.algorithmResult[alg].updateExperimentData(algorithms.get(alg),time);
+                this.algorithmResult[alg].updateExperimentData(algorithms.get(alg), time);
 
                 if ((0 == (time % Parameter.VirNetDuration)))
                 {
@@ -320,10 +320,12 @@ public class Experiment
         // edge demand
         for (int i = 0; i < vn.nodeSize; i++)
         {
+            boolean haseEdge = false;
             for (int j = 0; j < i; j++)
             {
                 if ((Math.random() < vnp.node2nodeProbability))
                 {
+                    haseEdge = true;
                     if (vn.virNode2subNode[i] != vn.virNode2subNode[j])
                     {
                         int distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum
@@ -332,6 +334,14 @@ public class Experiment
                         vn.edgeBandwithDemand[i][j] = vn.edgeBandwithDemand[j][i] = distributeIthEdgeBandwith;
                     }
                 }
+            }
+            if (!haseEdge && i != 0)
+            {
+                int toNode = (int) (Math.ceil(Math.random() * i) % i);
+                int distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum
+                        + Math.ceil(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
+                vn.topology[i][toNode] = vn.topology[toNode][i] = true;
+                vn.edgeBandwithDemand[i][toNode] = vn.edgeBandwithDemand[toNode][i] = distributeIthEdgeBandwith;
             }
         }
 

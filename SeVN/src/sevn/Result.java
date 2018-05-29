@@ -64,6 +64,7 @@ public class Result
     public int pathLengthVirEdge;
     public int revenueNodeCp;
     public int revenueEdgeBw;
+
     public int virNetReq;
     public int surNetReq;
 
@@ -150,14 +151,14 @@ public class Result
         arrayUtilizationNode = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayUtilizationEdge = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
-//        this.migrationFrequenceNode = 0;
-//        this.migrationFrequenceEdge = 0;
-//
-//        this.stressNode = 0;
-//        this.stressEdge = 0;
-//
-//        this.utilizationNode = 0;
-//        this.utilizationEdge = 0;
+        // this.migrationFrequenceNode = 0;
+        // this.migrationFrequenceEdge = 0;
+        //
+        // this.stressNode = 0;
+        // this.stressEdge = 0;
+        //
+        // this.utilizationNode = 0;
+        // this.utilizationEdge = 0;
 
         this.recordDataLength = 0;
     }
@@ -409,6 +410,15 @@ public class Result
             fwParameter.write(algorithms.size() + "\n");
             fwParameter.write(Parameter.RelativeCostbetweenComputingBandwidth + "\n");
             fwParameter.write(Parameter.addNewVirNodeCost + "\n");
+
+            fwParameter.write(Parameter.PossionMeanStart + "\n");
+            fwParameter.write(Parameter.PossionMeanEnd + "\n");
+            fwParameter.write(Parameter.PossionMeanAdd + "\n");
+
+            fwParameter.write(Parameter.ExponentialMeanStart + "\n");
+            fwParameter.write(Parameter.ExponentialMeanEnd + "\n");
+            fwParameter.write(Parameter.ExponentialMeanAdd + "\n");
+
             fwParameter.flush();
             fwParameter.close();
         } catch (IOException e)
@@ -554,7 +564,7 @@ public class Result
                     }
                 }
             }
-            if (vn != null && vn.isRunning && vn.surVirNet.isSucceedEmbed)
+            if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedEmbed))
             {
                 runningSurNetNum++;
                 for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++)
@@ -580,7 +590,14 @@ public class Result
         this.pathLengthVirEdge = usedEdge;
         this.revenueNodeCp = nodeComputation;
         this.revenueEdgeBw = edgeBandwith;
-        this.surNetReq = runningSurNetNum;
+        if (algorithm.algorithmName.equals("VirNet"))
+        {
+            this.surNetReq = runningVirNetNum;
+        } else
+        {
+            this.surNetReq = runningSurNetNum;
+        }
+
         this.virNetReq = runningVirNetNum;
 
         // migration ratio
@@ -648,7 +665,7 @@ public class Result
             this.stressNode = ((time - 1) * this.stressNode
                     + (1.0 * vnRequestInSubstrateNode / algorithm.subNet.nodeSize)) / time;
             this.stressEdge = ((time - 1) * this.stressEdge
-                    + (1.0 * vnRequestInSubstrateNode / algorithm.subNet.edgeSize)) / time;
+                    + (1.0 * vnRequestInSubstrateEdge / algorithm.subNet.edgeSize)) / time;
         }
 
         // utilization
@@ -663,7 +680,7 @@ public class Result
             int remain = algorithm.subNet.getSubstrateRemainComputaion4VirNet(i, algorithm.isShared);
             if (all != remain)
             {
-                utilizationN += ((all - remain) * 1.0 / algorithm.subNet.nodeComputationCapacity[i]);
+                utilizationN += ((all - remain) * 1.0 / all);
             }
 
             for (int j = 0; j < algorithm.subNet.nodeSize; j++)
@@ -672,7 +689,7 @@ public class Result
                 remain = algorithm.subNet.getSubStrateRemainBandwith4VirNet(i, j, algorithm.isShared);
                 if (all != remain)
                 {
-                    utilizationE += ((all - remain) * 1.0 / algorithm.subNet.edgeBandwithCapacity[i][j]);
+                    utilizationE += ((all - remain) * 1.0 / all);
 
                 }
             }
@@ -707,74 +724,86 @@ public class Result
      */
     public void writeExperimentDatatoFile(int experimentTimes, SeVNAlgorithm algorithm)
     {
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_", this.arrayActiveNodeSubNode,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_SubEdge_", this.arrayPathLengthSubEdge,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_", this.arrayCostNodeCp, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NdgeBw_", this.arrayCostEdgeBw, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_" + Parameter.ExperimentFileString,
+                this.arrayActiveNodeSubNode, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "PathLength_SubEdge_" + Parameter.ExperimentFileString,
+                this.arrayPathLengthSubEdge, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_" + Parameter.ExperimentFileString,
+                this.arrayCostNodeCp, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_NdgeBw_" + Parameter.ExperimentFileString,
+                this.arrayCostEdgeBw, recordDataLength);
 
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_Accumulate", this.arrayActiveNodeSubNodeAcc,
+        writeExperimentData(experimentTimes, algorithm,
+                "ActiveNode_SubNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeSubNodeAcc,
                 recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_SubEdge_Accumulate", this.arrayPathLengthSubEdgeAcc,
+        writeExperimentData(experimentTimes, algorithm,
+                "PathLength_SubEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthSubEdgeAcc,
                 recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_Accumulate", this.arrayCostNodeCpAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_Accumulate", this.arrayCostEdgeBwAcc,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayCostNodeCpAcc, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayCostEdgeBwAcc, recordDataLength);
 
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_VirNode_", this.arrayActiveNodeVirNode,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_VirEdge_", this.arrayPathLengthVirEdge,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_", this.arrayRevenueNodeCp, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_", this.arrayRevenueEdgeBw, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "ActiveNode_VirNode_" + Parameter.ExperimentFileString,
+                this.arrayActiveNodeVirNode, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "PathLength_VirEdge_" + Parameter.ExperimentFileString,
+                this.arrayPathLengthVirEdge, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_" + Parameter.ExperimentFileString,
+                this.arrayRevenueNodeCp, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_" + Parameter.ExperimentFileString,
+                this.arrayRevenueEdgeBw, recordDataLength);
         // Request_VirNet_Accumulate_ MapRevenue_virnet_
-        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_", this.arrayVirNetReq, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_" + Parameter.ExperimentFileString,
+                this.arrayVirNetReq, recordDataLength);
         // MapRevenue_subnet_
-        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_", this.arraySurNetReq, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_" + Parameter.ExperimentFileString,
+                this.arraySurNetReq, recordDataLength);
 
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_VirNode_Accumulate", this.arrayActiveNodeVirNodeAcc,
+        writeExperimentData(experimentTimes, algorithm,
+                "ActiveNode_VirNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeVirNodeAcc,
                 recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_VirEdge_Accumulate", this.arrayPathLengthVirEdgeAcc,
+        writeExperimentData(experimentTimes, algorithm,
+                "PathLength_VirEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthVirEdgeAcc,
                 recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_Accumulate", this.arrayRevenueNodeCpAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_Accumulate", this.arrayRevenueEdgeBwAcc,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayRevenueNodeCpAcc, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayRevenueEdgeBwAcc, recordDataLength);
         // MapRevenue_virnet_Sum_
-        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_Accumulate_", this.arrayVirNetReqAcc,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayVirNetReqAcc, recordDataLength);
         // MapRevenue_subnet_Sum_
-        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_Accumulate_", this.arraySurNetReqAcc,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_Accumulate_" + Parameter.ExperimentFileString,
+                this.arraySurNetReqAcc, recordDataLength);
 
         // Migration
         // MigrationFrequence_node
-        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_node", this.arrayMigrationFrequenceNode,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_node_" + Parameter.ExperimentFileString,
+                this.arrayMigrationFrequenceNode, recordDataLength);
         // MigrationFrequence_edge
-        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_edge", this.arrayMigrationFrequenceEdge,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_edge_" + Parameter.ExperimentFileString,
+                this.arrayMigrationFrequenceEdge, recordDataLength);
 
         // Stress
         // Stress_node
-        writeExperimentData(experimentTimes, algorithm, "Stress_Node", this.arrayStressNode, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Stress_Node_" + Parameter.ExperimentFileString,
+                this.arrayStressNode, recordDataLength);
         // Stress_edge
-        writeExperimentData(experimentTimes, algorithm, "Stress_Edge", this.arrayStressEdge, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Stress_Edge_" + Parameter.ExperimentFileString,
+                this.arrayStressEdge, recordDataLength);
 
         // utilization
         // utilization_node
-        writeExperimentData(experimentTimes, algorithm, "Utilization_Node", this.arrayUtilizationNode,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Utilization_Node_" + Parameter.ExperimentFileString,
+                this.arrayUtilizationNode, recordDataLength);
         // utilization_edge
-        writeExperimentData(experimentTimes, algorithm, "Utilization_Edge", this.arrayUtilizationEdge,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Utilization_Edge_" + Parameter.ExperimentFileString,
+                this.arrayUtilizationEdge, recordDataLength);
 
         // Acception ratio
-        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_", this.arrayAcceptanceRatioVirNet,
+        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_"+Parameter.ExperimentFileString, this.arrayAcceptanceRatioVirNet,
                 recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_SVN_", this.arrayAcceptanceRatioSurNet,
+        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_SVN_"+Parameter.ExperimentFileString, this.arrayAcceptanceRatioSurNet,
                 recordDataLength);
 
         recordDataLength = 0;
@@ -830,24 +859,48 @@ public class Result
             }
         }
 
-        if ((edgeBandwith - this.costEdgeBw) > 0)
+        if (Parameter.IsIncrementSum)
         {
-            this.costEdgeBwAcc += (edgeBandwith - this.costEdgeBw);
+            if ((edgeBandwith - this.costEdgeBw) > 0)
+            {
+                this.costEdgeBwAcc += (edgeBandwith - this.costEdgeBw);
+            }
+        } else
+        {
+            this.costEdgeBwAcc += edgeBandwith;
         }
 
-        if ((usedEdge - this.pathLengthSubEdge) > 0)
+        if (Parameter.IsIncrementSum)
         {
-            this.pathLengthSubEdgeAcc += (usedEdge - this.pathLengthSubEdge);
+            if ((usedEdge - this.pathLengthSubEdge) > 0)
+            {
+                this.pathLengthSubEdgeAcc += (usedEdge - this.pathLengthSubEdge);
+            }
+        } else
+        {
+            this.pathLengthSubEdgeAcc += usedEdge;
         }
 
-        if ((nodeComputation - this.costNodeCp) > 0)
+        if (Parameter.IsIncrementSum)
         {
-            this.costNodeCpAcc += (nodeComputation - this.costNodeCp);
+            if ((nodeComputation - this.costNodeCp) > 0)
+            {
+                this.costNodeCpAcc += (nodeComputation - this.costNodeCp);
+            }
+        } else
+        {
+            this.costNodeCpAcc += nodeComputation;
         }
 
-        if ((usedNode - this.activeNodeSubNode) > 0)
+        if (Parameter.IsIncrementSum)
         {
-            this.activeNodeSubNodeAcc += (usedNode - this.activeNodeSubNode);
+            if ((usedNode - this.activeNodeSubNode) > 0)
+            {
+                this.activeNodeSubNodeAcc += (usedNode - this.activeNodeSubNode);
+            }
+        } else
+        {
+            this.activeNodeSubNodeAcc += usedNode;
         }
 
         this.costEdgeBw = edgeBandwith;
@@ -884,7 +937,8 @@ public class Result
                     }
                 }
             }
-            if (vn != null && vn.isRunning && vn.surVirNet.isSucceedEmbed)
+            // algorithm.algorithmName.equals("VirNet")||
+            if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedEmbed))
             {
                 svnNum++;
                 for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++)
@@ -927,7 +981,7 @@ public class Result
         }
 
         this.virNetReqAcc = algorithm.subNet.virNetSuceedEmbedSum;
-        
+
         if (algorithm.algorithmName.equals("VirNet"))
         {
             this.surNetReqAcc = this.virNetReqAcc;

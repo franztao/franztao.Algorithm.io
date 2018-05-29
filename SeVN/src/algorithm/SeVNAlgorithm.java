@@ -507,7 +507,7 @@ public class SeVNAlgorithm
         // VirNet directly return, not process survivable procedure.
         if (this.algorithmName.equals("VirNet") || generateSurvivalVirtualNetwork(svn))
         {
-
+//            svn.isSucceedEmbed=true;
             this.subNet.surNetSuceedEmbedSum++;
             sevnLog.info("Alg: " + this.algorithmName + " Succeed to construct SeVN and embed SeVN");
         } else

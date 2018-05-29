@@ -23,19 +23,57 @@ public class Main
         Result result = new Result();
         result.recordTexParameter();
 
-        for (int ithExp = 0; ithExp < Parameter.ExperimentTimes; ithExp++)
+        if (Parameter.BasicExperiment == Parameter.ExperimentType || Parameter.AllExperiment)
         {
-            SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
+            Parameter.ExperimentFileString = "";
+            for (int ithExp = 0; ithExp < Parameter.ExperimentTimes; ithExp++)
+            {
 
-            SubstrateNetworkt sn = new SubstrateNetworkt(snp, ithExp);
+                SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
+                SubstrateNetworkt sn = new SubstrateNetworkt(snp, ithExp);
+                VirtualNetworkParameter vnp = new VirtualNetworkParameter();
+                Experiment exp = new Experiment(sn, vnp);
+                result.recordExperimentParameter(exp.algorithms);
+                exp.bootExperiment(ithExp);
+            }
+        }
 
-            VirtualNetworkParameter vnp = new VirtualNetworkParameter();
+        if (Parameter.PossionMeanExperiment == Parameter.ExperimentType || Parameter.AllExperiment)
+        {
+            for (int i = Parameter.PossionMeanStart; i <= Parameter.PossionMeanEnd; i = i + Parameter.PossionMeanAdd)
+            {
+                Parameter.ExperimentFileString = "PossionMean_" + i+"_";
 
-            Experiment exp = new Experiment(sn, vnp);
+                for (int ithExp = 0; ithExp < Parameter.ExperimentTimes; ithExp++)
+                {
 
-            result.recordExperimentParameter(exp.algorithms);
+                    SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
+                    SubstrateNetworkt sn = new SubstrateNetworkt(snp, ithExp);
+                    VirtualNetworkParameter vnp = new VirtualNetworkParameter();
+                    Experiment exp = new Experiment(sn, vnp);
+                    result.recordExperimentParameter(exp.algorithms);
+                    exp.bootExperiment(ithExp);
+                }
+            }
 
-            exp.bootExperiment(ithExp);
+        }
+        if (Parameter.ExponentialMeanExperiment == Parameter.ExperimentType || Parameter.AllExperiment)
+        {
+            for (int i = Parameter.ExponentialMeanStart; i <= Parameter.ExponentialMeanEnd; i = i
+                    + Parameter.ExponentialMeanAdd)
+            {
+                Parameter.ExperimentFileString = "ExponentialMean_" + i+"_";
+
+                for (int ithExp = 0; ithExp < Parameter.ExperimentTimes; ithExp++)
+                {
+                    SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
+                    SubstrateNetworkt sn = new SubstrateNetworkt(snp, ithExp);
+                    VirtualNetworkParameter vnp = new VirtualNetworkParameter();
+                    Experiment exp = new Experiment(sn, vnp);
+                    result.recordExperimentParameter(exp.algorithms);
+                    exp.bootExperiment(ithExp);
+                }
+            }
         }
 
         return;
