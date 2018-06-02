@@ -314,7 +314,6 @@ public class Experiment
             // node demand
             vn.nodeComputationDemand[i] = (int) (this.vnp.nodeComputationMinimum
                     + Math.ceil(Math.random() * (this.vnp.nodeComputationMaximum - this.vnp.nodeComputationMinimum)));
-
         }
 
         // edge demand

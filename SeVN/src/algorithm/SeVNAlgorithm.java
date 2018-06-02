@@ -616,7 +616,7 @@ public class SeVNAlgorithm
                     this.subNet.nodeComputation4Temp[i] += nodeResource;
                 } else
                 {
-                    sevnLog.warn("Fail to distribute (\" + i + \") node  RemainComputaion SeVN network ");
+                    sevnLog.warn("Fail to distribute (" + i + ") node  RemainComputaion SeVN network ");
                     return false;
                 }
             }

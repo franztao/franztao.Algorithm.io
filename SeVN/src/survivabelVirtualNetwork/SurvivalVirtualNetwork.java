@@ -61,6 +61,8 @@ public class SurvivalVirtualNetwork
 
     public VirtualNetwork virNet;
     public int index;
+    
+    public int edgeWeightSum;
     // public boolean sampleInit;
 
     /**

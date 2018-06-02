@@ -79,10 +79,13 @@ public class StarDP
                 }
 
                 int[] ithItem2ithKnapsack = new int[svn.nodeSize4Failure];
-                if (failIthNode(i, alg.isFailDep, ithItem2ithKnapsack) == -1)
+                int bipartiteMatchingSum = failIthNode(i, alg.isFailDep, ithItem2ithKnapsack);
+                if (bipartiteMatchingSum == -1)
                 {
+                    this.svn.edgeWeightSum = 0;
                     return false;
                 }
+                this.svn.edgeWeightSum = bipartiteMatchingSum;
                 svn.augmentNodeEdge(ithItem2ithKnapsack, i, Parameter.MatchMethod, this.items, this.knapsacks);
 
             }

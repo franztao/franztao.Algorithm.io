@@ -13,7 +13,7 @@ import gurobi.GRB;
  */
 public class Parameter
 {
-    public static final Level logLevel=Level.WARN;
+    public static final Level logLevel = Level.WARN;
     //
     public static final boolean isNewCriter = true;
 
@@ -28,50 +28,49 @@ public class Parameter
     public static final boolean IsReleaseVNafterEVNFailure = true;
     public static final boolean IsMultipleNodeMapOneNode = true;
     public static final boolean IsConsiderEdgeBandwith = true;
-    
-    public static final boolean IsIncrementSum=false;
-    
- // resource shared
+
+    public static final boolean IsIncrementSum = false;
+
+    // resource shared
     public static final int FailureDependent = 0;
     public static final int FailureIndependent = 1;
     public static final int One2OneProtection = 2;
 
-    
- // star match method
+    // star match method
     public static final int MatchMethodIP = 1;
     public static final int MatchMethodDP = 2;
     public static final int MatchMethod = MatchMethodIP;
-    
- // VNR node fail sequence
+
+    // VNR node fail sequence
     public static final int Ran = 0;
     public static final int Min = 1;
-    
- // /home/franz/franzDocuments/eclipse4cworkspace/EeVSNR
+
+    // /home/franz/franzDocuments/eclipse4cworkspace/EeVSNR
     public static final String FileAbsolutePath = "C:\\Users\\Taoheng\\Desktop\\SeVN";
-    
+
     public static final char LinearProgramType = GRB.BINARY;// GRB.BINARY
     // VirutualNetworkEmbeddingAlgorithm
     public static final int VNERandom = 0;
     public static final int VNEILP = 1;
     public static final int VNEAlgorithm = VNEILP;
-  
+
     // SNDLib topology number is 12
     public static final int ExperimentTimes = 1;
-    public static final long SubstrateNewtorkRunTimeInterval = 600;// 30000
+    public static final long SubstrateNewtorkRunTimeInterval = 500;// 30000
     public static final long unitTimeInterval = 1;
     // ExperimentPicture
     public static final int ExperimentPicturePlotNumber = 20;
-    
+
     // RequestType
     public static final int RequestTypeGeometric = 1;
     public static final int RequestTypePossion = 0;
-    public static final int RequestType = RequestTypeGeometric;
+    public static final int RequestType = RequestTypePossion;
     // GeometricDistribution
     public static final double RequestAppearProbability = 0.5;// 0.1
     public static final long RequestPerTimeAppearNum = 1;// 1
     public static final long VirNetDuration = 1;
     // possion distribution
-    public static  long PossionMean = 5;
+    public static long PossionMean = 5;
 
     public static final int VNRequestsLeaseTypeUniform = 0;
     public static final int VNRequestsLeaseTypeExponential = 1;
@@ -82,7 +81,6 @@ public class Parameter
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
     // Exponential
     public static long VNRequestsContinueTimeExponentialMean = SubstrateNewtorkRunTimeInterval / 10;
-   
 
     // service parameter
     public static final int FunctionNumber = 15;// 15
@@ -93,7 +91,7 @@ public class Parameter
     public static final int VirtualNodeSizeMinimum = 3;// 2
     public static final int VirtualNodeSizeMaximum = 10;// 10
     public static final int VirtualNodeComputationMinimum = 1;// 1
-    public static final int VirtualNodeComputationMaximum = 10;// 5
+    public static final int VirtualNodeComputationMaximum = 5;// 5
     // edge parameter
     public static final double VirtualNodenodeProbability = 0.5;// 0.5
     public static final int VirtualEdgeBandwithMinimum = 10;// 10
@@ -135,24 +133,28 @@ public class Parameter
     public static final int DataCenterCore2Aggregation = 100;// 100
     public static final int DataCenterVNSize = 4;// 4
     public static final int DataCenterVNBandWidth = 1;// 1
-    
-    
-    public static final boolean AllExperiment=true;
-    
-    public static final int BasicExperiment=1;
-    
-    public static final int PossionMeanExperiment=2;
-    public static final int PossionMeanStart=1;
-    public static final int PossionMeanEnd=10;
-    public static final int PossionMeanAdd=1;
-    
-    public static final int ExponentialMeanExperiment=3;
-    public static final int ExponentialMeanStart=10;
-    public static final int ExponentialMeanEnd=100;
-    public static final int ExponentialMeanAdd=10;
-    
-    public static final int ExperimentType=ExponentialMeanExperiment;
-    
+
+    public static final boolean AllExperiment = false;
+
+    public static final int BasicExperiment = 1;
+
+    public static final int PossionMeanExperiment = 2;
+    public static final int PossionMeanStart = 1;
+    public static final int PossionMeanEnd = 10;
+    public static final int PossionMeanAdd = 1;
+
+    public static final int ExponentialMeanExperiment = 3;
+    public static final int ExponentialMeanStart = 10;
+    public static final int ExponentialMeanEnd = 100;
+    public static final int ExponentialMeanAdd = 10;
+
+    public static final int ExperimentType = PossionMeanExperiment;
+
     public static String ExperimentFileString;
-    
+
+    public static final int NodeFailureExperiment = 4;
+    public static final int NodeFailureNumberStart = 1;
+    public static final int NodeFailureNumberEnd = 3;
+    public static int NodeFailureNumber = 1;
+
 }

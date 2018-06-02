@@ -102,6 +102,11 @@ public class Result
     private double acceptanceRatioSurNet;
     private double acceptanceRatioVirNet;
 
+    public double edgeWeight;
+    public double edgeWeightAcc;
+    public double[] arrayEdgeWeight;
+    public double[] arrayEdgeWeightAcc;
+
     /**
      * Result.
      */
@@ -151,14 +156,8 @@ public class Result
         arrayUtilizationNode = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayUtilizationEdge = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
-        // this.migrationFrequenceNode = 0;
-        // this.migrationFrequenceEdge = 0;
-        //
-        // this.stressNode = 0;
-        // this.stressEdge = 0;
-        //
-        // this.utilizationNode = 0;
-        // this.utilizationEdge = 0;
+        arrayEdgeWeight = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayEdgeWeightAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
         this.recordDataLength = 0;
     }
@@ -311,6 +310,9 @@ public class Result
 
         arrayAcceptanceRatioSurNet[recordDataLength] = this.acceptanceRatioSurNet;
         arrayAcceptanceRatioVirNet[recordDataLength] = this.acceptanceRatioVirNet;
+
+        arrayEdgeWeight[recordDataLength] = this.edgeWeight;
+        arrayEdgeWeightAcc[recordDataLength] = this.edgeWeightAcc;
 
         recordDataLength++;
 
@@ -541,6 +543,9 @@ public class Result
         edgeBandwith = 0;
         int runningVirNetNum = 0;
         int runningSurNetNum = 0;
+
+        int edgeWeight = 0;
+
         for (int i = 0; i < algorithm.subNet.virNetSet.size(); i++)
         {
             VirtualNetwork vn = algorithm.subNet.virNetSet.get(i);
@@ -566,6 +571,7 @@ public class Result
             }
             if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedEmbed))
             {
+                edgeWeight += vn.surVirNet.edgeWeightSum;
                 runningSurNetNum++;
                 for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++)
                 {
@@ -585,6 +591,9 @@ public class Result
                 }
             }
         }
+
+        this.edgeWeight = edgeWeight;
+        this.edgeWeightAcc += edgeWeight;
 
         this.activeNodeVirNode = usedNode;
         this.pathLengthVirEdge = usedEdge;
@@ -801,10 +810,16 @@ public class Result
                 this.arrayUtilizationEdge, recordDataLength);
 
         // Acception ratio
-        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_"+Parameter.ExperimentFileString, this.arrayAcceptanceRatioVirNet,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_SVN_"+Parameter.ExperimentFileString, this.arrayAcceptanceRatioSurNet,
-                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_" + Parameter.ExperimentFileString,
+                this.arrayAcceptanceRatioVirNet, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_SVN_" + Parameter.ExperimentFileString,
+                this.arrayAcceptanceRatioSurNet, recordDataLength);
+
+        // EdgeWeight
+        writeExperimentData(experimentTimes, algorithm, "EdgeWeight_" + Parameter.ExperimentFileString,
+                this.arrayEdgeWeight, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "EdgeWeight_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayEdgeWeightAcc, recordDataLength);
 
         recordDataLength = 0;
     }
@@ -914,6 +929,8 @@ public class Result
         edgeBandwith = 0;
         int vnNum = 0;
         int svnNum = 0;
+
+        int edgeWeight = 0;
         for (int i = 0; i < algorithm.subNet.virNetSet.size(); i++)
         {
             VirtualNetwork vn = algorithm.subNet.virNetSet.get(i);
@@ -940,6 +957,7 @@ public class Result
             // algorithm.algorithmName.equals("VirNet")||
             if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedEmbed))
             {
+                edgeWeight += vn.surVirNet.edgeWeightSum;
                 svnNum++;
                 for (int j = vn.nodeSize; j < vn.surVirNet.nodeSize; j++)
                 {
@@ -994,6 +1012,9 @@ public class Result
         this.pathLengthVirEdge = usedEdge;
         this.revenueNodeCp = nodeComputation;
         this.revenueEdgeBw = edgeBandwith;
+
+        this.edgeWeight = edgeWeight;
+        this.edgeWeightAcc += edgeWeight;
 
         this.virNetReq = vnNum;
         // when algorithm is VN, set its sur num is equal vn.
