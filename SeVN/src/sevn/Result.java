@@ -237,6 +237,9 @@ public class Result
                     + Parameter.SubStrateFacilityNodeFailDuration + "}\n");
             fwTexFileWriter.write(prefix + "ExperimentTimes" + "}{" + Parameter.ExperimentTimes + "}\n");
 
+            fwTexFileWriter.write(prefix + "NodeFailureNumberStart" + "}{" + Parameter.NodeFailureNumberStart + "}\n");
+            fwTexFileWriter.write(prefix + "NodeFailureNumberEnd" + "}{" + Parameter.NodeFailureNumberEnd + "}\n");
+
             fwTexFileWriter.flush();
             fwTexFileWriter.close();
         } catch (IOException e)
@@ -319,67 +322,6 @@ public class Result
     }
 
     /**
-     * writeExperimentData4AcceptionRatio.
-     * 
-     * @param experimentTimes
-     *            experimentTimes
-     * @param algorithm
-     *            algorithm
-     */
-
-    /**
-     * writeExperimentData.
-     * 
-     * @param experimentTimes
-     *            experimentTimes
-     * @param algorithm
-     *            algorithm
-     * @param filename
-     *            filename
-     * @param recordData
-     *            recordData
-     * @param dataLength
-     *            dataLength
-     */
-    private void writeExperimentData(int experimentTimes, SeVNAlgorithm algorithm, String filename, double[] recordData,
-            int dataLength)
-    {
-        File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
-        FileWriter fw;
-        if (!fl.exists())
-        {
-            try
-            {
-                fl.createNewFile();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        try
-        {
-            if (experimentTimes == 0)
-            {
-                fw = new FileWriter(fl);
-            } else
-            {
-                fw = new FileWriter(fl, true);
-            }
-            for (int i = 0; i < dataLength; i++)
-            {
-                fw.write(recordData[i] + "\n");
-            }
-            fw.flush();
-
-            fw.close();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
      * recordExperimentParameter.
      * 
      * @param experimentTimes
@@ -421,6 +363,9 @@ public class Result
             fwParameter.write(Parameter.ExponentialMeanEnd + "\n");
             fwParameter.write(Parameter.ExponentialMeanAdd + "\n");
 
+            fwParameter.write(Parameter.NodeFailureNumberStart + "\n");
+            fwParameter.write(Parameter.NodeFailureNumberEnd + "\n");
+
             fwParameter.flush();
             fwParameter.close();
         } catch (IOException e)
@@ -428,6 +373,107 @@ public class Result
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * writeExperimentData.
+     * 
+     * @param experimentTimes
+     *            experimentTimes
+     * @param algorithm
+     *            algorithm
+     */
+    public void writeExperimentDatatoFile(int experimentTimes, SeVNAlgorithm algorithm)
+    {
+        writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_" + Parameter.ExperimentFileString,
+                this.arrayActiveNodeSubNode, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "PathLength_SubEdge_" + Parameter.ExperimentFileString,
+                this.arrayPathLengthSubEdge, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_" + Parameter.ExperimentFileString,
+                this.arrayCostNodeCp, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_NdgeBw_" + Parameter.ExperimentFileString,
+                this.arrayCostEdgeBw, recordDataLength);
+
+        writeExperimentData(experimentTimes, algorithm,
+                "ActiveNode_SubNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeSubNodeAcc,
+                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm,
+                "PathLength_SubEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthSubEdgeAcc,
+                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayCostNodeCpAcc, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayCostEdgeBwAcc, recordDataLength);
+
+        writeExperimentData(experimentTimes, algorithm, "ActiveNode_VirNode_" + Parameter.ExperimentFileString,
+                this.arrayActiveNodeVirNode, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "PathLength_VirEdge_" + Parameter.ExperimentFileString,
+                this.arrayPathLengthVirEdge, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_" + Parameter.ExperimentFileString,
+                this.arrayRevenueNodeCp, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_" + Parameter.ExperimentFileString,
+                this.arrayRevenueEdgeBw, recordDataLength);
+        // Request_VirNet_Accumulate_ MapRevenue_virnet_
+        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_" + Parameter.ExperimentFileString,
+                this.arrayVirNetReq, recordDataLength);
+        // MapRevenue_subnet_
+        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_" + Parameter.ExperimentFileString,
+                this.arraySurNetReq, recordDataLength);
+
+        writeExperimentData(experimentTimes, algorithm,
+                "ActiveNode_VirNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeVirNodeAcc,
+                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm,
+                "PathLength_VirEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthVirEdgeAcc,
+                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayRevenueNodeCpAcc, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayRevenueEdgeBwAcc, recordDataLength);
+        // MapRevenue_virnet_Sum_
+        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayVirNetReqAcc, recordDataLength);
+        // MapRevenue_subnet_Sum_
+        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_Accumulate_" + Parameter.ExperimentFileString,
+                this.arraySurNetReqAcc, recordDataLength);
+
+        // Migration
+        // MigrationFrequence_node
+        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_node_" + Parameter.ExperimentFileString,
+                this.arrayMigrationFrequenceNode, recordDataLength);
+        // MigrationFrequence_edge
+        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_edge_" + Parameter.ExperimentFileString,
+                this.arrayMigrationFrequenceEdge, recordDataLength);
+
+        // Stress
+        // Stress_node
+        writeExperimentData(experimentTimes, algorithm, "Stress_Node_" + Parameter.ExperimentFileString,
+                this.arrayStressNode, recordDataLength);
+        // Stress_edge
+        writeExperimentData(experimentTimes, algorithm, "Stress_Edge_" + Parameter.ExperimentFileString,
+                this.arrayStressEdge, recordDataLength);
+
+        // utilization
+        // utilization_node
+        writeExperimentData(experimentTimes, algorithm, "Utilization_Node_" + Parameter.ExperimentFileString,
+                this.arrayUtilizationNode, recordDataLength);
+        // utilization_edge
+        writeExperimentData(experimentTimes, algorithm, "Utilization_Edge_" + Parameter.ExperimentFileString,
+                this.arrayUtilizationEdge, recordDataLength);
+
+        // Acception ratio
+        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_" + Parameter.ExperimentFileString,
+                this.arrayAcceptanceRatioVirNet, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_SVN_" + Parameter.ExperimentFileString,
+                this.arrayAcceptanceRatioSurNet, recordDataLength);
+
+        // EdgeWeight
+        writeExperimentData(experimentTimes, algorithm, "EdgeWeight_" + Parameter.ExperimentFileString,
+                this.arrayEdgeWeight, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "EdgeWeight_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayEdgeWeightAcc, recordDataLength);
+
+        recordDataLength = 0;
     }
 
     /**
@@ -724,107 +770,6 @@ public class Result
     }
 
     /**
-     * writeExperimentData.
-     * 
-     * @param experimentTimes
-     *            experimentTimes
-     * @param algorithm
-     *            algorithm
-     */
-    public void writeExperimentDatatoFile(int experimentTimes, SeVNAlgorithm algorithm)
-    {
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_" + Parameter.ExperimentFileString,
-                this.arrayActiveNodeSubNode, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_SubEdge_" + Parameter.ExperimentFileString,
-                this.arrayPathLengthSubEdge, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_" + Parameter.ExperimentFileString,
-                this.arrayCostNodeCp, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NdgeBw_" + Parameter.ExperimentFileString,
-                this.arrayCostEdgeBw, recordDataLength);
-
-        writeExperimentData(experimentTimes, algorithm,
-                "ActiveNode_SubNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeSubNodeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm,
-                "PathLength_SubEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthSubEdgeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayCostNodeCpAcc, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayCostEdgeBwAcc, recordDataLength);
-
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_VirNode_" + Parameter.ExperimentFileString,
-                this.arrayActiveNodeVirNode, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_VirEdge_" + Parameter.ExperimentFileString,
-                this.arrayPathLengthVirEdge, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_" + Parameter.ExperimentFileString,
-                this.arrayRevenueNodeCp, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_" + Parameter.ExperimentFileString,
-                this.arrayRevenueEdgeBw, recordDataLength);
-        // Request_VirNet_Accumulate_ MapRevenue_virnet_
-        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_" + Parameter.ExperimentFileString,
-                this.arrayVirNetReq, recordDataLength);
-        // MapRevenue_subnet_
-        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_" + Parameter.ExperimentFileString,
-                this.arraySurNetReq, recordDataLength);
-
-        writeExperimentData(experimentTimes, algorithm,
-                "ActiveNode_VirNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeVirNodeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm,
-                "PathLength_VirEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthVirEdgeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayRevenueNodeCpAcc, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayRevenueEdgeBwAcc, recordDataLength);
-        // MapRevenue_virnet_Sum_
-        writeExperimentData(experimentTimes, algorithm, "Request_VirNet_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayVirNetReqAcc, recordDataLength);
-        // MapRevenue_subnet_Sum_
-        writeExperimentData(experimentTimes, algorithm, "Request_SurNet_Accumulate_" + Parameter.ExperimentFileString,
-                this.arraySurNetReqAcc, recordDataLength);
-
-        // Migration
-        // MigrationFrequence_node
-        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_node_" + Parameter.ExperimentFileString,
-                this.arrayMigrationFrequenceNode, recordDataLength);
-        // MigrationFrequence_edge
-        writeExperimentData(experimentTimes, algorithm, "MigrationFrequence_edge_" + Parameter.ExperimentFileString,
-                this.arrayMigrationFrequenceEdge, recordDataLength);
-
-        // Stress
-        // Stress_node
-        writeExperimentData(experimentTimes, algorithm, "Stress_Node_" + Parameter.ExperimentFileString,
-                this.arrayStressNode, recordDataLength);
-        // Stress_edge
-        writeExperimentData(experimentTimes, algorithm, "Stress_Edge_" + Parameter.ExperimentFileString,
-                this.arrayStressEdge, recordDataLength);
-
-        // utilization
-        // utilization_node
-        writeExperimentData(experimentTimes, algorithm, "Utilization_Node_" + Parameter.ExperimentFileString,
-                this.arrayUtilizationNode, recordDataLength);
-        // utilization_edge
-        writeExperimentData(experimentTimes, algorithm, "Utilization_Edge_" + Parameter.ExperimentFileString,
-                this.arrayUtilizationEdge, recordDataLength);
-
-        // Acception ratio
-        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_VN_" + Parameter.ExperimentFileString,
-                this.arrayAcceptanceRatioVirNet, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "AcceptionRatio_SVN_" + Parameter.ExperimentFileString,
-                this.arrayAcceptanceRatioSurNet, recordDataLength);
-
-        // EdgeWeight
-        writeExperimentData(experimentTimes, algorithm, "EdgeWeight_" + Parameter.ExperimentFileString,
-                this.arrayEdgeWeight, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "EdgeWeight_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayEdgeWeightAcc, recordDataLength);
-
-        recordDataLength = 0;
-    }
-
-    /**
      * 
      * @param algorithm
      *            .
@@ -1024,6 +969,58 @@ public class Result
         } else
         {
             this.surNetReq = svnNum;
+        }
+
+    }
+
+    /**
+     * writeExperimentData.
+     * 
+     * @param experimentTimes
+     *            experimentTimes
+     * @param algorithm
+     *            algorithm
+     * @param filename
+     *            filename
+     * @param recordData
+     *            recordData
+     * @param dataLength
+     *            dataLength
+     */
+    private void writeExperimentData(int experimentTimes, SeVNAlgorithm algorithm, String filename, double[] recordData,
+            int dataLength)
+    {
+        File fl = new File(fileAbsolutePath + dataFilePathString + filename + algorithm.algorithmName + ".txt");
+        FileWriter fw;
+        if (!fl.exists())
+        {
+            try
+            {
+                fl.createNewFile();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        try
+        {
+            if (experimentTimes == 0)
+            {
+                fw = new FileWriter(fl);
+            } else
+            {
+                fw = new FileWriter(fl, true);
+            }
+            for (int i = 0; i < dataLength; i++)
+            {
+                fw.write(recordData[i] + "\n");
+            }
+            fw.flush();
+
+            fw.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
         }
 
     }

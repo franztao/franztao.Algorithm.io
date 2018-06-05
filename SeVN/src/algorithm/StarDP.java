@@ -70,7 +70,7 @@ public class StarDP
 
         if (alg.failSequence == Parameter.Ran)
         {
-            for (int i = 0; i < svn.nodeSize4Failure; i++)
+            for (int i = 0, t = 0; i < svn.nodeSize4Failure; i = i + t)
             {
 
                 if ((i == 0) && (Parameter.TopologyType == Parameter.TopologyTypeDataCenter))
@@ -78,15 +78,23 @@ public class StarDP
                     i++;
                 }
 
+                Vector<Integer> nodeFailure = new Vector<Integer>();
+                t = 0;
+                for (int j = 0; j < Parameter.NodeFailureNumberEnd; j++)
+                {
+                    nodeFailure.add(i);
+                    t++;
+                }
+
                 int[] ithItem2ithKnapsack = new int[svn.nodeSize4Failure];
-                int bipartiteMatchingSum = failIthNode(i, alg.isFailDep, ithItem2ithKnapsack);
+                int bipartiteMatchingSum = failIthNode(nodeFailure, alg.isFailDep, ithItem2ithKnapsack);
                 if (bipartiteMatchingSum == -1)
                 {
                     this.svn.edgeWeightSum = 0;
                     return false;
                 }
                 this.svn.edgeWeightSum = bipartiteMatchingSum;
-                svn.augmentNodeEdge(ithItem2ithKnapsack, i, Parameter.MatchMethod, this.items, this.knapsacks);
+                svn.augmentNodeEdge(ithItem2ithKnapsack, Parameter.MatchMethod, this.items, this.knapsacks);
 
             }
         }
@@ -111,7 +119,9 @@ public class StarDP
                     }
                     if (!isFailed[j])
                     {
-                        solutionCost[j] = failIthNode(j, alg.isFailDep, solution[j]);
+                        Vector<Integer> nodeFailure = new Vector<Integer>();
+                        nodeFailure.add(j);
+                        solutionCost[j] = failIthNode(nodeFailure, alg.isFailDep, solution[j]);
                         if (solutionCost[j] == -1)
                         {
                             return false;
@@ -137,8 +147,7 @@ public class StarDP
                         }
                     }
                 }
-                svn.augmentNodeEdge(solution[nextOptimalFailNode], nextOptimalFailNode, Parameter.MatchMethod,
-                        this.items, this.knapsacks);
+                svn.augmentNodeEdge(solution[nextOptimalFailNode], Parameter.MatchMethod, this.items, this.knapsacks);
                 isFailed[nextOptimalFailNode] = true;
             }
         }
@@ -153,50 +162,70 @@ public class StarDP
      * @param failSurNode
      *            failureNodeID
      */
-    void constructKnapsacks(int failSurNode)
+    void constructKnapsacks(Vector<Integer> nodeFailure)
     {
+        // int failSurNode
         knapsacks = new Vector<StarStructure>();
         for (int i = 0; i < this.svn.nodeSize; i++)
         {
-            if (this.svn.surNode2subNode[i] != this.svn.surNode2subNode[failSurNode])
+            boolean isContinue = false;
+            for (int t = 0; t < nodeFailure.size(); t++)
             {
-
-                StarStructure star = new StarStructure();
-                star.starNodeFunctionType = -1;
-                star.nodeServiceTypeSet = new boolean[this.svn.functionNum];
-                for (int j = 0; j < this.svn.functionNum; j++)
+                if (this.svn.surNode2subNode[i] == this.svn.surNode2subNode[nodeFailure.get(t)])
                 {
-                    star.nodeServiceTypeSet[j] = this.svn.boolFunctionTypeSet[i][j];
+                    isContinue = true;
                 }
-                star.starNodeSurVirNetInd = i;
-                star.starNodeComputation = this.svn.nodeComputationConsume[i];
-                // ineffective value could be erased
-                star.neighborEdge = new Vector<StarEdgeStructure>();
+            }
+            if (isContinue)
+            {
+                continue;
+            }
 
-                for (int k = 0; k < this.svn.virNet.nodeSize; k++)
+            StarStructure star = new StarStructure();
+            star.starNodeFunctionType = -1;
+            star.nodeServiceTypeSet = new boolean[this.svn.functionNum];
+            for (int j = 0; j < this.svn.functionNum; j++)
+            {
+                star.nodeServiceTypeSet[j] = this.svn.boolFunctionTypeSet[i][j];
+            }
+            star.starNodeSurVirNetInd = i;
+            star.starNodeComputation = this.svn.nodeComputationConsume[i];
+            // ineffective value could be erased
+            star.neighborEdge = new Vector<StarEdgeStructure>();
+
+            for (int k = 0; k < this.svn.virNet.nodeSize; k++)
+            {
+                int surNode = this.svn.virNode2surNode[k];
+
+                boolean isContinuek = false;
+                for (int t = 0; t < nodeFailure.size(); t++)
                 {
-                    int surNode = this.svn.virNode2surNode[k];
-
-                    if (failSurNode != surNode)
+                    if (surNode == nodeFailure.get(t))
                     {
-                        StarEdgeStructure edge = new StarEdgeStructure();
-                        edge.neighborNode4VirNetInd = k;
-                        edge.neighborNode4SurVirNetInd = surNode;
-                        if (i == this.svn.virNode2surNode[k])
-                        {
-                            edge.neighborEdgeBandwith = Integer.MAX_VALUE;
-                        } else
-                        {
-                            edge.neighborEdgeBandwith = this.svn.edgeBandwith4Comsume[i][surNode];
-                        }
-                        edge.neighborNodeType = this.svn.virNet.nodeFunctionType[k];
-                        star.neighborEdge.addElement(edge);
+                        isContinuek = true;
                     }
-
                 }
-                knapsacks.addElement(star);
+                if (isContinuek)
+                {
+                    continue;
+                }
+
+                StarEdgeStructure edge = new StarEdgeStructure();
+                edge.neighborNode4VirNetInd = k;
+                edge.neighborNode4SurVirNetInd = surNode;
+                if (i == this.svn.virNode2surNode[k])
+                {
+                    edge.neighborEdgeBandwith = Integer.MAX_VALUE;
+                } else
+                {
+                    edge.neighborEdgeBandwith = this.svn.edgeBandwith4Comsume[i][surNode];
+                }
+                edge.neighborNodeType = this.svn.virNet.nodeFunctionType[k];
+                star.neighborEdge.addElement(edge);
 
             }
+            knapsacks.addElement(star);
+
         }
     }
 
@@ -213,9 +242,10 @@ public class StarDP
      * @throws GRBException
      *             GRBException
      */
-    public int failIthNode(int failSurNode, int isFailDep, int[] ithItem2ithKnapsack) throws GRBException
+    public int failIthNode(Vector<Integer> nodeFailure, int isFailDep, int[] ithItem2ithKnapsack) throws GRBException
     {
-        constructKnapsacks(failSurNode);
+        // int failSurNode
+        constructKnapsacks(nodeFailure);
         MulitpleKnapsack mkp = new MulitpleKnapsack(this.svn.virNet.nodeSize, knapsacks.size(), this.svn.nodeSize);
         constructMultipleKnapsackProbem(mkp, isFailDep);
         int optimalResult = -1;

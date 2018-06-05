@@ -4,6 +4,9 @@
 
 package sevn;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import substrateNetwork.SubStrateNetworkParameter;
 import substrateNetwork.SubstrateNetworkt;
 import virtualNetwork.VirtualNetworkParameter;
@@ -20,14 +23,19 @@ public class Main
 
     public static void main(String[] args)
     {
-
+        Logger mainlogger = Logger.getLogger(Main.class.getName());
+        mainlogger.setLevel(Parameter.logLevel);
+        PropertyConfigurator.configure("log4j.properties");
+        
         Result result = new Result();
         result.recordTexParameter();
-        
+
         if (Parameter.BasicExperiment == Parameter.ExperimentType || Parameter.AllExperiment)
         {
             Parameter.ExperimentFileString = "";
             BootExperiment();
+
+            mainlogger.error("BasicExperiment");
         }
 
         if (Parameter.PossionMeanExperiment == Parameter.ExperimentType || Parameter.AllExperiment)
@@ -38,6 +46,8 @@ public class Main
                 Parameter.ExperimentFileString = "PossionMean_" + i + "_";
 
                 BootExperiment();
+
+                mainlogger.error("PossionMean_" + i + "_");
             }
             Parameter.PossionMean = 5;
         }
@@ -52,6 +62,8 @@ public class Main
                 Parameter.ExperimentFileString = "ExponentialMean_" + i + "_";
 
                 BootExperiment();
+
+                mainlogger.error("ExponentialMean_" + i + "_");
             }
             Parameter.VNRequestsContinueTimeExponentialMean = Parameter.SubstrateNewtorkRunTimeInterval / 10;
         }
@@ -65,9 +77,9 @@ public class Main
                 Parameter.ExperimentFileString = "NodeFailure_" + i + "_";
                 BootExperiment();
 
+                mainlogger.error("NodeFailure_" + i + "_");
             }
             Parameter.NodeFailureNumber = 1;
-
         }
 
         return;

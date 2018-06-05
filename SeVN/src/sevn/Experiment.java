@@ -58,7 +58,7 @@ public class Experiment
     {
         generateComparableAlgorithm(this.vnp);
         runComparableAlgorithmWithSameVirNet(ithExper);
-        // this.result.recordExperimentParameter(0, algorithms);
+        
 
     }
 

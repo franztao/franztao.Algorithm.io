@@ -259,12 +259,10 @@ public class SurvivalVirtualNetwork
      * 
      * @param solution
      *            solution
-     * @param failNode
-     *            failurenodeID
      * @param matchMehtod
      *            Method
      */
-    public void augmentNodeEdge(int[] solution, int failNode, int matchMehtod, StarStructure[] items,
+    public void augmentNodeEdge(int[] solution, int matchMehtod, StarStructure[] items,
             Vector<StarStructure> knapsacks)
     {
 

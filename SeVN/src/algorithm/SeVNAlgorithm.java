@@ -526,7 +526,8 @@ public class SeVNAlgorithm
         boolean isSvnAlgorithmSuccess = false;
         if (this.isExact)
         {
-            isSvnAlgorithmSuccess = new ILP().exactAlgorithmIntegerProgram4SeVN(this, svn);
+            
+//            isSvnAlgorithmSuccess = new ILP().exactAlgorithmIntegerProgram4SeVN(this, svn);
         } else
         {
 

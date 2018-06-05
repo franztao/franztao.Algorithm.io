@@ -13,21 +13,20 @@ import gurobi.GRB;
  */
 public class Parameter
 {
-    public static final Level logLevel = Level.WARN;
+    public static final Level logLevel = Level.ERROR;
     //
     public static final boolean isNewCriter = true;
 
     // Parameter
-    public static final int addNewVirNodeNewSubNodeCost = 10000000;
-    public static final int addNewVirNodeCost = 100;// 100
-    public static final int transformExistedNodeCost = 100000;// 100000
+    public static final int addNewVirNodeNewSubNodeCost = 200;
+    public static final int addNewVirNodeCost = 0;// 100
+    public static final int transformExistedNodeCost = 50;// 100000
     public static final int addNodeComputaionCost = 3;
     public static final int addEdgeBandwithCost = 1;
     public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost / addEdgeBandwithCost;
 
     public static final boolean IsReleaseVNafterEVNFailure = true;
     public static final boolean IsMultipleNodeMapOneNode = true;
-    public static final boolean IsConsiderEdgeBandwith = true;
 
     public static final boolean IsIncrementSum = false;
 
@@ -55,8 +54,8 @@ public class Parameter
     public static final int VNEAlgorithm = VNEILP;
 
     // SNDLib topology number is 12
-    public static final int ExperimentTimes = 1;
-    public static final long SubstrateNewtorkRunTimeInterval = 500;// 30000
+    public static final int ExperimentTimes = 2;
+    public static final int SubstrateNewtorkRunTimeInterval = 100;// 30000
     public static final long unitTimeInterval = 1;
     // ExperimentPicture
     public static final int ExperimentPicturePlotNumber = 20;
@@ -80,7 +79,7 @@ public class Parameter
     public static final long VNRequestsContinueTimeMaximum = 100;
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
     // Exponential
-    public static long VNRequestsContinueTimeExponentialMean = SubstrateNewtorkRunTimeInterval / 10;
+    public static long VNRequestsContinueTimeExponentialMean = SubstrateNewtorkRunTimeInterval / 2;
 
     // service parameter
     public static final int FunctionNumber = 15;// 15
@@ -113,8 +112,8 @@ public class Parameter
 
     public static final int SubStrateNodeComputationMinimum = 20;// 50
     public static final int SubStrateNodeComputationMaximum = 50;// 100
-    public static final int SubStrateEdgeBandwithMinimum = 50;// 100
-    public static final int SubStrateEdgeBandwithMaximum = 100;// 200
+    public static final int SubStrateEdgeBandwithMinimum = 100;// 100
+    public static final int SubStrateEdgeBandwithMaximum = 200;// 200
 
     // Random
     // node parameter
@@ -134,8 +133,7 @@ public class Parameter
     public static final int DataCenterVNSize = 4;// 4
     public static final int DataCenterVNBandWidth = 1;// 1
 
-    public static final boolean AllExperiment = false;
-
+    public static final boolean AllExperiment = true;
     public static final int BasicExperiment = 1;
 
     public static final int PossionMeanExperiment = 2;
@@ -144,17 +142,18 @@ public class Parameter
     public static final int PossionMeanAdd = 1;
 
     public static final int ExponentialMeanExperiment = 3;
-    public static final int ExponentialMeanStart = 10;
-    public static final int ExponentialMeanEnd = 100;
-    public static final int ExponentialMeanAdd = 10;
-
-    public static final int ExperimentType = PossionMeanExperiment;
-
+    public static final int ExponentialMeanStart = SubstrateNewtorkRunTimeInterval/10;
+    public static final int ExponentialMeanEnd = SubstrateNewtorkRunTimeInterval;
+    public static final int ExponentialMeanAdd = SubstrateNewtorkRunTimeInterval/10;
+    
     public static String ExperimentFileString;
 
     public static final int NodeFailureExperiment = 4;
     public static final int NodeFailureNumberStart = 1;
     public static final int NodeFailureNumberEnd = 3;
     public static int NodeFailureNumber = 1;
+    
+    
+    public static final int ExperimentType = NodeFailureExperiment;
 
 }
