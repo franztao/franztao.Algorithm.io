@@ -248,7 +248,7 @@ public class MulitpleKnapsack
             model.addConstr(conexpr1, GRB.EQUAL, 1.0, "constraint_row =" + i);
         }
 
-        if (!Parameter.IsMultipleNodeMapOneNode)
+        if (!Parameter.IsMultipleVirutalNodeMapOnePhysicalNode)
         {
             for (int j = 0; j < this.knapsackNum; j++)
             {

@@ -58,7 +58,6 @@ public class Experiment
     {
         generateComparableAlgorithm(this.vnp);
         runComparableAlgorithmWithSameVirNet(ithExper);
-        
 
     }
 
@@ -111,8 +110,10 @@ public class Experiment
                         {
                             experimentlogger.info("+++++ Time/Total Time: " + time + "/"
                                     + Parameter.SubstrateNewtorkRunTimeInterval + "  Alg: " + alg);
-                            algorithms.get(alg).generateAndProtectVirNet(protoVirNet);
-                            this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
+                            if (algorithms.get(alg).generateAndProtectVirNet(protoVirNet))
+                            {
+                                this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
+                            }
                         }
                     }
                 }
@@ -409,25 +410,25 @@ public class Experiment
 
             SubstrateNetworkt FD_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
-            alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.FailureDependent, true,
+            alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.OurPrtection, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt FD_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
-            alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.FailureDependent, false,
+            alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.OurPrtection, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt FI_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
-            alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.FailureIndependent, true,
+            alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.RVNProtection, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
             SubstrateNetworkt FI_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
-            alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.FailureIndependent, false,
+            alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.RVNProtection, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
@@ -445,7 +446,7 @@ public class Experiment
 
             SubstrateNetworkt virNet = (SubstrateNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
-            alg.setParameter("VirNet", virNet, false, Parameter.FailureIndependent, false, Parameter.Ran);
+            alg.setParameter("VirNet", virNet, false, Parameter.RVNProtection, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
             // SubstrateNetwork FD_ILP_Shared_Exact = (SubstrateNetwork)

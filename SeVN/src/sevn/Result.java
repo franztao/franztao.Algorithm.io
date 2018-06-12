@@ -30,60 +30,55 @@ public class Result
     String dataFilePathString = "/Data/";
     String prefix = "\\newcommand{\\";
 
-    double[] arrayAcceptanceRatioSurNet;
-    double[] arrayAcceptanceRatioVirNet;
-
-    public int[] arrayCostEdgeBwAcc;
-    public int[] arrayCostNodeCpAcc;
-    public int[] arrayActiveNodeSubNodeAcc;
-
-    private int[] arrayActiveNodeSubNode;
-    private int[] arrayCostNodeCp;
-    private int[] arrayCostEdgeBw;
-
-    private int[] arrayPathLengthSubEdgeAcc;
-    private int[] arrayPathLengthSubEdge;
-
-    public int[] arrayActiveNodeVirNodeAcc;
-    public int[] arrayRevenueEdgeBwAcc;
-    public int[] arrayRevenueNodeCpAcc;
-    private int[] arrayRevenueNodeCp;
-    private int[] arrayRevenueEdgeBw;
-    private int[] arrayActiveNodeVirNode;
-
-    public int recordDataLength;
-    private int[] arrayPathLengthVirEdgeAcc;
-    private int[] arrayPathLengthVirEdge;
-
-    private int[] arrayVirNetReqAcc;
-    private int[] arraySurNetReqAcc;
-    private int[] arrayVirNetReq;
-    private int[] arraySurNetReq;
-
-    public int activeNodeVirNode;
-    public int pathLengthVirEdge;
-    public int revenueNodeCp;
-    public int revenueEdgeBw;
-
     public int virNetReq;
     public int surNetReq;
-
-    public int activeNodeSubNode;
-    public int pathLengthSubEdge;
-    public int costNodeCp;
-    public int costEdgeBw;
-
-    public int activeNodeVirNodeAcc;
-    public int pathLengthVirEdgeAcc;
-    public int revenueNodeCpAcc;
-    public int revenueEdgeBwAcc;
     public int virNetReqAcc;
     public int surNetReqAcc;
+    public int[] arrayVirNetReq;
+    public int[] arraySurNetReq;
+    public int[] arrayVirNetReqAcc;
+    public int[] arraySurNetReqAcc;
 
-    public int activeNodeSubNodeAcc;
-    public int pathLengthSubEdgeAcc;
-    public int costNodeCpAcc;
-    public int costEdgeBwAcc;
+    private double acceptanceRatioSurNet;
+    private double acceptanceRatioVirNet;
+    public double[] arrayAcceptanceRatioSurNet;
+    public double[] arrayAcceptanceRatioVirNet;
+
+    public int activeNodeVirNode;
+    public double activeNodeVirNodeAcc;
+    public int activeNodeSubNode;
+    public double activeNodeSubNodeAcc;
+    public int[] arrayActiveNodeVirNode;
+    public double[] arrayActiveNodeVirNodeAcc;
+    public int[] arrayActiveNodeSubNode;
+    public double[] arrayActiveNodeSubNodeAcc;
+
+    public int pathLengthVirEdge;
+    public int pathLengthSubEdge;
+    public double pathLengthSubEdgeAcc;
+    public double pathLengthVirEdgeAcc;
+    public int[] arrayPathLengthVirEdge;
+    public double[] arrayPathLengthVirEdgeAcc;
+    public double[] arrayPathLengthSubEdge;
+    public double[] arrayPathLengthSubEdgeAcc;
+
+    public int costNodeCp;
+    public int costEdgeBw;
+    public double costNodeCpAcc;
+    public double costEdgeBwAcc;
+    public int[] arrayCostNodeCp;
+    public int[] arrayCostEdgeBw;
+    public double[] arrayCostEdgeBwAcc;
+    public double[] arrayCostNodeCpAcc;
+
+    public int revenueNodeCp;
+    public int revenueEdgeBw;
+    public double revenueNodeCpAcc;
+    public double revenueEdgeBwAcc;
+    public int[] arrayRevenueNodeCp;
+    public int[] arrayRevenueEdgeBw;
+    public double[] arrayRevenueEdgeBwAcc;
+    public double[] arrayRevenueNodeCpAcc;
 
     public double migrationFrequenceNode;
     public double migrationFrequenceEdge;
@@ -99,13 +94,14 @@ public class Result
     public double utilizationEdge;
     public double[] arrayUtilizationNode;
     public double[] arrayUtilizationEdge;
-    private double acceptanceRatioSurNet;
-    private double acceptanceRatioVirNet;
 
     public double edgeWeight;
     public double edgeWeightAcc;
     public double[] arrayEdgeWeight;
     public double[] arrayEdgeWeightAcc;
+
+    public int accumulateSum;
+    public int recordDataLength;
 
     /**
      * Result.
@@ -119,20 +115,20 @@ public class Result
         arrayAcceptanceRatioVirNet = new double[(Parameter.ExperimentPicturePlotNumber + 1)
                 * Parameter.ExperimentTimes];
 
-        arrayCostEdgeBwAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-        arrayCostNodeCpAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-        arrayActiveNodeSubNodeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayCostEdgeBwAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayCostNodeCpAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayActiveNodeSubNodeAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
         arrayCostEdgeBw = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayCostNodeCp = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayActiveNodeSubNode = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
-        arrayPathLengthSubEdgeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-        arrayPathLengthSubEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayPathLengthSubEdgeAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayPathLengthSubEdge = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
-        arrayActiveNodeVirNodeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-        arrayRevenueEdgeBwAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-        arrayRevenueNodeCpAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayActiveNodeVirNodeAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayRevenueEdgeBwAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayRevenueNodeCpAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
         arrayRevenueNodeCp = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayRevenueEdgeBw = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
@@ -142,7 +138,7 @@ public class Result
         arraySurNetReqAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayVirNetReq = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arraySurNetReq = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
-        arrayPathLengthVirEdgeAcc = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
+        arrayPathLengthVirEdgeAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
         arrayPathLengthVirEdge = new int[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
         arrayMigrationFrequenceNode = new double[(Parameter.ExperimentPicturePlotNumber + 1)
@@ -160,6 +156,7 @@ public class Result
         arrayEdgeWeightAcc = new double[(Parameter.ExperimentPicturePlotNumber + 1) * Parameter.ExperimentTimes];
 
         this.recordDataLength = 0;
+        this.accumulateSum = 0;
     }
 
     /*
@@ -276,31 +273,33 @@ public class Result
     private void recordExperimentData4AllPerformenceMetric(int experimentTimes, SeVNAlgorithm algorithm, int time)
     {
 
-        arrayActiveNodeVirNodeAcc[recordDataLength] = this.activeNodeVirNodeAcc;
-        arrayPathLengthVirEdgeAcc[recordDataLength] = this.pathLengthVirEdgeAcc;
-        arrayRevenueNodeCpAcc[recordDataLength] = this.revenueNodeCpAcc;
-        arrayRevenueEdgeBwAcc[recordDataLength] = this.revenueEdgeBwAcc;
-
-        arrayActiveNodeVirNode[recordDataLength] = this.activeNodeVirNode;
-        arrayPathLengthVirEdge[recordDataLength] = this.pathLengthVirEdge;
-        arrayRevenueNodeCp[recordDataLength] = this.revenueNodeCp;
-        arrayRevenueEdgeBw[recordDataLength] = this.revenueEdgeBw;
-
+        arrayVirNetReq[recordDataLength] = this.virNetReq;
+        arraySurNetReq[recordDataLength] = this.surNetReq;
         arrayVirNetReqAcc[recordDataLength] = this.virNetReqAcc;
         arraySurNetReqAcc[recordDataLength] = this.surNetReqAcc;
 
-        arrayActiveNodeSubNodeAcc[recordDataLength] = this.activeNodeSubNodeAcc;
-        arrayPathLengthSubEdgeAcc[recordDataLength] = this.pathLengthSubEdgeAcc;
-        arrayCostNodeCpAcc[recordDataLength] = this.costNodeCpAcc;
-        arrayCostEdgeBwAcc[recordDataLength] = this.costEdgeBwAcc;
+        arrayAcceptanceRatioSurNet[recordDataLength] = this.acceptanceRatioSurNet;
+        arrayAcceptanceRatioVirNet[recordDataLength] = this.acceptanceRatioVirNet;
 
+        arrayActiveNodeVirNode[recordDataLength] = this.activeNodeVirNode;
+        arrayActiveNodeVirNodeAcc[recordDataLength] = this.activeNodeVirNodeAcc;
         arrayActiveNodeSubNode[recordDataLength] = this.activeNodeSubNode;
+        arrayActiveNodeSubNodeAcc[recordDataLength] = this.activeNodeSubNodeAcc;
+
+        arrayPathLengthVirEdge[recordDataLength] = this.pathLengthVirEdge;
+        arrayPathLengthVirEdgeAcc[recordDataLength] = this.pathLengthVirEdgeAcc;
         arrayPathLengthSubEdge[recordDataLength] = this.pathLengthSubEdge;
+        arrayPathLengthSubEdgeAcc[recordDataLength] = this.pathLengthSubEdgeAcc;
+
+        arrayRevenueNodeCp[recordDataLength] = this.revenueNodeCp;
+        arrayRevenueNodeCpAcc[recordDataLength] = this.revenueNodeCpAcc;
+        arrayRevenueEdgeBw[recordDataLength] = this.revenueEdgeBw;
+        arrayRevenueEdgeBwAcc[recordDataLength] = this.revenueEdgeBwAcc;
+
         arrayCostNodeCp[recordDataLength] = this.costNodeCp;
         arrayCostEdgeBw[recordDataLength] = this.costEdgeBw;
-
-        arrayVirNetReq[recordDataLength] = this.virNetReq;
-        arraySurNetReq[recordDataLength] = this.surNetReq;
+        arrayCostNodeCpAcc[recordDataLength] = this.costNodeCpAcc;
+        arrayCostEdgeBwAcc[recordDataLength] = this.costEdgeBwAcc;
 
         arrayMigrationFrequenceNode[recordDataLength] = this.migrationFrequenceNode;
         arrayMigrationFrequenceEdge[recordDataLength] = this.migrationFrequenceEdge;
@@ -310,9 +309,6 @@ public class Result
 
         arrayUtilizationNode[recordDataLength] = this.utilizationNode;
         arrayUtilizationEdge[recordDataLength] = this.utilizationEdge;
-
-        arrayAcceptanceRatioSurNet[recordDataLength] = this.acceptanceRatioSurNet;
-        arrayAcceptanceRatioVirNet[recordDataLength] = this.acceptanceRatioVirNet;
 
         arrayEdgeWeight[recordDataLength] = this.edgeWeight;
         arrayEdgeWeightAcc[recordDataLength] = this.edgeWeightAcc;
@@ -385,57 +381,59 @@ public class Result
      */
     public void writeExperimentDatatoFile(int experimentTimes, SeVNAlgorithm algorithm)
     {
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_" + Parameter.ExperimentFileString,
-                this.arrayActiveNodeSubNode, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_SubEdge_" + Parameter.ExperimentFileString,
-                this.arrayPathLengthSubEdge, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_" + Parameter.ExperimentFileString,
-                this.arrayCostNodeCp, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NdgeBw_" + Parameter.ExperimentFileString,
-                this.arrayCostEdgeBw, recordDataLength);
-
-        writeExperimentData(experimentTimes, algorithm,
-                "ActiveNode_SubNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeSubNodeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm,
-                "PathLength_SubEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthSubEdgeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayCostNodeCpAcc, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayCostEdgeBwAcc, recordDataLength);
-
-        writeExperimentData(experimentTimes, algorithm, "ActiveNode_VirNode_" + Parameter.ExperimentFileString,
-                this.arrayActiveNodeVirNode, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "PathLength_VirEdge_" + Parameter.ExperimentFileString,
-                this.arrayPathLengthVirEdge, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_" + Parameter.ExperimentFileString,
-                this.arrayRevenueNodeCp, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_" + Parameter.ExperimentFileString,
-                this.arrayRevenueEdgeBw, recordDataLength);
         // Request_VirNet_Accumulate_ MapRevenue_virnet_
         writeExperimentData(experimentTimes, algorithm, "Request_VirNet_" + Parameter.ExperimentFileString,
                 this.arrayVirNetReq, recordDataLength);
         // MapRevenue_subnet_
         writeExperimentData(experimentTimes, algorithm, "Request_SurNet_" + Parameter.ExperimentFileString,
                 this.arraySurNetReq, recordDataLength);
-
-        writeExperimentData(experimentTimes, algorithm,
-                "ActiveNode_VirNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeVirNodeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm,
-                "PathLength_VirEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthVirEdgeAcc,
-                recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayRevenueNodeCpAcc, recordDataLength);
-        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
-                this.arrayRevenueEdgeBwAcc, recordDataLength);
         // MapRevenue_virnet_Sum_
         writeExperimentData(experimentTimes, algorithm, "Request_VirNet_Accumulate_" + Parameter.ExperimentFileString,
                 this.arrayVirNetReqAcc, recordDataLength);
         // MapRevenue_subnet_Sum_
         writeExperimentData(experimentTimes, algorithm, "Request_SurNet_Accumulate_" + Parameter.ExperimentFileString,
                 this.arraySurNetReqAcc, recordDataLength);
+
+        // ActiveNode
+        writeExperimentData(experimentTimes, algorithm, "ActiveNode_VirNode_" + Parameter.ExperimentFileString,
+                this.arrayActiveNodeVirNode, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "ActiveNode_SubNode_" + Parameter.ExperimentFileString,
+                this.arrayActiveNodeSubNode, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm,
+                "ActiveNode_SubNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeSubNodeAcc,
+                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm,
+                "ActiveNode_VirNode_Accumulate_" + Parameter.ExperimentFileString, this.arrayActiveNodeVirNodeAcc,
+                recordDataLength);
+
+        writeExperimentData(experimentTimes, algorithm, "PathLength_SubEdge_" + Parameter.ExperimentFileString,
+                this.arrayPathLengthSubEdge, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "PathLength_VirEdge_" + Parameter.ExperimentFileString,
+                this.arrayPathLengthVirEdge, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm,
+                "PathLength_SubEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthSubEdgeAcc,
+                recordDataLength);
+        writeExperimentData(experimentTimes, algorithm,
+                "PathLength_VirEdge_Accumulate_" + Parameter.ExperimentFileString, this.arrayPathLengthVirEdgeAcc,
+                recordDataLength);
+
+        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_" + Parameter.ExperimentFileString,
+                this.arrayCostNodeCp, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayCostNodeCpAcc, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_" + Parameter.ExperimentFileString,
+                this.arrayCostEdgeBw, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Cost_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayCostEdgeBwAcc, recordDataLength);
+
+        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_" + Parameter.ExperimentFileString,
+                this.arrayRevenueNodeCp, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_" + Parameter.ExperimentFileString,
+                this.arrayRevenueEdgeBw, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_NodeCp_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayRevenueNodeCpAcc, recordDataLength);
+        writeExperimentData(experimentTimes, algorithm, "Revenue_EdgeBw_Accumulate_" + Parameter.ExperimentFileString,
+                this.arrayRevenueEdgeBwAcc, recordDataLength);
 
         // Migration
         // MigrationFrequence_node
@@ -615,7 +613,7 @@ public class Result
                     }
                 }
             }
-            if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedEmbed))
+            if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedProtection))
             {
                 edgeWeight += vn.surVirNet.edgeWeightSum;
                 runningSurNetNum++;
@@ -763,8 +761,8 @@ public class Result
             this.acceptanceRatioVirNet = 1.0;
         } else
         {
-            this.acceptanceRatioSurNet = (1.0 * algorithm.subNet.surNetSuceedEmbedSum / algorithm.subNet.virNetReqSum);
-            this.acceptanceRatioVirNet = (1.0 * algorithm.subNet.virNetSuceedEmbedSum / algorithm.subNet.virNetReqSum);
+            this.acceptanceRatioSurNet = (1.0 * algorithm.subNet.surNetSuceedEmbedSum / algorithm.subNet.reqSum);
+            this.acceptanceRatioVirNet = (1.0 * algorithm.subNet.virNetSuceedEmbedSum / algorithm.subNet.reqSum);
 
         }
     }
@@ -777,8 +775,8 @@ public class Result
     public void updateExperimentDataAccumulate(SeVNAlgorithm algorithm)
     {
         // node
-        int usedNode = 0;
-        int usedEdge = 0;
+        int activeNode = 0;
+        int activeEdge = 0;
         int nodeComputation = 0;
         int edgeBandwith = 0;
         for (int i = 0; i < algorithm.subNet.nodeSize; i++)
@@ -792,7 +790,7 @@ public class Result
             }
             if (nc != 0)
             {
-                usedNode++;
+                activeNode++;
             }
             if (nc > 0)
             {
@@ -809,7 +807,7 @@ public class Result
                 }
                 if (bc != 0)
                 {
-                    usedEdge++;
+                    activeEdge++;
                 }
                 if (bc > 0)
                 {
@@ -825,51 +823,45 @@ public class Result
             {
                 this.costEdgeBwAcc += (edgeBandwith - this.costEdgeBw);
             }
-        } else
-        {
-            this.costEdgeBwAcc += edgeBandwith;
-        }
 
-        if (Parameter.IsIncrementSum)
-        {
-            if ((usedEdge - this.pathLengthSubEdge) > 0)
+            if ((activeEdge - this.pathLengthSubEdge) > 0)
             {
-                this.pathLengthSubEdgeAcc += (usedEdge - this.pathLengthSubEdge);
+                this.pathLengthSubEdgeAcc += (activeEdge - this.pathLengthSubEdge);
             }
-        } else
-        {
-            this.pathLengthSubEdgeAcc += usedEdge;
-        }
 
-        if (Parameter.IsIncrementSum)
-        {
             if ((nodeComputation - this.costNodeCp) > 0)
             {
                 this.costNodeCpAcc += (nodeComputation - this.costNodeCp);
             }
-        } else
-        {
-            this.costNodeCpAcc += nodeComputation;
-        }
-
-        if (Parameter.IsIncrementSum)
-        {
-            if ((usedNode - this.activeNodeSubNode) > 0)
+            if ((activeNode - this.activeNodeSubNode) > 0)
             {
-                this.activeNodeSubNodeAcc += (usedNode - this.activeNodeSubNode);
+                this.activeNodeSubNodeAcc += (activeNode - this.activeNodeSubNode);
             }
         } else
         {
-            this.activeNodeSubNodeAcc += usedNode;
+            this.costEdgeBwAcc += edgeBandwith;
+            // this.costEdgeBwAcc += 1.0 * this.costEdgeBwAcc / (this.accumulateSum + 1);
+
+            this.pathLengthSubEdgeAcc += activeEdge;
+            // this.pathLengthSubEdgeAcc = 1.0 * this.pathLengthSubEdgeAcc /
+            // (this.accumulateSum + 1);
+
+            this.costNodeCpAcc += nodeComputation;
+            // this.costNodeCpAcc = 1.0 * this.costNodeCpAcc / (this.accumulateSum + 1);
+
+            this.activeNodeSubNodeAcc += activeNode;
+            // this.activeNodeSubNodeAcc = 1.0 * this.activeNodeSubNodeAcc /
+            // (this.accumulateSum + 1);
+
         }
 
         this.costEdgeBw = edgeBandwith;
-        this.pathLengthSubEdge = usedEdge;
+        this.pathLengthSubEdge = activeEdge;
         this.costNodeCp = nodeComputation;
-        this.activeNodeSubNode = usedNode;
+        this.activeNodeSubNode = activeNode;
 
-        usedNode = 0;
-        usedEdge = 0;
+        activeNode = 0;
+        activeEdge = 0;
         nodeComputation = 0;
         edgeBandwith = 0;
         int vnNum = 0;
@@ -886,21 +878,21 @@ public class Result
                 {
                     if (vn.nodeComputationDemand[j] > 0)
                     {
-                        usedNode++;
+                        activeNode++;
                         nodeComputation += vn.nodeComputationDemand[j];
                     }
                     for (int k = 0; k < j; k++)
                     {
                         if (vn.edgeBandwithDemand[j][k] > 0)
                         {
-                            usedEdge++;
+                            activeEdge++;
                             edgeBandwith += vn.edgeBandwithDemand[j][k];
                         }
                     }
                 }
             }
             // algorithm.algorithmName.equals("VirNet")||
-            if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedEmbed))
+            if (vn != null && vn.isRunning && (vn.surVirNet.isSucceedProtection))
             {
                 edgeWeight += vn.surVirNet.edgeWeightSum;
                 svnNum++;
@@ -908,61 +900,70 @@ public class Result
                 {
                     if (vn.surVirNet.nodeComputation4Backup[j] > 0)
                     {
-                        usedNode++;
+                        activeNode++;
                         nodeComputation += vn.surVirNet.nodeComputation4Backup[j];
                     }
                     for (int k = 0; k < j; k++)
                     {
                         if (vn.surVirNet.edgeBandwith4Backup[j][k] > 0)
                         {
-                            usedEdge++;
+                            activeEdge++;
                             edgeBandwith += vn.surVirNet.edgeBandwith4Backup[j][k];
                         }
                     }
                 }
             }
         }
-        if ((usedNode - this.activeNodeVirNode) > 0)
+
+        if (Parameter.IsIncrementSum)
         {
-            this.activeNodeVirNodeAcc += (usedNode - this.activeNodeVirNode);
-        }
+            if ((activeNode - this.activeNodeVirNode) > 0)
+            {
+                this.activeNodeVirNodeAcc += (activeNode - this.activeNodeVirNode);
+            }
 
-        if ((usedEdge - this.pathLengthVirEdge) > 0)
-        {
+            if ((activeEdge - this.pathLengthVirEdge) > 0)
+            {
+                this.pathLengthVirEdgeAcc += (activeEdge - this.pathLengthVirEdge);
+            }
 
-            this.pathLengthVirEdgeAcc += (usedEdge - this.pathLengthVirEdge);
-        }
+            if ((edgeBandwith - this.revenueEdgeBw) > 0)
+            {
+                this.revenueEdgeBwAcc += (edgeBandwith - this.revenueEdgeBw);
+            }
 
-        if ((edgeBandwith - this.revenueEdgeBw) > 0)
-        {
-            this.revenueEdgeBwAcc += (edgeBandwith - this.revenueEdgeBw);
-        }
+            if ((nodeComputation - this.revenueNodeCp) > 0)
+            {
+                this.revenueNodeCpAcc += (nodeComputation - this.revenueNodeCp);
+            }
 
-        if ((nodeComputation - this.revenueNodeCp) > 0)
-        {
-            this.revenueNodeCpAcc += (nodeComputation - this.revenueNodeCp);
-        }
-
-        this.virNetReqAcc = algorithm.subNet.virNetSuceedEmbedSum;
-
-        if (algorithm.algorithmName.equals("VirNet"))
-        {
-            this.surNetReqAcc = this.virNetReqAcc;
+            if ((edgeWeight - this.edgeWeight) > 0)
+            {
+                this.edgeWeightAcc += (edgeWeight - this.edgeWeight);
+            }
         } else
         {
-            this.surNetReqAcc = algorithm.subNet.surNetSuceedEmbedSum;
+            this.activeNodeVirNodeAcc += activeNode;
+            // this.activeNodeVirNodeAcc = 1.0 * this.activeNodeVirNodeAcc /
+            // (this.accumulateSum + 1);
+
+            this.pathLengthVirEdgeAcc += activeEdge;
+            // this.pathLengthVirEdgeAcc = 1.0 * this.pathLengthVirEdgeAcc /
+            // (this.accumulateSum + 1);
+
+            this.revenueEdgeBwAcc += edgeBandwith;
+            // this.revenueEdgeBwAcc = 1.0 * this.revenueEdgeBwAcc / (this.accumulateSum +
+            // 1);
+
+            this.revenueNodeCpAcc += nodeComputation;
+            // this.revenueNodeCpAcc = 1.0 * this.revenueNodeCpAcc / (this.accumulateSum +
+            // 1);
+
+            this.edgeWeightAcc += edgeWeight;
+            // this.edgeWeightAcc = 1.0 * this.edgeWeightAcc / (this.accumulateSum + 1);
         }
 
-        this.activeNodeVirNode = usedNode;
-        this.pathLengthVirEdge = usedEdge;
-        this.revenueNodeCp = nodeComputation;
-        this.revenueEdgeBw = edgeBandwith;
-
-        this.edgeWeight = edgeWeight;
-        this.edgeWeightAcc += edgeWeight;
-
         this.virNetReq = vnNum;
-        // when algorithm is VN, set its sur num is equal vn.
         if (algorithm.algorithmName.equals("VirNet"))
         {
             this.surNetReq = vnNum;
@@ -970,6 +971,24 @@ public class Result
         {
             this.surNetReq = svnNum;
         }
+
+        // this.virNetReqAcc += algorithm.subNet.virNetSuceedEmbedSum;
+        this.virNetReqAcc += vnNum;
+        if (algorithm.algorithmName.equals("VirNet"))
+        {
+            this.surNetReqAcc += this.virNetReq;
+        } else
+        {
+            this.surNetReqAcc += this.surNetReq;
+        }
+
+        this.activeNodeVirNode = activeNode;
+        this.pathLengthVirEdge = activeEdge;
+        this.revenueNodeCp = nodeComputation;
+        this.revenueEdgeBw = edgeBandwith;
+        this.edgeWeight = edgeWeight;
+
+        this.accumulateSum = this.accumulateSum + 1;
 
     }
 

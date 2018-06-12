@@ -65,7 +65,7 @@ public class SubstrateNetworkt implements Cloneable
     public int virNetSuceedEmbedSum;
     public int surNetSuceedEmbedSum;
     // EmbeddingCost
-    public int virNetReqSum;
+    public int reqSum;
 
     /**
      * SubstrateNetwork.
@@ -197,7 +197,7 @@ public class SubstrateNetworkt implements Cloneable
 
         this.virNetSuceedEmbedSum = 0;
         this.surNetSuceedEmbedSum = 0;
-        this.virNetReqSum = 0;
+        this.reqSum = 0;
 
     }
 
@@ -387,7 +387,7 @@ public class SubstrateNetworkt implements Cloneable
                 int temp = 0;
                 if ((this.virNetSet.get(this.surVirNetSet.get(ithSurVirNet).virNet.index) != null)
                         && this.virNetSet.get(this.surVirNetSet.get(ithSurVirNet).virNet.index).isRunning
-                        && this.surVirNetSet.get(ithSurVirNet).isSucceedEmbed)
+                        && this.surVirNetSet.get(ithSurVirNet).isSucceedProtection)
                 {
                     for (int j = 0; j < this.surVirNetSet.get(ithSurVirNet).nodeSize; j++)
                     {
@@ -463,7 +463,7 @@ public class SubstrateNetworkt implements Cloneable
                 int tempBandwith = 0;
                 if ((this.virNetSet.get(this.surVirNetSet.get(ithSeVN).virNet.index) != null)
                         && this.virNetSet.get(this.surVirNetSet.get(ithSeVN).virNet.index).isRunning
-                        && this.surVirNetSet.get(ithSeVN).isSucceedEmbed)
+                        && this.surVirNetSet.get(ithSeVN).isSucceedProtection)
                 {
                     for (int p = 0; p < this.surVirNetSet.get(ithSeVN).nodeSize; p++)
                     {

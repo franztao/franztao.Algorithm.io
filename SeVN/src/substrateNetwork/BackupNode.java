@@ -21,25 +21,25 @@ public class BackupNode
     /**
      * BackupNode.
      * 
-     * @param sn
+     * @param subNet
      *            sn
-     * @param vn
+     * @param virNet
      *            vn
      * @param isShared
      *            isShared
      */
-    public BackupNode(SubstrateNetworkt sn, VirtualNetwork vn, boolean isShared)
+    public BackupNode(SubstrateNetworkt subNet, VirtualNetwork virNet, boolean isShared)
     {
         // backup node number;
-        boolean[] isUsedNode = new boolean[sn.nodeSize];
-        for (int i = 0; i < vn.nodeSize; i++)
+        boolean[] isUsedNode = new boolean[subNet.nodeSize];
+        for (int i = 0; i < virNet.nodeSize; i++)
         {
-            isUsedNode[vn.virNode2subNode[i]] = true;
+            isUsedNode[virNet.virNode2subNode[i]] = true;
         }
 
         this.backupNodeSize = 0;
 
-        for (int i = 0; i < sn.nodeSize; i++)
+        for (int i = 0; i < subNet.nodeSize; i++)
         {
             if (!isUsedNode[i])
             {
@@ -48,26 +48,26 @@ public class BackupNode
         }
 
         this.backNode2subNode = new int[this.backupNodeSize];
-        this.boolFunctionTypeSet = new boolean[this.backupNodeSize][sn.functionNum];
+        this.boolFunctionTypeSet = new boolean[this.backupNodeSize][subNet.functionNum];
         this.nodeComputationCapacity = new int[this.backupNodeSize];
         this.isHaveSubstrateNodeResource4buNode = new boolean[this.backupNodeSize];
 
-        for (int i = 0, j = 0; i < sn.nodeSize; i++)
+        for (int i = 0, j = 0; i < subNet.nodeSize; i++)
         {
             if (!isUsedNode[i])
             {
                 this.backNode2subNode[j] = i;
-                if (sn.nodeComputationCapacity[i] == sn.getSubstrateRemainComputaion4VirNet(i, isShared))
+                if (subNet.nodeComputationCapacity[i] == subNet.getSubstrateRemainComputaion4VirNet(i, isShared))
                 {
                     isHaveSubstrateNodeResource4buNode[j] = true;
                 }
 
-                for (int l = 0; l < sn.functionNum; l++)
+                for (int l = 0; l < subNet.functionNum; l++)
                 {
-                    boolFunctionTypeSet[j][l] = sn.boolFunctionTypeSet[i][l];
+                    boolFunctionTypeSet[j][l] = subNet.boolFunctionTypeSet[i][l];
                 }
 
-                this.nodeComputationCapacity[j] = sn.getSubstrateRemainComputaion4SurVirNet(i, isShared);
+                this.nodeComputationCapacity[j] = subNet.getSubstrateRemainComputaion4SurVirNet(i, isShared);
                 j++;
             }
         }

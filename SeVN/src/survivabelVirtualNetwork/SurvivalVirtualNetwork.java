@@ -4,7 +4,6 @@
 
 package survivabelVirtualNetwork;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -29,9 +28,9 @@ import algorithm.StarStructure;
 public class SurvivalVirtualNetwork
 {
 
-    private Logger loggerEnhancedVirtualNetwork = Logger.getLogger(SurvivalVirtualNetwork.class.getName());
+    private Logger loggerSurvivalVirtualNetwork = Logger.getLogger(SurvivalVirtualNetwork.class.getName());
 
-//    public final int matchMethod = Parameter.MatchMethod;
+    // public final int matchMethod = Parameter.MatchMethod;
 
     // nodeSize=enhacnedNodeSize+backupNodeSize
     public int nodeSize;
@@ -61,7 +60,7 @@ public class SurvivalVirtualNetwork
 
     public VirtualNetwork virNet;
     public int index;
-    
+
     public int edgeWeightSum;
     // public boolean sampleInit;
 
@@ -85,7 +84,7 @@ public class SurvivalVirtualNetwork
 
     ConsumeResource consumedResource;
 
-    public boolean isSucceedEmbed;
+    public boolean isSucceedProtection;
 
     /**
      * SurvivalVirtualNetwork.
@@ -97,12 +96,11 @@ public class SurvivalVirtualNetwork
      */
     public SurvivalVirtualNetwork(SubstrateNetworkt sn, VirtualNetwork vn, BackupNode bn)
     {
-        loggerEnhancedVirtualNetwork.setLevel(Parameter.logLevel);
-
+        loggerSurvivalVirtualNetwork.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
         this.virNet = vn;
         this.virNet.surVirNet = this;
-        this.isSucceedEmbed = false;
+        this.isSucceedProtection = false;
 
         // node
         this.nodeSize4Failure = vn.nodeSize;
@@ -166,29 +164,27 @@ public class SurvivalVirtualNetwork
                 this.nodeComputationCapacity[i] = vn.nodeComputationCapacity[i];
                 this.nodeComputationConsume[i] = vn.nodeComputationDemand[i];
                 this.surNode2subNode[i] = vn.virNode2subNode[i];
+                this.virNode2surNode[i] = i;
+                this.surNode2virNode[i] = i;
 
             } else
             {
                 this.nodeComputationCapacity[i] = bn.nodeComputationCapacity[i - this.nodeSize4Failure];
                 this.nodeComputationConsume[i] = 0;
                 this.surNode2subNode[i] = bn.backNode2subNode[i - this.nodeSize4Failure];
+                this.surNode2virNode[i] = -1;
                 if (bn.isHaveSubstrateNodeResource4buNode[i - this.nodeSize4Failure])
                 {
                     this.isSubNodeComEmpty[i] = true;
                 }
             }
         }
-        for (int i = 0; i < this.nodeSize4Failure; i++)
-        {
-            this.virNode2surNode[i] = i;
-            this.surNode2virNode[i] = i;
-        }
         // edge
-        for (int i = 0; i < this.nodeSize4Failure; i++)
+        for (int i = 0; i < this.virNet.nodeSize; i++)
         {
             for (int j = 0; j < i; j++)
             {
-                if ((vn.edgeBandwithDemand[this.virNode2surNode[i]][this.virNode2surNode[j]] > 0))
+                if ((vn.edgeBandwithDemand[i][j] > 0))
                 {
                     int isurNode = this.virNode2surNode[i];
                     int jsurNode = this.virNode2surNode[j];
@@ -216,8 +212,8 @@ public class SurvivalVirtualNetwork
         }
 
         // label
-        String estr = "EN_";
-        String bstr = "BN_";
+        String estr = "Crital_";
+        String bstr = "Backup_";
         for (int i = 0; i < this.nodeSize; i++)
         {
             if (i < this.nodeSize4Failure)
@@ -236,19 +232,16 @@ public class SurvivalVirtualNetwork
             if (this.nodeComputationConsume[i] > 0)
             {
                 consumedResource.initNodeNumber++;
-                consumedResource.consumedNodeNumber++;
+                consumedResource.consumedNodeNumber = consumedResource.initNodeNumber;
 
                 consumedResource.initNodeComputation += this.nodeComputationConsume[i];
-                consumedResource.consumedNodeComputation += this.nodeComputationConsume[i];
+                consumedResource.consumedNodeComputation = consumedResource.initNodeComputation;
             }
-        }
-
-        for (int i = 0; i < this.nodeSize; i++)
-        {
             for (int j = 0; j < i; j++)
             {
-                consumedResource.consumeEdgeBandwith += this.edgeBandwith4Comsume[i][j];
                 consumedResource.initEdgeBandwith += this.edgeBandwith4Comsume[i][j];
+                consumedResource.consumeEdgeBandwith = consumedResource.initEdgeBandwith;
+
             }
         }
 
@@ -257,13 +250,12 @@ public class SurvivalVirtualNetwork
     /**
      * augmentNodeEdge.
      * 
-     * @param solution
+     * @param ithItem2ithKnapsack
      *            solution
      * @param matchMehtod
      *            Method
      */
-    public void augmentNodeEdge(int[] solution, int matchMehtod, StarStructure[] items,
-            Vector<StarStructure> knapsacks)
+    public void augmentNodeEdge(int[] ithItem2ithKnapsack, int matchMehtod, StarStructure[] items, Vector<StarStructure> knapsacks)
     {
 
         int[] virutialNode2NewSurvivalVirtualNode = new int[this.virNet.nodeSize];
@@ -271,15 +263,14 @@ public class SurvivalVirtualNetwork
         {
             for (int i = 0; i < this.virNet.nodeSize; i++)
             {
-                virutialNode2NewSurvivalVirtualNode[i] = knapsacks.elementAt(solution[i]).starNodeSurVirNetInd;
+                virutialNode2NewSurvivalVirtualNode[i] = knapsacks.elementAt(ithItem2ithKnapsack[i]).starNode2SurNetInd;
             }
         }
         if (matchMehtod == Parameter.MatchMethodDP)
         {
             for (int i = 0; i < this.virNet.nodeSize; i++)
             {
-                virutialNode2NewSurvivalVirtualNode[i] = solution[i];
-                // System.out.println(virutialNode2NewVirtualNode[i] + 1);
+                virutialNode2NewSurvivalVirtualNode[i] = ithItem2ithKnapsack[i];
             }
         }
 
@@ -337,7 +328,7 @@ public class SurvivalVirtualNetwork
                 edgeBandwith += this.edgeBandwith4Comsume[i][j];
             }
         }
-        loggerEnhancedVirtualNetwork.info((nodeNum - this.consumedResource.consumedNodeNumber) + " Node + "
+        loggerSurvivalVirtualNetwork.info((nodeNum - this.consumedResource.consumedNodeNumber) + " Node + "
                 + (nodeComputaiton - this.consumedResource.consumedNodeComputation) + " Computation + "
                 + (edgeBandwith - this.consumedResource.consumeEdgeBandwith) + " Bandwith ");
 

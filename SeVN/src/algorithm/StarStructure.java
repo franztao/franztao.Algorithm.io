@@ -13,9 +13,9 @@ public class StarStructure
 {
     public int starNodeFunctionType;
     public int starNodeComputation;
-    public int starNodeSurVirNetInd;
+    public int starNode2SurNetInd;
 
-    public boolean[] nodeServiceTypeSet;
+    public boolean[] nodeFunctionTypeSet;
     public Vector<StarEdgeStructure> neighborEdge;
     // Vector<Integer> neighborEnhancedVNID;
     // Vector<Integer> neighborEnhancedVNType;

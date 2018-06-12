@@ -35,7 +35,7 @@ public class SeVNAlgorithm
     public SubstrateNetworkt subNet;
     public VirtualNetworkParameter vnp;
 
-    public StarDP alg;
+    public StarDP starDP;
 
     // algorithm
     // NoShared Shared
@@ -49,7 +49,8 @@ public class SeVNAlgorithm
     public int failSequence;
 
     public SeVNAlgorithm()
-    {   sevnLog.setLevel(Parameter.logLevel);
+    {
+        sevnLog.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
     }
 
@@ -72,7 +73,7 @@ public class SeVNAlgorithm
                     releaseVirNetResource(i);
                     this.subNet.virNetSet.get(i).isRunning = false;
 
-                    if (this.subNet.virNetSet.get(i).surVirNet.isSucceedEmbed)
+                    if (this.subNet.virNetSet.get(i).surVirNet.isSucceedProtection)
                     {
                         releaseSurVirNetResource(this.subNet.virNetSet.get(i).surVirNet.index);
                     }
@@ -121,7 +122,7 @@ public class SeVNAlgorithm
             }
         }
 
-        this.subNet.surVirNetSet.get(index).destructerResource(alg.knapsacks);
+        this.subNet.surVirNetSet.get(index).destructerResource(starDP.knapSacks);
 
     }
 
@@ -390,7 +391,7 @@ public class SeVNAlgorithm
                         }
 
                         distributeBandwith = protoVn.edgeBandwithDemand[i][j];
-//                        distributeBandwith=0;
+                        // distributeBandwith=0;
                         if (distributeBandwith > pathMaximumBandwith)
                         {
                             sevnLog.warn("Alg: " + this.algorithmName + " Fail to embed VN (" + i + " to " + j
@@ -475,10 +476,10 @@ public class SeVNAlgorithm
      * @param protoVirNet
      *            sameVirNet
      */
-    public void generateAndProtectVirNet(VirtualNetwork protoVirNet)
+    public boolean generateAndProtectVirNet(VirtualNetwork protoVirNet)
     {
 
-        this.subNet.virNetReqSum++;
+        this.subNet.reqSum++;
         VirtualNetwork virNet = new VirtualNetwork(protoVirNet);
 
         // construct a virtual network
@@ -488,14 +489,14 @@ public class SeVNAlgorithm
             virNet.isRunning = true;
             this.subNet.virNetSuceedEmbedSum++;
             this.subNet.virNetSet.addElement(virNet);
-            sevnLog.info("Alg: " + this.algorithmName + " Succeed to generate (" + (this.subNet.virNetSet.size() - 1)
+            sevnLog.info("Alg: " + this.algorithmName + " Succeed to generate (" + this.subNet.virNetSet.size()
                     + ")-th  VN");
         } else
         {
             this.subNet.clearTempResource();
             sevnLog.warn("Alg: " + this.algorithmName + "Fail to generate (" + this.subNet.virNetSet.size()
                     + ")-th VN: embed VN");
-            return;
+            return false;
         }
 
         // construct backup node
@@ -507,35 +508,39 @@ public class SeVNAlgorithm
         // VirNet directly return, not process survivable procedure.
         if (this.algorithmName.equals("VirNet") || generateSurvivalVirtualNetwork(svn))
         {
-//            svn.isSucceedEmbed=true;
+            // svn.isSucceedEmbed=true;
             this.subNet.surNetSuceedEmbedSum++;
             sevnLog.info("Alg: " + this.algorithmName + " Succeed to construct SeVN and embed SeVN");
+            svn.index = this.subNet.surVirNetSet.size();
+            this.subNet.surVirNetSet.addElement(svn);
+            return true;
         } else
         {
             this.subNet.clearTempResource();
             sevnLog.warn("Alg: " + this.algorithmName + " Fail to construct SeVN");
+            svn.index = this.subNet.surVirNetSet.size();
+            this.subNet.surVirNetSet.addElement(svn);
+            return false;
         }
 
-        svn.index = this.subNet.surVirNetSet.size();
-        this.subNet.surVirNetSet.addElement(svn);
-        return;
     }
 
-    public boolean startSeVNAlgorithm(SurvivalVirtualNetwork svn)
+    public boolean startSeVNAlgorithm(SurvivalVirtualNetwork surNet)
     {
         boolean isSvnAlgorithmSuccess = false;
         if (this.isExact)
         {
-            
-//            isSvnAlgorithmSuccess = new ILP().exactAlgorithmIntegerProgram4SeVN(this, svn);
+            sevnLog.error("ILP algorithm do not exist");
+            // isSvnAlgorithmSuccess = new ILP().exactAlgorithmIntegerProgram4SeVN(this,
+            // svn);
         } else
         {
 
-            this.alg = new StarDP(svn);
-            this.alg.obtainItems(svn);
+            this.starDP = new StarDP(surNet);
+            this.starDP.obtainItems(surNet);
             try
             {
-                isSvnAlgorithmSuccess = alg.heursitcAlgorithm4SeVN(this, svn);
+                isSvnAlgorithmSuccess = starDP.heursitcAlgorithm4SeVN(this, surNet);
             } catch (GRBException e)
             {
                 e.printStackTrace();
@@ -551,27 +556,27 @@ public class SeVNAlgorithm
      *            vn
      * @return boolean
      */
-    private boolean generateSurvivalVirtualNetwork(SurvivalVirtualNetwork svn)
+    private boolean generateSurvivalVirtualNetwork(SurvivalVirtualNetwork surNet)
     {
 
-        if (startSeVNAlgorithm(svn))
+        if (startSeVNAlgorithm(surNet))
         {
-            if (distributeResource4SurVirNet(svn))
+            if (distributeResource4SurNet(surNet))
             {
-                svn.isSucceedEmbed = true;
+                surNet.isSucceedProtection = true;
                 sevnLog.info("Alg: " + this.algorithmName + " Succeed distribute enough resource for SeVN");
                 return true;
             } else
             {
                 if (Parameter.IsReleaseVNafterEVNFailure)
                 {
-                    this.subNet.virNetSet.get(svn.virNet.index).leaveTime = 1;
+                    this.subNet.virNetSet.get(surNet.virNet.index).leaveTime = 1;
                 }
                 sevnLog.info("Alg: " + this.algorithmName + " Fail distribute enough resource for SeVN");
             }
         } else
         {
-            sevnLog.info("Alg: " + this.algorithmName + " Algorithm fail to ask the SeVN solution");
+            sevnLog.info("Alg: " + this.algorithmName + " Algorithm fail generate Survival Virtual Network");
         }
         return false;
     }
@@ -583,7 +588,7 @@ public class SeVNAlgorithm
      *            evn
      * @return boolean
      */
-    private boolean distributeResource4SurVirNet(SurvivalVirtualNetwork svn)
+    private boolean distributeResource4SurNet(SurvivalVirtualNetwork svn)
     {
         for (int i = 0; i < this.subNet.nodeSize; i++)
         {

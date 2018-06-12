@@ -26,13 +26,14 @@ public class Parameter
     public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost / addEdgeBandwithCost;
 
     public static final boolean IsReleaseVNafterEVNFailure = true;
-    public static final boolean IsMultipleNodeMapOneNode = true;
-
+    public static final boolean IsMultipleVirutalNodeMapOnePhysicalNode = true;
+    public static final boolean IsMultipleVirutalNodeMapOnePhysicalNode4VNE = false;
+    
     public static final boolean IsIncrementSum = false;
 
     // resource shared
-    public static final int FailureDependent = 0;
-    public static final int FailureIndependent = 1;
+    public static final int OurPrtection = 0;
+    public static final int RVNProtection = 1;
     public static final int One2OneProtection = 2;
 
     // star match method
@@ -54,7 +55,7 @@ public class Parameter
     public static final int VNEAlgorithm = VNEILP;
 
     // SNDLib topology number is 12
-    public static final int ExperimentTimes = 2;
+    public static final int ExperimentTimes = 1;
     public static final int SubstrateNewtorkRunTimeInterval = 100;// 30000
     public static final long unitTimeInterval = 1;
     // ExperimentPicture
@@ -133,7 +134,7 @@ public class Parameter
     public static final int DataCenterVNSize = 4;// 4
     public static final int DataCenterVNBandWidth = 1;// 1
 
-    public static final boolean AllExperiment = true;
+    public static final boolean AllExperiment = false;
     public static final int BasicExperiment = 1;
 
     public static final int PossionMeanExperiment = 2;
@@ -154,6 +155,6 @@ public class Parameter
     public static int NodeFailureNumber = 1;
     
     
-    public static final int ExperimentType = NodeFailureExperiment;
+    public static final int ExperimentType = BasicExperiment;
 
 }

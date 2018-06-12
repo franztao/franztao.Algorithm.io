@@ -107,16 +107,18 @@ public class VirtualNetworkEmbedILP
         }
 
         // Tiv<=1
-        for (int j = 0; j < subNet.nodeSize; j++)
+        if (!Parameter.IsMultipleVirutalNodeMapOnePhysicalNode4VNE)
         {
-            GRBLinExpr expr = new GRBLinExpr();
-            for (int i = 0; i < protoVN.nodeSize; i++)
+            for (int j = 0; j < subNet.nodeSize; j++)
             {
-                expr.addTerm(1.0, nodeMappingMatrix[i][j]);
+                GRBLinExpr expr = new GRBLinExpr();
+                for (int i = 0; i < protoVN.nodeSize; i++)
+                {
+                    expr.addTerm(1.0, nodeMappingMatrix[i][j]);
+                }
+                model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "Tiv<=1:" + j);
             }
-            model.addConstr(expr, GRB.LESS_EQUAL, 1.0, "Tiv<=1:" + j);
         }
-
         // node mapping
         // T'D<=C
         // computaion

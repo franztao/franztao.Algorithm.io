@@ -17,38 +17,38 @@ import survivabelVirtualNetwork.SurvivalVirtualNetwork;
 public class StarDP
 {
 
-    public SurvivalVirtualNetwork svn;
+    public SurvivalVirtualNetwork surVirNet;
 
     /**
      * @param svn
      */
     public StarDP(SurvivalVirtualNetwork svn)
     {
-        this.svn = svn;
+        this.surVirNet = svn;
     }
 
     StarStructure[] items;
-    Vector<StarStructure> knapsacks;
+    Vector<StarStructure> knapSacks;
 
-    public void obtainItems(SurvivalVirtualNetwork svn)
+    public void obtainItems(SurvivalVirtualNetwork surNet)
     {
-        this.items = new StarStructure[svn.virNet.nodeSize];
-        for (int i = 0; i < svn.virNet.nodeSize; i++)
+        this.items = new StarStructure[surNet.virNet.nodeSize];
+        for (int i = 0; i < surNet.virNet.nodeSize; i++)
         {
             items[i] = new StarStructure();
-            items[i].starNodeSurVirNetInd = svn.virNode2surNode[i];
-            items[i].starNodeComputation = svn.virNet.nodeComputationDemand[i];
-            items[i].starNodeFunctionType = svn.virNet.nodeFunctionType[i];
+            items[i].starNode2SurNetInd = surNet.virNode2surNode[i];
+            items[i].starNodeComputation = surNet.virNet.nodeComputationDemand[i];
+            items[i].starNodeFunctionType = surNet.virNet.nodeFunctionType[i];
             items[i].neighborEdge = new Vector<StarEdgeStructure>();
-            for (int j = 0; j < svn.virNet.nodeSize; j++)
+            for (int j = 0; j < surNet.virNet.nodeSize; j++)
             {
-                if (svn.virNet.topology[i][j])
+                if (surNet.virNet.topology[i][j])
                 {
                     StarEdgeStructure edge = new StarEdgeStructure();
                     edge.neighborNode4VirNetInd = j;
-                    edge.neighborNode4SurVirNetInd = svn.virNode2surNode[j];
-                    edge.neighborEdgeBandwith = svn.virNet.edgeBandwithDemand[i][j];
-                    edge.neighborNodeType = svn.virNet.nodeFunctionType[j];
+                    edge.neighborNode4SurVirNetInd = surNet.virNode2surNode[j];
+                    edge.neighborEdgeBandwith = surNet.virNet.edgeBandwithDemand[i][j];
+                    edge.neighborNodeFunctionType = surNet.virNet.nodeFunctionType[j];
                     items[i].neighborEdge.addElement(edge);
                 }
             }
@@ -70,7 +70,7 @@ public class StarDP
 
         if (alg.failSequence == Parameter.Ran)
         {
-            for (int i = 0, t = 0; i < svn.nodeSize4Failure; i = i + t)
+            for (int i = 0; i < svn.nodeSize4Failure;)
             {
 
                 if ((i == 0) && (Parameter.TopologyType == Parameter.TopologyTypeDataCenter))
@@ -78,26 +78,28 @@ public class StarDP
                     i++;
                 }
 
-                Vector<Integer> nodeFailure = new Vector<Integer>();
-                t = 0;
-                for (int j = 0; j < Parameter.NodeFailureNumberEnd; j++)
+                Vector<Integer> failureNodeSet = new Vector<Integer>();
+                int[] ithItem2ithKnapsack = new int[svn.nodeSize4Failure];
+
+                for (int j = 0; j < (Parameter.NodeFailureNumberEnd) && (i < svn.nodeSize4Failure); j++)
                 {
-                    nodeFailure.add(i);
-                    t++;
+                    failureNodeSet.add(i);
+                    i++;
                 }
 
-                int[] ithItem2ithKnapsack = new int[svn.nodeSize4Failure];
-                int bipartiteMatchingSum = failIthNode(nodeFailure, alg.isFailDep, ithItem2ithKnapsack);
+                int bipartiteMatchingSum = failureNode(failureNodeSet, alg.isFailDep, ithItem2ithKnapsack);
                 if (bipartiteMatchingSum == -1)
                 {
-                    this.svn.edgeWeightSum = 0;
+                    this.surVirNet.edgeWeightSum = 0;
                     return false;
                 }
-                this.svn.edgeWeightSum = bipartiteMatchingSum;
-                svn.augmentNodeEdge(ithItem2ithKnapsack, Parameter.MatchMethod, this.items, this.knapsacks);
+                this.surVirNet.edgeWeightSum = bipartiteMatchingSum;
+                svn.augmentNodeEdge(ithItem2ithKnapsack, Parameter.MatchMethod, this.items, this.knapSacks);
 
             }
         }
+
+        // Parameter.Min do noe support mylitiple node failure emperiment
         if (alg.failSequence == Parameter.Min)
         {
             boolean[] isFailed = new boolean[svn.nodeSize4Failure];
@@ -121,7 +123,7 @@ public class StarDP
                     {
                         Vector<Integer> nodeFailure = new Vector<Integer>();
                         nodeFailure.add(j);
-                        solutionCost[j] = failIthNode(nodeFailure, alg.isFailDep, solution[j]);
+                        solutionCost[j] = failureNode(nodeFailure, alg.isFailDep, solution[j]);
                         if (solutionCost[j] == -1)
                         {
                             return false;
@@ -147,7 +149,7 @@ public class StarDP
                         }
                     }
                 }
-                svn.augmentNodeEdge(solution[nextOptimalFailNode], Parameter.MatchMethod, this.items, this.knapsacks);
+                svn.augmentNodeEdge(solution[nextOptimalFailNode], Parameter.MatchMethod, this.items, this.knapSacks);
                 isFailed[nextOptimalFailNode] = true;
             }
         }
@@ -162,16 +164,16 @@ public class StarDP
      * @param failSurNode
      *            failureNodeID
      */
-    void constructKnapsacks(Vector<Integer> nodeFailure)
+    void constructKnapsacks(Vector<Integer> failureSurNodeSet)
     {
         // int failSurNode
-        knapsacks = new Vector<StarStructure>();
-        for (int i = 0; i < this.svn.nodeSize; i++)
+        knapSacks = new Vector<StarStructure>();
+        for (int i = 0; i < this.surVirNet.nodeSize; i++)
         {
             boolean isContinue = false;
-            for (int t = 0; t < nodeFailure.size(); t++)
+            for (int t = 0; t < failureSurNodeSet.size(); t++)
             {
-                if (this.svn.surNode2subNode[i] == this.svn.surNode2subNode[nodeFailure.get(t)])
+                if (this.surVirNet.surNode2subNode[i] == this.surVirNet.surNode2subNode[failureSurNodeSet.get(t)])
                 {
                     isContinue = true;
                 }
@@ -181,26 +183,28 @@ public class StarDP
                 continue;
             }
 
-            StarStructure star = new StarStructure();
-            star.starNodeFunctionType = -1;
-            star.nodeServiceTypeSet = new boolean[this.svn.functionNum];
-            for (int j = 0; j < this.svn.functionNum; j++)
+            StarStructure physicalStar = new StarStructure();
+            physicalStar.starNodeFunctionType = -1;
+            physicalStar.nodeFunctionTypeSet = new boolean[this.surVirNet.functionNum];
+            for (int j = 0; j < this.surVirNet.functionNum; j++)
             {
-                star.nodeServiceTypeSet[j] = this.svn.boolFunctionTypeSet[i][j];
+                physicalStar.nodeFunctionTypeSet[j] = this.surVirNet.boolFunctionTypeSet[i][j];
             }
-            star.starNodeSurVirNetInd = i;
-            star.starNodeComputation = this.svn.nodeComputationConsume[i];
+            
+            physicalStar.starNode2SurNetInd = i;
+            physicalStar.starNodeComputation = this.surVirNet.nodeComputationConsume[i];
             // ineffective value could be erased
-            star.neighborEdge = new Vector<StarEdgeStructure>();
+            physicalStar.neighborEdge = new Vector<StarEdgeStructure>();
 
-            for (int k = 0; k < this.svn.virNet.nodeSize; k++)
+            for (int k = 0; k < this.surVirNet.virNet.nodeSize; k++)
             {
-                int surNode = this.svn.virNode2surNode[k];
+                
+                int surNode = this.surVirNet.virNode2surNode[k];
 
                 boolean isContinuek = false;
-                for (int t = 0; t < nodeFailure.size(); t++)
+                for (int t = 0; t < failureSurNodeSet.size(); t++)
                 {
-                    if (surNode == nodeFailure.get(t))
+                    if (surNode == failureSurNodeSet.get(t))
                     {
                         isContinuek = true;
                     }
@@ -209,22 +213,27 @@ public class StarDP
                 {
                     continue;
                 }
+                
+                if (!this.surVirNet.topology[i][surNode])
+                {
+                    continue;
+                }
 
                 StarEdgeStructure edge = new StarEdgeStructure();
                 edge.neighborNode4VirNetInd = k;
                 edge.neighborNode4SurVirNetInd = surNode;
-                if (i == this.svn.virNode2surNode[k])
+                if (i == this.surVirNet.virNode2surNode[k])
                 {
                     edge.neighborEdgeBandwith = Integer.MAX_VALUE;
                 } else
                 {
-                    edge.neighborEdgeBandwith = this.svn.edgeBandwith4Comsume[i][surNode];
+                    edge.neighborEdgeBandwith = this.surVirNet.edgeBandwith4Comsume[i][surNode];
                 }
-                edge.neighborNodeType = this.svn.virNet.nodeFunctionType[k];
-                star.neighborEdge.addElement(edge);
+                edge.neighborNodeFunctionType = this.surVirNet.virNet.nodeFunctionType[k];
+                physicalStar.neighborEdge.addElement(edge);
 
             }
-            knapsacks.addElement(star);
+            knapSacks.addElement(physicalStar);
 
         }
     }
@@ -242,11 +251,12 @@ public class StarDP
      * @throws GRBException
      *             GRBException
      */
-    public int failIthNode(Vector<Integer> nodeFailure, int isFailDep, int[] ithItem2ithKnapsack) throws GRBException
+    public int failureNode(Vector<Integer> nodeFailure, int isFailDep, int[] ithItem2ithKnapsack) throws GRBException
     {
         // int failSurNode
         constructKnapsacks(nodeFailure);
-        MulitpleKnapsack mkp = new MulitpleKnapsack(this.svn.virNet.nodeSize, knapsacks.size(), this.svn.nodeSize);
+        MulitpleKnapsack mkp = new MulitpleKnapsack(this.surVirNet.virNet.nodeSize, knapSacks.size(),
+                this.surVirNet.nodeSize);
         constructMultipleKnapsackProbem(mkp, isFailDep);
         int optimalResult = -1;
         if (Parameter.MatchMethod == Parameter.MatchMethodDP)
@@ -254,8 +264,6 @@ public class StarDP
             optimalResult = mkp.optimalSoutionDP(ithItem2ithKnapsack);
             if (optimalResult == -1)
             {
-                // loggerEnhancedVirtualNetwork.warn("Failure node: " + failSurNode + ", there
-                // is not solution");
                 return -1;
             }
         }
@@ -265,8 +273,6 @@ public class StarDP
             optimalResult = mkp.optimalSoutionIntegerPrograming(ithItem2ithKnapsack);
             if (optimalResult == -1)
             {
-                // loggerEnhancedVirtualNetwork.warn("Failure node: " + failSurNode + ", there
-                // is not solution");
                 return -1;
             }
         }
@@ -286,56 +292,52 @@ public class StarDP
      */
     boolean constructMultipleKnapsackProbem(MulitpleKnapsack multKnaP, int isFailDep)
     {
-        for (int i = 0; i < this.svn.virNet.nodeSize; i++)
+        for (int i = 0; i < this.surVirNet.virNet.nodeSize; i++)
         {
-            for (int j = 0; j < knapsacks.size(); j++)
+            for (int j = 0; j < knapSacks.size(); j++)
             {
                 multKnaP.matchMatrix[i][j] = Integer.MAX_VALUE;
-                if ((isFailDep == Parameter.FailureIndependent)
-                        && (knapsacks.elementAt(j).starNodeSurVirNetInd < this.svn.nodeSize4Failure)
-                        && (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd))
+                if ((isFailDep == Parameter.RVNProtection)
+                        && (knapSacks.elementAt(j).starNode2SurNetInd < this.surVirNet.nodeSize4Failure)
+                        && (items[i].starNode2SurNetInd != knapSacks.elementAt(j).starNode2SurNetInd))
                 {
                     continue;
                 }
 
                 if ((isFailDep == Parameter.One2OneProtection)
-                        && (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd)
-                        && (0 != this.svn.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd]))
+                        && (items[i].starNode2SurNetInd != knapSacks.elementAt(j).starNode2SurNetInd)
+                        && (0 != this.surVirNet.nodeComputationConsume[knapSacks.elementAt(j).starNode2SurNetInd]))
                 {
                     continue;
                 }
 
-                // if (knapsacks.elementAt(j).starNodeSurVirNetInd ==
-                // items[i].starNodeSurVirNetInd) {
-                // System.out.println("fff");
-                // }
-                if (knapsacks.elementAt(j).nodeServiceTypeSet[items[i].starNodeFunctionType])
+                if (knapSacks.elementAt(j).nodeFunctionTypeSet[items[i].starNodeFunctionType])
                 {
-                    if (items[i].starNodeComputation <= this.svn.nodeComputationCapacity[knapsacks
-                            .elementAt(j).starNodeSurVirNetInd])
+                    if (items[i].starNodeComputation <= this.surVirNet.nodeComputationCapacity[knapSacks
+                            .elementAt(j).starNode2SurNetInd])
                     {
                         multKnaP.matchMatrix[i][j] = 0;
 
-                        if (this.svn.isSubNodeComEmpty[knapsacks.elementAt(j).starNodeSurVirNetInd])
+                        if (this.surVirNet.isSubNodeComEmpty[knapSacks.elementAt(j).starNode2SurNetInd])
                         {
                             multKnaP.matchMatrix[i][j] += Parameter.addNewVirNodeNewSubNodeCost;
                         }
 
-                        if (0 == this.svn.nodeComputationConsume[knapsacks.elementAt(j).starNodeSurVirNetInd])
+                        if (0 == this.surVirNet.nodeComputationConsume[knapSacks.elementAt(j).starNode2SurNetInd])
                         {
                             multKnaP.matchMatrix[i][j] += Parameter.addNewVirNodeCost;
                         }
 
-                        if (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd)
+                        if (items[i].starNode2SurNetInd != knapSacks.elementAt(j).starNode2SurNetInd)
                         {
                             multKnaP.matchMatrix[i][j] += Parameter.transformExistedNodeCost;
                         }
 
-                        if (items[i].starNodeComputation > this.svn.nodeComputationConsume[knapsacks
-                                .elementAt(j).starNodeSurVirNetInd])
+                        if (items[i].starNodeComputation > this.surVirNet.nodeComputationConsume[knapSacks
+                                .elementAt(j).starNode2SurNetInd])
                         {
 
-                            if (items[i].starNodeSurVirNetInd != knapsacks.elementAt(j).starNodeSurVirNetInd)
+                            if (items[i].starNode2SurNetInd != knapSacks.elementAt(j).starNode2SurNetInd)
                             {
                                 if (Parameter.isNewCriter)
                                 {
@@ -344,8 +346,9 @@ public class StarDP
                                 } else
                                 {
                                     multKnaP.matchMatrix[i][j] += (Parameter.addNodeComputaionCost
-                                            * (items[i].starNodeComputation - this.svn.nodeComputationConsume[knapsacks
-                                                    .elementAt(j).starNodeSurVirNetInd]));
+                                            * (items[i].starNodeComputation
+                                                    - this.surVirNet.nodeComputationConsume[knapSacks
+                                                            .elementAt(j).starNode2SurNetInd]));
                                 }
                             }
 
@@ -354,23 +357,23 @@ public class StarDP
                         for (int k = 0; k < items[i].neighborEdge.size(); k++)
                         {
                             boolean isExistedEdge = true;
-                            for (int l = 0; l < knapsacks.elementAt(j).neighborEdge.size(); l++)
+                            for (int l = 0; l < knapSacks.elementAt(j).neighborEdge.size(); l++)
                             {
 
                                 if (items[i].neighborEdge
-                                        .elementAt(k).neighborNode4VirNetInd == knapsacks.elementAt(j).neighborEdge
+                                        .elementAt(k).neighborNode4VirNetInd == knapSacks.elementAt(j).neighborEdge
                                                 .elementAt(l).neighborNode4VirNetInd)
                                 {
                                     isExistedEdge = false;
                                     if (items[i].neighborEdge
-                                            .elementAt(k).neighborEdgeBandwith > knapsacks.elementAt(j).neighborEdge
+                                            .elementAt(k).neighborEdgeBandwith > knapSacks.elementAt(j).neighborEdge
                                                     .elementAt(l).neighborEdgeBandwith)
                                     {
 
                                         if (Parameter.isNewCriter)
                                         {
-                                            if (items[i].starNodeSurVirNetInd != knapsacks
-                                                    .elementAt(j).starNodeSurVirNetInd)
+                                            if (items[i].starNode2SurNetInd != knapSacks
+                                                    .elementAt(j).starNode2SurNetInd)
                                             {
                                                 multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
                                                         * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwith));
@@ -378,7 +381,7 @@ public class StarDP
                                             {
                                                 multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
                                                         * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwith
-                                                                - knapsacks.elementAt(j).neighborEdge
+                                                                - knapSacks.elementAt(j).neighborEdge
                                                                         .elementAt(l).neighborEdgeBandwith));
                                             }
 
@@ -386,7 +389,7 @@ public class StarDP
                                         {
                                             multKnaP.matchMatrix[i][j] += (Parameter.addEdgeBandwithCost
                                                     * (items[i].neighborEdge.elementAt(k).neighborEdgeBandwith
-                                                            - knapsacks.elementAt(j).neighborEdge
+                                                            - knapSacks.elementAt(j).neighborEdge
                                                                     .elementAt(l).neighborEdgeBandwith));
                                         }
 
@@ -407,58 +410,18 @@ public class StarDP
             }
         }
 
-        // System.out.println();
-        // System.out.println();
-        // for (int i = 0; i < this.virNet.nodeSize; i++) {
-        // for (int j = 0; j < knapsacks.size(); j++) {
-        // // multKnaP.matchMatrix[i][j] = Integer.MAX_VALUE;
-        // if (multKnaP.matchMatrix[i][j] != Integer.MAX_VALUE) {
-        // System.out.print(multKnaP.matchMatrix[i][j] + " ");
-        // } else
-        // System.out.print("oo ");
-        // }
-        // System.out.println();
-        // }
-        // System.out.println();
-        // System.out.println();
-        for (int i = 0; i < knapsacks.size(); i++)
+        for (int i = 0; i < knapSacks.size(); i++)
         {
-            multKnaP.ithKapsack2ithUnionKnapsack[i] = knapsacks.elementAt(i).starNodeSurVirNetInd;
+            multKnaP.ithKapsack2ithUnionKnapsack[i] = knapSacks.elementAt(i).starNode2SurNetInd;
         }
-        for (int i = 0; i < this.svn.nodeSize; i++)
+        for (int i = 0; i < this.surVirNet.nodeSize; i++)
         {
-            multKnaP.unionKnapsackCapacity[i] = this.svn.nodeComputationCapacity[i];
+            multKnaP.unionKnapsackCapacity[i] = this.surVirNet.nodeComputationCapacity[i];
         }
-        for (int i = 0; i < this.svn.virNet.nodeSize; i++)
+        for (int i = 0; i < this.surVirNet.virNet.nodeSize; i++)
         {
-            multKnaP.capacityItem[i] = this.svn.virNet.nodeComputationDemand[i];
+            multKnaP.capacityItem[i] = this.surVirNet.virNet.nodeComputationDemand[i];
         }
-        // for (int i = 0; i < this.VN.nodeSize; i++) {
-        // for (int j = 0; j < Knapsacks.size(); j++) {
-        // System.out.print("i: "+i+"j: "+j+" --"+matchingMatrix[i][j]);
-        // if (mKP.matchMatrix[i][j] != Integer.MAX_VALUE) {
-        // // System.out.print("00\t ");
-        // // else {
-        // // final int addNewNodeCost = 10000000;
-        // // final int transformExistedNodeCost = 100000;
-        // // final int addNodeComputaionCost = 1000;
-        // // final int addEdgeBandwithCost = 1;
-        // int printint = mKP.matchMatrix[i][j];
-        // if ((mKP.matchMatrix[i][j] / EVSNR.addNewNodeCost) > 0)
-        // // System.out.print("N+");
-        // printint = printint % EVSNR.addNewNodeCost;
-        // if ((printint / EVSNR.transformExistedNodeCost) > 0)
-        // // System.out.print("M+");
-        // printint = printint % EVSNR.transformExistedNodeCost;
-        // if ((printint / EVSNR.addNodeComputaionCost) > 0)
-        // // System.out.print("(" + (printint /
-        // // EVSNR.addNodeComputaionCost) + ")+");
-        // printint = printint % EVSNR.addNodeComputaionCost;
-        // // System.out.print(printint + "\t ");
-        // }
-        // }
-        // System.out.println("");
-        // }
         return false;
 
     }
