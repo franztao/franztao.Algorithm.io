@@ -20,13 +20,13 @@ public class VirtualNetwork
     public int leaveTime;
     //node
     public int nodeSize;
-    public int[] virNode2subNode;
+    public int[] virNode2phyNode;
     public int[] nodeComputationDemand;
     public int[] nodeComputationCapacity;
     //edge
     public boolean[][] topology;
     public int[][] edgeBandwithDemand;
-    public Vector<Vector<Vector<Integer>>> virEdge2subPath;
+    public Vector<Vector<Vector<Integer>>> virEdge2PhyPath;
     //function
     public int functionNum;
     public int[] nodeFunctionType;
@@ -73,19 +73,19 @@ public class VirtualNetwork
         // node
         this.nodeComputationDemand = new int[nodeSize];
         this.nodeComputationCapacity = new int[nodeSize];
-        this.virNode2subNode = new int[nodeSize];
+        this.virNode2phyNode = new int[nodeSize];
 
         //edge
         this.topology = new boolean[nodeSize][nodeSize];
         this.edgeBandwithDemand = new int[nodeSize][nodeSize];
-        this.virEdge2subPath = new Vector<Vector<Vector<Integer>>>();
+        this.virEdge2PhyPath = new Vector<Vector<Vector<Integer>>>();
 
         for (int i = 0; i < this.nodeSize; i++)
         {
-            virEdge2subPath.addElement(new Vector<Vector<Integer>>());
+            virEdge2PhyPath.addElement(new Vector<Vector<Integer>>());
             for (int j = 0; j < this.nodeSize; j++)
             {
-                virEdge2subPath.get(i).addElement(new Vector<Integer>());
+                virEdge2PhyPath.get(i).addElement(new Vector<Integer>());
             }
         }
 
@@ -113,12 +113,12 @@ public class VirtualNetwork
         {
             for (int j = 0; j < this.nodeSize; j++)
             {
-                virEdge2subPath.get(i).get(j).clear();
+                virEdge2PhyPath.get(i).get(j).clear();
 
             }
-            virEdge2subPath.get(i).clear();
+            virEdge2PhyPath.get(i).clear();
         }
-        virEdge2subPath.clear();
+        virEdge2PhyPath.clear();
         label2Node.clear();
     }
 }

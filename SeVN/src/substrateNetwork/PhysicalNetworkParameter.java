@@ -12,18 +12,18 @@ import sevn.Parameter;
  * @author franz
  *
  */
-public class SubStrateNetworkParameter
+public class PhysicalNetworkParameter
 {
 
     // node parameter
     public int nodeSize = -1;
-    public int nodeComputationMinimum = Parameter.SubStrateNodeComputationMinimum;
-    public int nodeComputationMaximum = Parameter.SubStrateNodeComputationMaximum;
+    public int nodeComputationMinimum = Parameter.PhysicalNodeComputationMinimum;
+    public int nodeComputationMaximum = Parameter.PhysicalNodeComputationMaximum;
 
     // edge parameter
-    public double node2nodeProbability = Parameter.SubStrateNodenodeProbability;
-    public int edgeBandwithMinimum = Parameter.SubStrateEdgeBandwithMinimum;
-    public int edgeBandwithMaximum = Parameter.SubStrateEdgeBandwithMaximum;
+    public double node2nodeProbability = Parameter.PhysicalNodenodeProbability;
+    public int edgeBandwithMinimum = Parameter.PhysicalEdgeBandwithMinimum;
+    public int edgeBandwithMaximum = Parameter.PhysicalEdgeBandwithMaximum;
 
     // service parameter
     public int functionTypeNumber;
@@ -33,7 +33,7 @@ public class SubStrateNetworkParameter
      * SubStrateNetworkParameter.
      * 
      */
-    public SubStrateNetworkParameter()
+    public PhysicalNetworkParameter()
     {
         if (Parameter.TopologyType == Parameter.TopologyTypeSample)
         {
@@ -48,7 +48,7 @@ public class SubStrateNetworkParameter
 
         if (Parameter.TopologyType == Parameter.TopologyTypeRandom)
         {
-            this.nodeSize = Parameter.SubStrateNodeSize;
+            this.nodeSize = Parameter.PhysicalNodeSize;
             this.functionTypeNumber = Parameter.FunctionNumber;
         }
 

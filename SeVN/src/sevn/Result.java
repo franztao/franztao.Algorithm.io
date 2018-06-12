@@ -181,14 +181,14 @@ public class Result
             FileWriter fwTexFileWriter = new FileWriter(flTexFileWriter);
             fwTexFileWriter.write(prefix + "addNewNodeCost" + "}{" + Parameter.addNewVirNodeCost + "}\n");
             fwTexFileWriter
-                    .write(prefix + "transformExistedNodeCost" + "}{" + Parameter.transformExistedNodeCost + "}\n");
+                    .write(prefix + "transformExistedNodeCost" + "}{" + Parameter.transformNodeCost + "}\n");
             fwTexFileWriter.write(prefix + "addNodeComputaionCost" + "}{" + Parameter.addNodeComputaionCost + "}\n");
             fwTexFileWriter.write(prefix + "addEdgeBandwithCost" + "}{" + Parameter.addEdgeBandwithCost + "}\n");
             fwTexFileWriter.write(prefix + "RelativeCostbetweenComputingBandwidth" + "}{"
                     + Parameter.RelativeCostbetweenComputingBandwidth + "}\n");
 
             fwTexFileWriter.write(prefix + "SubstrateNewtorkRunTimeInterval" + "}{"
-                    + Parameter.SubstrateNewtorkRunTimeInterval + "}\n");
+                    + Parameter.PhysicalNewtorkRunTimeInterval + "}\n");
             fwTexFileWriter.write(prefix + "unitTimeInterval" + "}{" + Parameter.unitTimeInterval + "}\n");
             fwTexFileWriter
                     .write(prefix + "requestAppearProbability" + "}{" + Parameter.RequestAppearProbability + "}\n");
@@ -206,17 +206,17 @@ public class Result
             fwTexFileWriter.write(prefix + "VNRequestsContinueTimeExponentialMean" + "}{"
                     + Parameter.VNRequestsContinueTimeExponentialMean + "}\n");
 
-            fwTexFileWriter.write(prefix + "SubStrateNodeSize" + "}{" + Parameter.SubStrateNodeSize + "}\n");
+            fwTexFileWriter.write(prefix + "SubStrateNodeSize" + "}{" + Parameter.PhysicalNodeSize + "}\n");
             fwTexFileWriter.write(prefix + "SubStrateNodeComputationMinimum" + "}{"
-                    + Parameter.SubStrateNodeComputationMinimum + "}\n");
+                    + Parameter.PhysicalNodeComputationMinimum + "}\n");
             fwTexFileWriter.write(prefix + "SubStrateNodeComputationMaximum" + "}{"
-                    + Parameter.SubStrateNodeComputationMaximum + "}\n");
+                    + Parameter.PhysicalNodeComputationMaximum + "}\n");
             fwTexFileWriter.write(
-                    prefix + "SubStrateNodenodeProbability" + "}{" + Parameter.SubStrateNodenodeProbability + "}\n");
+                    prefix + "SubStrateNodenodeProbability" + "}{" + Parameter.PhysicalNodenodeProbability + "}\n");
             fwTexFileWriter.write(
-                    prefix + "SubStrateEdgeBandwithMinimum" + "}{" + Parameter.SubStrateEdgeBandwithMinimum + "}\n");
+                    prefix + "SubStrateEdgeBandwithMinimum" + "}{" + Parameter.PhysicalEdgeBandwithMinimum + "}\n");
             fwTexFileWriter.write(
-                    prefix + "SubStrateEdgeBandwithMaximum" + "}{" + Parameter.SubStrateEdgeBandwithMaximum + "}\n");
+                    prefix + "SubStrateEdgeBandwithMaximum" + "}{" + Parameter.PhysicalEdgeBandwithMaximum + "}\n");
 
             fwTexFileWriter.write(prefix + "VirtualNodeSizeMinimum" + "}{" + Parameter.VirtualNodeSizeMinimum + "}\n");
             fwTexFileWriter.write(prefix + "VirtualNodeSizeMaximum" + "}{" + Parameter.VirtualNodeSizeMaximum + "}\n");
@@ -346,7 +346,7 @@ public class Result
             fwParameter = new FileWriter(flParameter);
             fwParameter.write(Parameter.ExperimentTimes + "\n");
             fwParameter.write((Parameter.ExperimentPicturePlotNumber + 1) + "\n");
-            fwParameter.write(Parameter.SubstrateNewtorkRunTimeInterval + "\n");
+            fwParameter.write(Parameter.PhysicalNewtorkRunTimeInterval + "\n");
             fwParameter.write(algorithms.size() + "\n");
             fwParameter.write(Parameter.RelativeCostbetweenComputingBandwidth + "\n");
             fwParameter.write(Parameter.addNewVirNodeCost + "\n");

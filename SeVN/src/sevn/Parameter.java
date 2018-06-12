@@ -15,12 +15,12 @@ public class Parameter
 {
     public static final Level logLevel = Level.ERROR;
     //
-    public static final boolean isNewCriter = true;
+    public static final boolean isNewCriter = false;
 
     // Parameter
-    public static final int addNewVirNodeNewSubNodeCost = 200;
+    public static final int addNewVirNodeNewPhysicalNodeCost = 200;
     public static final int addNewVirNodeCost = 0;// 100
-    public static final int transformExistedNodeCost = 50;// 100000
+    public static final int transformNodeCost = 50;// 100000
     public static final int addNodeComputaionCost = 3;
     public static final int addEdgeBandwithCost = 1;
     public static final int RelativeCostbetweenComputingBandwidth = addNodeComputaionCost / addEdgeBandwithCost;
@@ -55,8 +55,8 @@ public class Parameter
     public static final int VNEAlgorithm = VNEILP;
 
     // SNDLib topology number is 12
-    public static final int ExperimentTimes = 1;
-    public static final int SubstrateNewtorkRunTimeInterval = 100;// 30000
+    public static final int ExperimentTimes = 3;
+    public static final int PhysicalNewtorkRunTimeInterval = 100;// 30000
     public static final long unitTimeInterval = 1;
     // ExperimentPicture
     public static final int ExperimentPicturePlotNumber = 20;
@@ -80,7 +80,7 @@ public class Parameter
     public static final long VNRequestsContinueTimeMaximum = 100;
     public static final long VNRequestsContinueTimeAverage = VNRequestsContinueTimeMaximum / 2;
     // Exponential
-    public static long VNRequestsContinueTimeExponentialMean = SubstrateNewtorkRunTimeInterval / 2;
+    public static long VNRequestsContinueTimeExponentialMean = PhysicalNewtorkRunTimeInterval / 2;
 
     // service parameter
     public static final int FunctionNumber = 15;// 15
@@ -98,7 +98,7 @@ public class Parameter
     public static final int VirtualEdgeBandwithMaximum = 20;// 20
 
     // failure migration
-    public static final long SubStrateFacilityNodeFailDuration = SubstrateNewtorkRunTimeInterval
+    public static final long SubStrateFacilityNodeFailDuration = PhysicalNewtorkRunTimeInterval
             / ExperimentPicturePlotNumber;
 
     // -1 sample
@@ -111,16 +111,16 @@ public class Parameter
     public static final int TopologyTypeDataCenter = 2;
     public static final int TopologyType = TopologyTypeSNDLib;
 
-    public static final int SubStrateNodeComputationMinimum = 20;// 50
-    public static final int SubStrateNodeComputationMaximum = 50;// 100
-    public static final int SubStrateEdgeBandwithMinimum = 100;// 100
-    public static final int SubStrateEdgeBandwithMaximum = 200;// 200
+    public static final int PhysicalNodeComputationMinimum = 20;// 50
+    public static final int PhysicalNodeComputationMaximum = 50;// 100
+    public static final int PhysicalEdgeBandwithMinimum = 50;// 100
+    public static final int PhysicalEdgeBandwithMaximum = 100;// 200
 
     // Random
     // node parameter
-    public static final int SubStrateNodeSize = 30;// 100
+    public static final int PhysicalNodeSize = 30;// 100
     // edge parameter
-    public static final double SubStrateNodenodeProbability = 0.75;
+    public static final double PhysicalNodenodeProbability = 0.75;
 
     // SNDlib
     public static final String SNDLibFile = "data\\sndlib-networks-native";
@@ -143,9 +143,9 @@ public class Parameter
     public static final int PossionMeanAdd = 1;
 
     public static final int ExponentialMeanExperiment = 3;
-    public static final int ExponentialMeanStart = SubstrateNewtorkRunTimeInterval/10;
-    public static final int ExponentialMeanEnd = SubstrateNewtorkRunTimeInterval;
-    public static final int ExponentialMeanAdd = SubstrateNewtorkRunTimeInterval/10;
+    public static final int ExponentialMeanStart = PhysicalNewtorkRunTimeInterval/10;
+    public static final int ExponentialMeanEnd = PhysicalNewtorkRunTimeInterval;
+    public static final int ExponentialMeanAdd = PhysicalNewtorkRunTimeInterval/10;
     
     public static String ExperimentFileString;
 

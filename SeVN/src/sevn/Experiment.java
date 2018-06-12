@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import algorithm.SeVNAlgorithm;
-import substrateNetwork.SubstrateNetworkt;
+import substrateNetwork.PhysicalNetworkt;
 import virtualNetwork.VirtualNetwork;
 import virtualNetwork.VirtualNetworkParameter;
 
@@ -28,7 +28,7 @@ public class Experiment
     // log
     private Logger experimentlogger = Logger.getLogger(Experiment.class.getName());
 
-    private SubstrateNetworkt basicSubstrateNework;
+    private PhysicalNetworkt basicSubstrateNework;
     private VirtualNetworkParameter vnp;
     private Result[] algorithmResult;
 
@@ -37,7 +37,7 @@ public class Experiment
     /**
      * Experiment .
      */
-    public Experiment(SubstrateNetworkt sn, VirtualNetworkParameter vnp)
+    public Experiment(PhysicalNetworkt sn, VirtualNetworkParameter vnp)
     {
         experimentlogger.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
@@ -69,17 +69,17 @@ public class Experiment
      */
     private void runComparableAlgorithmWithSameVirNet(int ithExper)
     {
-        for (int time = 0; time <= Parameter.SubstrateNewtorkRunTimeInterval; time++)
+        for (int time = 0; time <= Parameter.PhysicalNewtorkRunTimeInterval; time++)
         {
 
             VirtualNetwork protoVirNet = generateProtoVirtualNetwork();
 
-            experimentlogger.info("####### Time/Total Time: " + time + "/" + Parameter.SubstrateNewtorkRunTimeInterval);
+            experimentlogger.info("####### Time/Total Time: " + time + "/" + Parameter.PhysicalNewtorkRunTimeInterval);
 
             for (int alg = 0; alg < algorithms.size(); alg++)
             {
 
-                if ((time % (Parameter.SubstrateNewtorkRunTimeInterval / Parameter.ExperimentPicturePlotNumber)) == 0)
+                if ((time % (Parameter.PhysicalNewtorkRunTimeInterval / Parameter.ExperimentPicturePlotNumber)) == 0)
                 {
                     this.algorithmResult[alg].recordExperimentData(ithExper, algorithms.get(alg), time);
                 }
@@ -109,7 +109,7 @@ public class Experiment
                         if ((Math.random() <= AppearProbability))
                         {
                             experimentlogger.info("+++++ Time/Total Time: " + time + "/"
-                                    + Parameter.SubstrateNewtorkRunTimeInterval + "  Alg: " + alg);
+                                    + Parameter.PhysicalNewtorkRunTimeInterval + "  Alg: " + alg);
                             if (algorithms.get(alg).generateAndProtectVirNet(protoVirNet))
                             {
                                 this.algorithmResult[alg].updateExperimentDataAccumulate(algorithms.get(alg));
@@ -160,20 +160,20 @@ public class Experiment
      */
     private void constructSameVirNet4Sample(VirtualNetwork vn)
     {
-        vn.leaveTime = (int) Parameter.SubstrateNewtorkRunTimeInterval;
+        vn.leaveTime = (int) Parameter.PhysicalNewtorkRunTimeInterval;
         vn.nodeComputationDemand[0] = 2;
         vn.nodeComputationDemand[1] = 3;
         vn.nodeComputationDemand[2] = 5;
         vn.nodeComputationDemand[3] = 6;
-        vn.virNode2subNode[0] = 0;
-        vn.virNode2subNode[1] = 1;
-        vn.virNode2subNode[2] = 2;
-        vn.virNode2subNode[3] = 3;
+        vn.virNode2phyNode[0] = 0;
+        vn.virNode2phyNode[1] = 1;
+        vn.virNode2phyNode[2] = 2;
+        vn.virNode2phyNode[3] = 3;
 
-        vn.virNode2subNode[0] = 0;
-        vn.virNode2subNode[1] = 1;
-        vn.virNode2subNode[2] = 2;
-        vn.virNode2subNode[3] = 3;
+        vn.virNode2phyNode[0] = 0;
+        vn.virNode2phyNode[1] = 1;
+        vn.virNode2phyNode[2] = 2;
+        vn.virNode2phyNode[3] = 3;
 
         vn.edgeBandwithDemand[0][1] = 4;
         vn.edgeBandwithDemand[0][2] = 5;
@@ -225,7 +225,7 @@ public class Experiment
         boolean[] isSamesNode = new boolean[this.basicSubstrateNework.nodeSize];
 
         // core
-        vn.virNode2subNode[0] = 0;
+        vn.virNode2phyNode[0] = 0;
         isSamesNode[0] = true;
         vn.nodeFunctionType[0] = 0;
         vn.nodeComputationDemand[0] = 0;
@@ -240,7 +240,7 @@ public class Experiment
                                 * (Parameter.DataCenterAry * Parameter.DataCenterAry * Parameter.DataCenterAry - 1));
                 if (!isSamesNode[snodeloc])
                 {
-                    vn.virNode2subNode[i] = snodeloc;
+                    vn.virNode2phyNode[i] = snodeloc;
                     isSamesNode[snodeloc] = true;
                     break;
                 }
@@ -263,7 +263,7 @@ public class Experiment
         for (int i = 1; i < vn.nodeSize; i++)
         {
 
-            if (vn.virNode2subNode[i] != vn.virNode2subNode[0])
+            if (vn.virNode2phyNode[i] != vn.virNode2phyNode[0])
             {
                 int distributeIthEdgeBandwith = (int) (2
                         + Math.ceil(Math.random() * (Parameter.DataCenterVNBandWidth)));
@@ -301,7 +301,7 @@ public class Experiment
                 // every phisical mapped only one virtual node
                 if (!isSamesNode[snodeloc])
                 {
-                    vn.virNode2subNode[i] = snodeloc;
+                    vn.virNode2phyNode[i] = snodeloc;
                     isSamesNode[snodeloc] = true;
                     break;
                 }
@@ -326,7 +326,7 @@ public class Experiment
                 if ((Math.random() < vnp.node2nodeProbability))
                 {
                     haseEdge = true;
-                    if (vn.virNode2subNode[i] != vn.virNode2subNode[j])
+                    if (vn.virNode2phyNode[i] != vn.virNode2phyNode[j])
                     {
                         int distributeIthEdgeBandwith = (int) (vnp.edgeBandwithMinimum
                                 + Math.ceil(Math.random() * (vnp.edgeBandwithMaximum - vnp.edgeBandwithMinimum)));
@@ -408,43 +408,43 @@ public class Experiment
             // Parameter.One2OneProtection, true, Parameter.Min);
             // this.algorithms.addElement(alg);
 
-            SubstrateNetworkt FD_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
+            PhysicalNetworkt FD_Ran_Shared = (PhysicalNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
             alg.setParameter("FD_Ran_Shared_Heuristic", FD_Ran_Shared, false, Parameter.OurPrtection, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetworkt FD_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
+            PhysicalNetworkt FD_Ran_NoShared = (PhysicalNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
             alg.setParameter("FD_Ran_NoShared_Heuristic", FD_Ran_NoShared, false, Parameter.OurPrtection, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetworkt FI_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
+            PhysicalNetworkt FI_Ran_Shared = (PhysicalNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
             alg.setParameter("FI_Ran_Shared_Heuristic", FI_Ran_Shared, false, Parameter.RVNProtection, true,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetworkt FI_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
+            PhysicalNetworkt FI_Ran_NoShared = (PhysicalNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
             alg.setParameter("FI_Ran_NoShared_Heuristic", FI_Ran_NoShared, false, Parameter.RVNProtection, false,
                     Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetworkt One2OneProtection_Ran_NoShared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
+            PhysicalNetworkt One2OneProtection_Ran_NoShared = (PhysicalNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
             alg.setParameter("One2OneProtection_Ran_NoShared", One2OneProtection_Ran_NoShared, false,
                     Parameter.One2OneProtection, false, Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetworkt One2OneProtection_Ran_Shared = (SubstrateNetworkt) this.basicSubstrateNework.clone();
+            PhysicalNetworkt One2OneProtection_Ran_Shared = (PhysicalNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
             alg.setParameter("One2OneProtection_Ran_Shared", One2OneProtection_Ran_Shared, false,
                     Parameter.One2OneProtection, true, Parameter.Ran);
             this.algorithms.addElement(alg);
 
-            SubstrateNetworkt virNet = (SubstrateNetworkt) this.basicSubstrateNework.clone();
+            PhysicalNetworkt virNet = (PhysicalNetworkt) this.basicSubstrateNework.clone();
             alg = new SeVNAlgorithm();
             alg.setParameter("VirNet", virNet, false, Parameter.RVNProtection, false, Parameter.Ran);
             this.algorithms.addElement(alg);

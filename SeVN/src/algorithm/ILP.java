@@ -78,7 +78,7 @@ public class ILP
             {
                 for (int k = 0; k < sn.nodeSize; k++)
                 {
-                    survivalGraphBandwithMatrix[j][k] = model.addVar(0.0, Parameter.SubStrateEdgeBandwithMaximum, 0.0,
+                    survivalGraphBandwithMatrix[j][k] = model.addVar(0.0, Parameter.PhysicalEdgeBandwithMaximum, 0.0,
                             GRB.INTEGER, "GB" + " r:" + j + " c:" + k);
                 }
             }

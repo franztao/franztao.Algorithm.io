@@ -7,8 +7,8 @@ package sevn;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import substrateNetwork.SubStrateNetworkParameter;
-import substrateNetwork.SubstrateNetworkt;
+import substrateNetwork.PhysicalNetworkParameter;
+import substrateNetwork.PhysicalNetworkt;
 import virtualNetwork.VirtualNetworkParameter;
 
 public class Main
@@ -65,7 +65,7 @@ public class Main
 
                 mainlogger.error("ExponentialMean_" + i + "_");
             }
-            Parameter.VNRequestsContinueTimeExponentialMean = Parameter.SubstrateNewtorkRunTimeInterval / 10;
+            Parameter.VNRequestsContinueTimeExponentialMean = Parameter.PhysicalNewtorkRunTimeInterval / 10;
         }
 
         if (Parameter.NodeFailureExperiment == Parameter.ExperimentType || Parameter.AllExperiment)
@@ -90,8 +90,8 @@ public class Main
         Result result = new Result();
         for (int ithExp = 0; ithExp < Parameter.ExperimentTimes; ithExp++)
         {
-            SubStrateNetworkParameter snp = new SubStrateNetworkParameter();
-            SubstrateNetworkt sn = new SubstrateNetworkt(snp, ithExp);
+            PhysicalNetworkParameter snp = new PhysicalNetworkParameter();
+            PhysicalNetworkt sn = new PhysicalNetworkt(snp, ithExp);
             VirtualNetworkParameter vnp = new VirtualNetworkParameter();
             Experiment exp = new Experiment(sn, vnp);
             result.recordExperimentParameter(exp.algorithms);

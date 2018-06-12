@@ -27,9 +27,9 @@ import sndlib.core.network.Node;
 import survivabelVirtualNetwork.SurvivalVirtualNetwork;
 import virtualNetwork.VirtualNetwork;
 
-public class SubstrateNetworkt implements Cloneable
+public class PhysicalNetworkt implements Cloneable
 {
-    private Logger substrateNetworkLog = Logger.getLogger(SubstrateNetworkt.class.getName());
+    private Logger substrateNetworkLog = Logger.getLogger(PhysicalNetworkt.class.getName());
 
     public SeVNAlgorithm algorihtm;
 
@@ -40,7 +40,7 @@ public class SubstrateNetworkt implements Cloneable
     public int[] nodeComputation4SurvivalUnsharedBackupSum;
     public int[] nodeComputation4Temp;
     public Vector<Vector<Integer>> virNetIndexSet4sNode;
-    public Vector<Vector<Integer>> surVirNetIndexSet4sNode;
+    public Vector<Vector<Integer>> surNetIndexSet4subNode;
     // edge
     public int edgeSize;
     public boolean[][] topology;
@@ -59,7 +59,7 @@ public class SubstrateNetworkt implements Cloneable
     public Map<String, Integer> label2Node;
 
     public Vector<VirtualNetwork> virNetSet;
-    public Vector<SurvivalVirtualNetwork> surVirNetSet;
+    public Vector<SurvivalVirtualNetwork> surNetSet;
 
     // acceptionRatio
     public int virNetSuceedEmbedSum;
@@ -73,7 +73,7 @@ public class SubstrateNetworkt implements Cloneable
      * @param snp
      *            snp
      */
-    public SubstrateNetworkt(SubStrateNetworkParameter snp, int ithexperiment)
+    public PhysicalNetworkt(PhysicalNetworkParameter snp, int ithexperiment)
     {
         substrateNetworkLog.setLevel(Parameter.logLevel);
 
@@ -126,11 +126,11 @@ public class SubstrateNetworkt implements Cloneable
         this.nodeComputation4SurvivalUnsharedBackupSum = new int[nodeSize];
         this.nodeComputation4Temp = new int[nodeSize];
         this.virNetIndexSet4sNode = new Vector<Vector<Integer>>();
-        this.surVirNetIndexSet4sNode = new Vector<Vector<Integer>>();
+        this.surNetIndexSet4subNode = new Vector<Vector<Integer>>();
         for (int i = 0; i < nodeSize; i++)
         {
             virNetIndexSet4sNode.addElement(new Vector<Integer>());
-            surVirNetIndexSet4sNode.addElement(new Vector<Integer>());
+            surNetIndexSet4subNode.addElement(new Vector<Integer>());
         }
 
         // edge
@@ -167,7 +167,7 @@ public class SubstrateNetworkt implements Cloneable
         this.label2Node = new HashMap<String, Integer>();
 
         this.virNetSet = new Vector<VirtualNetwork>();
-        this.surVirNetSet = new Vector<SurvivalVirtualNetwork>();
+        this.surNetSet = new Vector<SurvivalVirtualNetwork>();
         if (Parameter.TopologyType == Parameter.TopologyTypeSample)
         {
             setResourceDistribution4Sample();
@@ -265,7 +265,7 @@ public class SubstrateNetworkt implements Cloneable
      * @param snp
      * @param network
      */
-    private void setResourceDistribution4SNDLib(SubStrateNetworkParameter snp, Network network)
+    private void setResourceDistribution4SNDLib(PhysicalNetworkParameter snp, Network network)
     {
         // node computation
         for (int i = 0; i < this.nodeSize; i++)
@@ -381,21 +381,21 @@ public class SubstrateNetworkt implements Cloneable
         if (isShared)
         {
             int maxShare = 0;
-            for (int i = 0; i < this.surVirNetIndexSet4sNode.get(nodeloc).size(); i++)
+            for (int i = 0; i < this.surNetIndexSet4subNode.get(nodeloc).size(); i++)
             {
-                int ithSurVirNet = this.surVirNetIndexSet4sNode.get(nodeloc).get(i);
+                int ithSurVirNet = this.surNetIndexSet4subNode.get(nodeloc).get(i);
                 int temp = 0;
-                if ((this.virNetSet.get(this.surVirNetSet.get(ithSurVirNet).virNet.index) != null)
-                        && this.virNetSet.get(this.surVirNetSet.get(ithSurVirNet).virNet.index).isRunning
-                        && this.surVirNetSet.get(ithSurVirNet).isSucceedProtection)
+                if ((this.virNetSet.get(this.surNetSet.get(ithSurVirNet).virNet.index) != null)
+                        && this.virNetSet.get(this.surNetSet.get(ithSurVirNet).virNet.index).isRunning
+                        && this.surNetSet.get(ithSurVirNet).isSucceedProtection)
                 {
-                    for (int j = 0; j < this.surVirNetSet.get(ithSurVirNet).nodeSize; j++)
+                    for (int j = 0; j < this.surNetSet.get(ithSurVirNet).nodeSize; j++)
                     {
-                        if (nodeloc == this.surVirNetSet.get(ithSurVirNet).surNode2subNode[j])
+                        if (nodeloc == this.surNetSet.get(ithSurVirNet).surNode2phyNode[j])
                         {
                             // one substrate network node map multiple virtual
                             // network request and network node
-                            temp += this.surVirNetSet.get(ithSurVirNet).nodeComputation4Backup[j];
+                            temp += this.surNetSet.get(ithSurVirNet).nodeComputation4Backup[j];
                         }
                     }
                 }
@@ -461,23 +461,23 @@ public class SubstrateNetworkt implements Cloneable
                 int ithSeVN = this.surVirNetIndexSet4sEdge.get(from).get(to).get(i);
 
                 int tempBandwith = 0;
-                if ((this.virNetSet.get(this.surVirNetSet.get(ithSeVN).virNet.index) != null)
-                        && this.virNetSet.get(this.surVirNetSet.get(ithSeVN).virNet.index).isRunning
-                        && this.surVirNetSet.get(ithSeVN).isSucceedProtection)
+                if ((this.virNetSet.get(this.surNetSet.get(ithSeVN).virNet.index) != null)
+                        && this.virNetSet.get(this.surNetSet.get(ithSeVN).virNet.index).isRunning
+                        && this.surNetSet.get(ithSeVN).isSucceedProtection)
                 {
-                    for (int p = 0; p < this.surVirNetSet.get(ithSeVN).nodeSize; p++)
+                    for (int p = 0; p < this.surNetSet.get(ithSeVN).nodeSize; p++)
                     {
-                        for (int q = 0; q < this.surVirNetSet.get(ithSeVN).nodeSize; q++)
+                        for (int q = 0; q < this.surNetSet.get(ithSeVN).nodeSize; q++)
                         {
-                            for (int t = 0; t < (this.surVirNetSet.get(ithSeVN).surEdge2SubPath.get(p).get(q).size()
+                            for (int t = 0; t < (this.surNetSet.get(ithSeVN).surEdge2PhyPath.get(p).get(q).size()
                                     - 1); t++)
                             {
-                                if ((from == this.surVirNetSet.get(ithSeVN).surEdge2SubPath.get(p).get(q).get(t))
-                                        && (to == this.surVirNetSet.get(ithSeVN).surEdge2SubPath.get(p).get(q)
+                                if ((from == this.surNetSet.get(ithSeVN).surEdge2PhyPath.get(p).get(q).get(t))
+                                        && (to == this.surNetSet.get(ithSeVN).surEdge2PhyPath.get(p).get(q)
                                                 .get(t + 1)))
                                 {
 
-                                    tempBandwith += this.surVirNetSet.get(ithSeVN).edgeBandwith4Backup[p][q];
+                                    tempBandwith += this.surNetSet.get(ithSeVN).edgeBandwith4Backup[p][q];
                                 }
                             }
                         }
@@ -505,7 +505,7 @@ public class SubstrateNetworkt implements Cloneable
      * @param snp
      *            snp
      */
-    private void setResourceDistribution4RandomTopo(SubStrateNetworkParameter snp)
+    private void setResourceDistribution4RandomTopo(PhysicalNetworkParameter snp)
     {
         // node computation
         for (int i = 0; i < this.nodeSize; i++)
@@ -566,7 +566,7 @@ public class SubstrateNetworkt implements Cloneable
      * @param snp
      *            snp
      */
-    private void setResourceDistribution4DataCenter(SubStrateNetworkParameter snp)
+    private void setResourceDistribution4DataCenter(PhysicalNetworkParameter snp)
     {
         // node computation
         for (int i = 0; i < this.nodeSize; i++)
@@ -663,7 +663,7 @@ public class SubstrateNetworkt implements Cloneable
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        SubstrateNetworkt sn = (SubstrateNetworkt) super.clone();
+        PhysicalNetworkt sn = (PhysicalNetworkt) super.clone();
         sn.nodeComputationCapacity = new int[sn.nodeSize];
         sn.nodeComputationCapacity = Arrays.copyOf(this.nodeComputationCapacity, this.nodeSize);
         sn.nodeComputation4Crital = new int[sn.nodeSize];
@@ -675,11 +675,11 @@ public class SubstrateNetworkt implements Cloneable
         // sn.EVNIndexSet4sNode = (Vector<Vector<Integer>>) ((SubstrateNetwork)
         // super.clone()).VNQIndexSet4sNode.clone();
         sn.virNetIndexSet4sNode = new Vector<Vector<Integer>>();
-        sn.surVirNetIndexSet4sNode = new Vector<Vector<Integer>>();
+        sn.surNetIndexSet4subNode = new Vector<Vector<Integer>>();
         for (int i = 0; i < sn.nodeSize; i++)
         {
             sn.virNetIndexSet4sNode.addElement(new Vector<Integer>());
-            sn.surVirNetIndexSet4sNode.addElement(new Vector<Integer>());
+            sn.surNetIndexSet4subNode.addElement(new Vector<Integer>());
         }
 
         sn.topology = new boolean[sn.nodeSize][sn.nodeSize];
@@ -699,7 +699,7 @@ public class SubstrateNetworkt implements Cloneable
         // ((SubstrateNetwork) super.clone()).EVNCollection.clone();
 
         sn.virNetSet = new Vector<VirtualNetwork>();
-        sn.surVirNetSet = new Vector<SurvivalVirtualNetwork>();
+        sn.surNetSet = new Vector<SurvivalVirtualNetwork>();
 
         // sn.VNQIndexSet4Edge = (Vector<Vector<Vector<Integer>>>)
         // ((SubstrateNetwork) super.clone()).VNQIndexSet4Edge

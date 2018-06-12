@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import sevn.Parameter;
 import substrateNetwork.BackupNode;
-import substrateNetwork.SubstrateNetworkt;
+import substrateNetwork.PhysicalNetworkt;
 import virtualNetwork.VirtualNetwork;
 
 import org.apache.log4j.Logger;
@@ -46,7 +46,7 @@ public class SurvivalVirtualNetwork
     // edgeBandwithCapacity-usedEdgeCurrentBandwithCapacity
     public int[][] edgeBandwith4Comsume;
     public int[][] edgeBandwith4Backup;
-    public Vector<Vector<Vector<Integer>>> surEdge2SubPath;
+    public Vector<Vector<Vector<Integer>>> surEdge2PhyPath;
 
     public int functionNum;
     public boolean[][] boolFunctionTypeSet;
@@ -56,7 +56,7 @@ public class SurvivalVirtualNetwork
 
     public int[] virNode2surNode;
     public int[] surNode2virNode;
-    public int[] surNode2subNode;
+    public int[] surNode2phyNode;
 
     public VirtualNetwork virNet;
     public int index;
@@ -94,7 +94,7 @@ public class SurvivalVirtualNetwork
      * @param bn
      *            bn
      */
-    public SurvivalVirtualNetwork(SubstrateNetworkt sn, VirtualNetwork vn, BackupNode bn)
+    public SurvivalVirtualNetwork(PhysicalNetworkt sn, VirtualNetwork vn, BackupNode bn)
     {
         loggerSurvivalVirtualNetwork.setLevel(Parameter.logLevel);
         PropertyConfigurator.configure("log4j.properties");
@@ -115,14 +115,14 @@ public class SurvivalVirtualNetwork
         this.topology = new boolean[this.nodeSize][this.nodeSize];
         this.edgeBandwith4Comsume = new int[this.nodeSize][this.nodeSize];
         this.edgeBandwith4Backup = new int[this.nodeSize][this.nodeSize];
-        surEdge2SubPath = new Vector<Vector<Vector<Integer>>>();
+        surEdge2PhyPath = new Vector<Vector<Vector<Integer>>>();
 
         for (int i = 0; i < this.nodeSize; i++)
         {
-            surEdge2SubPath.addElement(new Vector<Vector<Integer>>());
+            surEdge2PhyPath.addElement(new Vector<Vector<Integer>>());
             for (int j = 0; j < this.nodeSize; j++)
             {
-                surEdge2SubPath.get(i).addElement(new Vector<Integer>());
+                surEdge2PhyPath.get(i).addElement(new Vector<Integer>());
             }
         }
 
@@ -137,7 +137,7 @@ public class SurvivalVirtualNetwork
         // embed function
         this.virNode2surNode = new int[this.virNet.nodeSize];
         this.surNode2virNode = new int[this.nodeSize];
-        this.surNode2subNode = new int[this.nodeSize];
+        this.surNode2phyNode = new int[this.nodeSize];
 
         // knapsack problem
         // this.items = new StarStructure[this.virNet.nodeSize];
@@ -154,7 +154,7 @@ public class SurvivalVirtualNetwork
      * @param bn
      *            bn
      */
-    private void constrcutSurVirNet(SubstrateNetworkt sn, VirtualNetwork vn, BackupNode bn)
+    private void constrcutSurVirNet(PhysicalNetworkt sn, VirtualNetwork vn, BackupNode bn)
     {
         // node
         for (int i = 0; i < this.nodeSize; i++)
@@ -163,7 +163,7 @@ public class SurvivalVirtualNetwork
             {
                 this.nodeComputationCapacity[i] = vn.nodeComputationCapacity[i];
                 this.nodeComputationConsume[i] = vn.nodeComputationDemand[i];
-                this.surNode2subNode[i] = vn.virNode2subNode[i];
+                this.surNode2phyNode[i] = vn.virNode2phyNode[i];
                 this.virNode2surNode[i] = i;
                 this.surNode2virNode[i] = i;
 
@@ -171,9 +171,9 @@ public class SurvivalVirtualNetwork
             {
                 this.nodeComputationCapacity[i] = bn.nodeComputationCapacity[i - this.nodeSize4Failure];
                 this.nodeComputationConsume[i] = 0;
-                this.surNode2subNode[i] = bn.backNode2subNode[i - this.nodeSize4Failure];
+                this.surNode2phyNode[i] = bn.backNode2phyNode[i - this.nodeSize4Failure];
                 this.surNode2virNode[i] = -1;
-                if (bn.isHaveSubstrateNodeResource4buNode[i - this.nodeSize4Failure])
+                if (bn.isPhysicalNodeBoot[i - this.nodeSize4Failure])
                 {
                     this.isSubNodeComEmpty[i] = true;
                 }
@@ -201,10 +201,10 @@ public class SurvivalVirtualNetwork
             {
                 if (i < this.nodeSize4Failure)
                 {
-                    this.boolFunctionTypeSet[i][j] = sn.boolFunctionTypeSet[vn.virNode2subNode[i]][j];
+                    this.boolFunctionTypeSet[i][j] = sn.boolFunctionTypeSet[vn.virNode2phyNode[i]][j];
                 } else
                 {
-                    this.boolFunctionTypeSet[i][j] = sn.boolFunctionTypeSet[bn.backNode2subNode[i
+                    this.boolFunctionTypeSet[i][j] = sn.boolFunctionTypeSet[bn.backNode2phyNode[i
                             - this.nodeSize4Failure]][j];
                 }
             }
@@ -258,25 +258,25 @@ public class SurvivalVirtualNetwork
     public void augmentNodeEdge(int[] ithItem2ithKnapsack, int matchMehtod, StarStructure[] items, Vector<StarStructure> knapsacks)
     {
 
-        int[] virutialNode2NewSurvivalVirtualNode = new int[this.virNet.nodeSize];
+        int[] virtualNode2NewSurvivalNode = new int[this.virNet.nodeSize];
         if (matchMehtod == Parameter.MatchMethodIP)
         {
             for (int i = 0; i < this.virNet.nodeSize; i++)
             {
-                virutialNode2NewSurvivalVirtualNode[i] = knapsacks.elementAt(ithItem2ithKnapsack[i]).starNode2SurNetInd;
+                virtualNode2NewSurvivalNode[i] = knapsacks.elementAt(ithItem2ithKnapsack[i]).starNode2SurNetInd;
             }
         }
         if (matchMehtod == Parameter.MatchMethodDP)
         {
             for (int i = 0; i < this.virNet.nodeSize; i++)
             {
-                virutialNode2NewSurvivalVirtualNode[i] = ithItem2ithKnapsack[i];
+                virtualNode2NewSurvivalNode[i] = ithItem2ithKnapsack[i];
             }
         }
 
         for (int i = 0; i < this.virNet.nodeSize; i++)
         {
-            int ithVirNode2ithSurNode = virutialNode2NewSurvivalVirtualNode[i];
+            int ithVirNode2ithSurNode = virtualNode2NewSurvivalNode[i];
             // add node computation
             if (this.nodeComputationConsume[ithVirNode2ithSurNode] < items[i].starNodeComputation)
             {
@@ -285,7 +285,8 @@ public class SurvivalVirtualNetwork
             for (int j = 0; j < items[i].neighborEdge.size(); j++)
             {
                 int neighborVirNetNode = items[i].neighborEdge.elementAt(j).neighborNode4VirNetInd;
-                int neighborVirNetNode2ithSurNode = virutialNode2NewSurvivalVirtualNode[neighborVirNetNode];
+                int neighborVirNetNode2ithSurNode = virtualNode2NewSurvivalNode[neighborVirNetNode];
+                //two virtual node do not map one same physical node
                 if (ithVirNode2ithSurNode != neighborVirNetNode2ithSurNode)
                 {
                     int cap = items[i].neighborEdge.elementAt(j).neighborEdgeBandwith;
@@ -346,11 +347,11 @@ public class SurvivalVirtualNetwork
         {
             for (int j = 0; j < this.nodeSize; j++)
             {
-                surEdge2SubPath.get(i).get(j).clear();
+                surEdge2PhyPath.get(i).get(j).clear();
             }
-            surEdge2SubPath.get(i).clear();
+            surEdge2PhyPath.get(i).clear();
         }
-        surEdge2SubPath.clear();
+        surEdge2PhyPath.clear();
         label2Node.clear();
         for (int i = 0; i < knapsacks.size(); i++)
         {

@@ -12,11 +12,11 @@ public class BackupNode
 {
 
     public int backupNodeSize;
-    public int[] backNode2subNode;
+    public int[] backNode2phyNode;
     public boolean[][] boolFunctionTypeSet;
     public int[] nodeComputationCapacity;
 
-    public boolean[] isHaveSubstrateNodeResource4buNode;
+    public boolean[] isPhysicalNodeBoot;
 
     /**
      * BackupNode.
@@ -28,13 +28,13 @@ public class BackupNode
      * @param isShared
      *            isShared
      */
-    public BackupNode(SubstrateNetworkt subNet, VirtualNetwork virNet, boolean isShared)
+    public BackupNode(PhysicalNetworkt subNet, VirtualNetwork virNet, boolean isShared)
     {
         // backup node number;
         boolean[] isUsedNode = new boolean[subNet.nodeSize];
         for (int i = 0; i < virNet.nodeSize; i++)
         {
-            isUsedNode[virNet.virNode2subNode[i]] = true;
+            isUsedNode[virNet.virNode2phyNode[i]] = true;
         }
 
         this.backupNodeSize = 0;
@@ -47,19 +47,19 @@ public class BackupNode
             }
         }
 
-        this.backNode2subNode = new int[this.backupNodeSize];
+        this.backNode2phyNode = new int[this.backupNodeSize];
         this.boolFunctionTypeSet = new boolean[this.backupNodeSize][subNet.functionNum];
         this.nodeComputationCapacity = new int[this.backupNodeSize];
-        this.isHaveSubstrateNodeResource4buNode = new boolean[this.backupNodeSize];
+        this.isPhysicalNodeBoot = new boolean[this.backupNodeSize];
 
         for (int i = 0, j = 0; i < subNet.nodeSize; i++)
         {
             if (!isUsedNode[i])
             {
-                this.backNode2subNode[j] = i;
+                this.backNode2phyNode[j] = i;
                 if (subNet.nodeComputationCapacity[i] == subNet.getSubstrateRemainComputaion4VirNet(i, isShared))
                 {
-                    isHaveSubstrateNodeResource4buNode[j] = true;
+                    isPhysicalNodeBoot[j] = true;
                 }
 
                 for (int l = 0; l < subNet.functionNum; l++)
